@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	style="@style/UsbongMainMenuParentLayout">
+	
+	<Button android:id="@+id/newGame_button"
+	style="@style/UsbongMainMenuButton" 
+	android:text="New Entry" />
+
+	<Button android:id="@+id/instructions_button"
+	style="@style/UsbongMainMenuButton"
+    android:text="Instructions" />
+
+	<Button android:id="@+id/about_button"
+	style="@style/UsbongMainMenuButton"
+    android:text="About" />
+
+	<Button android:id="@+id/settings_button"
+	style="@style/UsbongMainMenuButton"
+    android:text="Settings" />
+	
+	<Button android:id="@+id/exit_button"
+	style="@style/UsbongMainMenuButton"
+    android:text="Exit" />    
+</LinearLayout>
