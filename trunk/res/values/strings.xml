@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="hello">Hello World, UsbongActivity!</string>
+    <string name="app_name">Usbong</string>
+    <string name="group_a_name">Group A</string>    
+    <string name="group_b_name">Group B</string>    
+    <string name="team_name_textview">Team Name:</string>    
+	<string name="pleaseChooseAnAnswerStringValue">Please choose an answer.\n答えを選択してください。</string>
+
+	<string name="noStringValueEnglish">No</string>
+	<string name="yesStringValueEnglish">Yes</string>  
+
+	<string name="pleaseMakeSureThatInputTxtExistsString">Please make sure that \'input.xml\' exists in your SD Card\'s \'/usbong/usbong_trees/\' directory!</string>
+
+	<string name="noStringValueFilipino">Hindi</string>
+	<string name="yesStringValueFilipino">Oo</string>  
+
+	<string name="noStringValue">No [いいえ] [不要]</string>
+	<string name="yesStringValue">Yes [はい] [要]</string>  
+	<string name="alertStringValue">Alert! 注意！</string>  
+
+    <string name="UsbongEndStateTextView_FILIPINO">Narating mo na ang dulo.</string>        
+    <string name="UsbongEndStateTextView_ENGLISH">You\'ve now reached the end.</string>        
+    
+    <string name="UsbongEndStateTextView">You\'ve now reached the end. \n　終点に着いた。 \n　你已经到了终点。</string>        
+    <string name="default_textview">default</string>    
+
+    <string name="pre_instructions_textview">Divide your team into two: Group A and Group B.</string>    	    		
+
+    <string name="results_textview">Results</string>    	    		
+	<string name="audio_recorder_textview">Audio Recorder</string>
+    
+	<string name="photo_capture_textview">Photo Capture</string>
+
+
+    <string name="vocab_list_filename">vocab_list.txt</string>
+    
+    <string name="group_a_hint_textview">The word to be guessed by the other group is: </string>
+    <string name="group_b_guess_textview">The correct word is:</string>
+    <string name="group_b_guess_edittext">Input your guess here!</string>
+
+    <string name="NoAudioFile">Hit the Menu Button on your phone to record an audio file</string>
+    <string name="NoImageCaptured">Hit the Menu Button on your phone to capture an image</string>
+    <string name="NoImageDrawn">Hit the Menu Button on your phone to draw an image</string>
+    
+    <dimen name="defTextSize">30px</dimen>
+    <color name="defTextColor">#FFFFFF</color>
+    <dimen name="defPaddingTop">16px</dimen>    
+</resources>

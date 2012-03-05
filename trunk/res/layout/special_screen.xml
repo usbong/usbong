@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	style="@style/UsbongSpecialParentLayout">
+	<ScrollView style="@style/UsbongDefaultScrollView"
+	>		 	
+	<LinearLayout style="@style/UsbongDefaultMainLayout">
+		android:gravity="center_vertical|center_horizontal">   	
+		<TextView android:id="@+id/special_textview"
+		    style="@style/UsbongDefaultTextView"	    	
+		    android:text="@string/default_textview" 
+		    android:layout_alignParentBottom="true"	    			
+		/>
+	</LinearLayout>
+	</ScrollView>	    	    
+	<LinearLayout
+		style="@style/UsbongDefaultBackNextButtonLayout">	
+	    <Button android:id="@+id/back_button"
+		    style="@style/UsbongDefaultBackNextButton"
+		    android:text="Back"/>
+		    
+	   	<Button android:id="@+id/next_button"
+		    style="@style/UsbongDefaultBackNextButton"
+		    android:text="Next"/>	    
+	</LinearLayout>
+</LinearLayout>
