@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	style="@style/UsbongDefaultParentLayout">
+	<LinearLayout
+	style="@style/UsbongDefaultMainLayout"> 
+		<TextView android:id="@+id/difficulty_textview"
+		style="@style/UsbongDefaultTextView"
+	    android:text="Did you see a fishkill incident today?: " />
+	
+		<RadioGroup android:id="@+id/yes_no_radiogroup"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">        	        
+			<RadioButton android:id="@+id/yes_radiobutton"
+			style="@style/UsbongYesNoRadioButton"
+		    android:checked="true"
+			android:text="  Yes" />
+				    
+			<RadioButton android:id="@+id/no_radiobutton"
+		    style="@style/UsbongYesNoRadioButton"
+		    android:checked="false"
+			android:text="  No" />	    			
+		</RadioGroup>    
+	
+		<LinearLayout
+		style="@style/UsbongDefaultBackNextButtonLayout">	
+		    <Button android:id="@+id/back_button"
+		    style="@style/UsbongDefaultBackNextButton"
+		    android:text="Back"/>
+		    
+		   	<Button android:id="@+id/next_button"
+		    style="@style/UsbongDefaultBackNextButton"
+		    android:text="Next"/>	    
+		</LinearLayout>
+	</LinearLayout>			    
+</LinearLayout>

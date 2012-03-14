@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root-container name="st_lukes_checkup" width="721" height="647">
+  <node name="start-state1" x="229" y="-118" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="textField~Child&apos;s name \n [?????]" x="160" y="35" width="243" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="special~Pediatrics \n [??????]" x="181" y="-36" width="248" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="radioButtons~1~Sex [??]" x="238" y="109" width="179" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="radioButtons~1~Do you have health insurance? [?????????????]" x="84" y="177" width="458" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="checkList~1~What is wrong with you? (your child) [???????]" x="152" y="253" width="394" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="Have you(he.she) ever been allergic to medication or food? \n [???????????????????????]" x="287" y="491" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="checkList~1~Has allergies \n [??????]" x="11" y="333" width="632" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="end-state1" x="61" y="409" width="288" height="36"/>
+</root-container>
