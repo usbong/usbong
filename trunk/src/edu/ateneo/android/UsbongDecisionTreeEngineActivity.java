@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -48,14 +49,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import edu.ateneo.android.multimedia.audio.AudioRecorder;
 import edu.ateneo.android.utils.UsbongUtils;
@@ -78,7 +83,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	public static final int SPECIAL_SCREEN=7;	
 	public static final int SPECIAL_IMAGE_SCREEN=8;	
 	public static final int CLASSIFICATION_SCREEN=9;		
-	public static final int END_STATE_SCREEN=10;	
+	public static final int DATE_SCREEN=10;	
+	public static final int END_STATE_SCREEN=11;	
 	
 	private static int currScreen=TEXTFIELD_SCREEN;
 	
@@ -134,6 +140,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	private CustomDataAdapter mCustomAdapter;
 	private ArrayList<String> listOfTreesArrayList;
 
+	private ArrayAdapter<CharSequence> monthAdapter;
+	private ArrayAdapter<CharSequence> dayAdapter;
+	
+	//for date
+	private int monthNumPos;
+	private int dayNumPos;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);        
@@ -155,7 +168,6 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
         mTts = new TextToSpeech(this,this);
 		mTts.setLanguage(new Locale("eng", "EN"));//default
         //==================================================================
-
         
     	usbongNodeContainer = new Vector<String>();
     	classificationContainer = new Vector<String>();
@@ -196,10 +208,24 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	    		e.printStackTrace();
 	    	}
 		}
-    	
+        
         initTreeLoader();
     }
 
+    public class MyOnItemSelectedListener implements OnItemSelectedListener {
+        public void onItemSelected(AdapterView<?> parent,
+            View view, int pos, long id) {
+/*
+        	Toast.makeText(parent.getContext(), "The month is " +
+              parent.getItemAtPosition(pos).toString(), Toast.LENGTH_LONG).show();
+*/              
+        }
+
+        public void onNothingSelected(AdapterView parent) {
+          // Do nothing.
+        }
+    }
+    
 	public void initTreeLoader()
 	{
 		setContentView(R.layout.tree_list_interface);
@@ -316,6 +342,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 					        }
 				        }		     		        
 				        break;    	
+					case DATE_SCREEN:				       
 					case SPECIAL_SCREEN:
 				        if (USE_UNESCAPE) {
 				        	sb.append(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode))+". ");
@@ -442,7 +469,11 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 				//check if the first transition's name is "No"
 //				  if (parser.getAttributeValue(1).toString().equals(noStringValue)) {
-				  if (parser.getAttributeValue(null,"name").equals(noStringValue)) {
+								
+				//added by Mike, March 8, 2012
+				//add the || just in case the language is Filipino, but we used "Yes/No" for the transitions
+				  if (parser.getAttributeValue(null,"name").equals(noStringValue)
+						  || parser.getAttributeValue(null,"name").equals("No")) {
 					  nextUsbongNodeIfNo = /*parser.getAttributeValue(null,"to").toString();*/parser.getAttributeValue(0).toString();
 					  //do two nextTag()'s, because <transition> has a closing tag
 					  parser.nextTag();
@@ -450,7 +481,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 					  nextUsbongNodeIfYes = /*parser.getAttributeValue(null,"to").toString();*/parser.getAttributeValue(0).toString();
 				  }
 //				  else if (parser.getAttributeValue(1).toString().equals(yesStringValue)) { // if it is "Yes"
-				  else if (parser.getAttributeValue(null,"name").equals(yesStringValue)) {
+				  else if (parser.getAttributeValue(null,"name").equals(yesStringValue)
+				  		  || parser.getAttributeValue(null,"name").equals("Yes")){
 				  	  nextUsbongNodeIfYes = /*parser.getAttributeValue(null,"to").toString();*/parser.getAttributeValue(0).toString();
 					  //do two nextTag()'s, because <transition> has a closing tag
 					  parser.nextTag();
@@ -562,7 +594,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 					  }
 					  else if (parser.getName().equals("task-node")) { 
 						  	StringTokenizer st = new StringTokenizer(currUsbongNode, "~");
-							String myStringToken = st.nextToken();
+							String myStringToken = st.nextToken();							
+
 							if (myStringToken.equals(currUsbongNode)) {//if this is the task-node for classification and treatment/management plan								
 								//<task-node name="SOME DEHYDRATION">
 								//	<task name="Give fluid, zinc supplements and food for some dehydration (Plan B)"></task>
@@ -572,6 +605,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 								//	<transition to="end-state1" name="to-end"></transition>
 								//</task-node>
 								parser.nextTag(); //go to task tag
+
 								currScreen = CLASSIFICATION_SCREEN;
 								classificationContainer.removeAllElements();
 								while(!parser.getName().equals("transition")) {
@@ -677,6 +711,15 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 									
 									parseYesNoAnswers(parser);
 								}																								
+								else if (myStringToken.equals("date")) { //special?
+									//<task-node name="date~Birthday">
+									//  <transition to="Address" name="Any"></transition>
+									//</task-node>
+									parser.nextTag(); //go to transition tag
+									currScreen=DATE_SCREEN;
+
+									parseYesNoAnswers(parser);
+								}
 								else if (myStringToken.equals("special")) { //special?
 									//<task-node name="special~Give a trial of rapid acting inhaled bronchodilator for up to 3 times 15-20 minutes apart. Count the breaths and look for chest indrawing again, and then classify.">
 									//  <transition to="Does the child have wheezing? (child must be calm)" name="Any"></transition>
@@ -878,7 +921,46 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		            myClassificationLinearLayout.addView(myTextView);
 		        }		     		        
 		        break;    	
+			case DATE_SCREEN:
+		    	setContentView(R.layout.date_screen);
+		        initBackNextButtons();
+		        
+		        TextView myDateScreenTextView = (TextView)findViewById(R.id.date_textview);
+		        if (USE_UNESCAPE) {
+		        	myDateScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
+		        }
+		        else {
+		        	myDateScreenTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
+		        }
+		        
+		        //month-------------------------------
+		    	Spinner dateMonthSpinner = (Spinner) findViewById(R.id.date_month_spinner);
+		        monthAdapter = ArrayAdapter.createFromResource(
+		                this, R.array.months_array, android.R.layout.simple_spinner_item);
+		        monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		        dateMonthSpinner.setAdapter(monthAdapter);
+//		        dateMonthSpinner.getSelectedItem().toString()
+//		        dateMonthSpinner.setOnItemSelectedListener(new MyOnItemSelectedListener(monthNumPos));
+		        //-------------------------------------
+		        
+		        //day----------------------------------
+		        Spinner dateDaySpinner = (Spinner) findViewById(R.id.date_day_spinner);
+		        dayAdapter = ArrayAdapter.createFromResource(
+		                this, R.array.day_array, android.R.layout.simple_spinner_item);
+		        dayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		        dateDaySpinner.setAdapter(dayAdapter);		        
+//		        dateMonthSpinner.setOnItemSelectedListener(new MyOnItemSelectedListener(dayNumPos));
+		        //-------------------------------------
 
+		        //year---------------------------------
+		        Calendar date = Calendar.getInstance();
+				int year = date.get(Calendar.YEAR);
+		        EditText myDateYearEditText = (EditText)findViewById(R.id.date_edittext);
+		        myDateYearEditText.setText(""+year);		        
+		        myDateYearEditText.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);		        
+		        //-------------------------------------		        
+		        break;    	
+		        
 			case SPECIAL_SCREEN:
 		    	setContentView(R.layout.special_screen);
 		        initBackNextButtons();
@@ -1099,6 +1181,18 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 							initParser();				        	
 				        }
 		    		}
+		    		else if (currScreen==DATE_SCREEN) {
+		    			currUsbongNode = nextUsbongNodeIfYes;
+				    	Spinner dateMonthSpinner = (Spinner) findViewById(R.id.date_month_spinner);
+				        Spinner dateDaySpinner = (Spinner) findViewById(R.id.date_day_spinner);
+				        EditText myDateYearEditText = (EditText)findViewById(R.id.date_edittext);
+		    			usbongAnswerContainer.addElement(monthAdapter.getItem(dateMonthSpinner.getSelectedItemPosition()).toString() +
+								 						 dayAdapter.getItem(dateDaySpinner.getSelectedItemPosition()).toString() + "," +
+								 						 myDateYearEditText.getText().toString());		    					
+				        
+		    			System.out.println(">>>>>>>>>>>>>Date screen: "+usbongAnswerContainer.lastElement());
+		    			initParser();				        	
+		    		}		    		
 		    		else { //TODO: do this for now
 						currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
 						usbongAnswerContainer.addElement("Any;");															

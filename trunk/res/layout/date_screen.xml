@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	style="@style/UsbongSpecialParentLayout">
+	<ScrollView style="@style/UsbongDefaultScrollView"
+	>		 	
+	<LinearLayout style="@style/UsbongDefaultMainLayout">
+		<TextView android:id="@+id/date_textview"
+		    style="@style/UsbongDefaultTextView"	    	
+		    android:text="@string/default_textview" 
+		    android:layout_alignParentBottom="true"	    			
+		/>
+		<LinearLayout style="@style/UsbongDateMainLayout">
+			<Spinner 
+		        android:id="@+id/date_month_spinner"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:prompt="@string/date_month"
+		        android:textSize="24px"
+	    	/>
+			<Spinner 
+		        android:id="@+id/date_day_spinner"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:prompt="@string/date_day"
+		        android:textSize="24px"
+	    	/>
+			<EditText android:id="@+id/date_edittext"
+			    style="@style/UsbongDefaultTextView"	    	
+			    android:layout_alignParentBottom="true"
+			    android:text="2012" 
+			    android:textColor="#000000"		
+			/>
+		</LinearLayout>
+	</LinearLayout>
+	</ScrollView>	    	    
+	<LinearLayout
+		style="@style/UsbongDefaultBackNextButtonLayout">	
+	    <Button android:id="@+id/back_button"
+		    style="@style/UsbongDefaultBackNextButton"
+		    android:text="Back"/>
+		    
+	   	<Button android:id="@+id/next_button"
+		    style="@style/UsbongDefaultBackNextButton"
+		    android:text="Next"/>	    
+	</LinearLayout>
+</LinearLayout>

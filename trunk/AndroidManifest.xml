@@ -7,7 +7,6 @@
     <uses-permission android:name="android.permission.CAMERA"></uses-permission>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
     <uses-permission android:name="android.permission.RECORD_AUDIO"></uses-permission>
-    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application android:icon="@drawable/icon" android:label="@string/app_name">
         <activity android:name=".TitleActivity"
@@ -20,6 +19,6 @@
         <activity android:name="UsbongMainActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="UsbongDecisionTreeEngineActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="CameraActivity" android:permission="android.permission.CAMERA" android:screenOrientation="nosensor"></activity>
-        <activity android:name="SettingsActivity" android:screenOrientation="portrait"></activity>
+
     </application>
 </manifest>
