@@ -25,6 +25,57 @@
     <string name="UsbongEndStateTextView">You\'ve now reached the end. \n　終点に着いた。 \n　你已经到了终点。</string>        
     <string name="default_textview">default</string>    
 
+	<string name="date_month">month</string>
+    <string-array name="months_array">
+        <item>Jan</item>
+        <item>Feb</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>Aug</item>
+        <item>Sept</item>
+        <item>Oct</item>
+        <item>Nov</item>
+        <item>Dec</item>
+    </string-array>
+
+	<string name="date_day">day</string>
+    <string-array name="day_array">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+        <item>24</item>
+        <item>25</item>
+        <item>26</item>
+        <item>27</item>
+        <item>28</item>
+        <item>29</item>
+        <item>30</item>
+        <item>31</item>
+    </string-array>
+
     <string name="pre_instructions_textview">Divide your team into two: Group A and Group B.</string>    	    		
 
     <string name="results_textview">Results</string>    	    		
