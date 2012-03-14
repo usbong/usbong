@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<process-definition  xmlns=""  name="st_lukes_checkup">
+
+
+	<start-state name="start-state1">
+		<transition to="special~Pediatrics \n [小児科問診票]"></transition>
+	</start-state>
+
+
+	<task-node name="textField~Child's name \n [子供の名前]">
+		<transition to="radioButtons~1~Sex [性別]" name="Any"></transition>
+	</task-node>
+
+	<task-node name="special~Pediatrics \n [小児科問診票]">
+		<transition to="textField~Child's name \n [子供の名前]" name="Any"></transition>
+	</task-node>
+
+	<task-node name="radioButtons~1~Sex [性別]">
+		<task name="Male [男]"></task>
+		<task name="Female [女]"></task>
+		<transition to="radioButtons~1~Do you have health insurance? [健康保険を持っていますか？]" name="Any"></transition>
+	</task-node>
+
+	<task-node name="radioButtons~1~Do you have health insurance? [健康保険を持っていますか？]">
+		<task name="Yes [有]"></task>
+		<task name="No [無]"></task>
+		<transition to="checkList~1~What is wrong with you? (your child) [どうしましたか]" name="Any"></transition>
+	</task-node>
+
+	<task-node name="checkList~1~What is wrong with you? (your child) [どうしましたか]">
+		<task name="fever [熱がある]"></task>
+		<task name="spasm [ひきつけをおこす]"></task>
+		<task name="irritable [機嫌が悪い]"></task>
+		<task name="swelling [むくみ]"></task>
+		<task name="chest pain [胸痛]"></task>
+		<task name="rash [発疹]"></task>
+		<task name="loss of appetite (low milk intake) [食欲不振]"></task>
+		<transition to="Have you(he.she) ever been allergic to medication or food? \n [薬や飲物等でアレルギーを生じたことがありますか]"　name="Any"></transition>
+	</task-node>
+
+	<decision name="Have you(he.she) ever been allergic to medication or food? \n [薬や飲物等でアレルギーを生じたことがありますか]">
+		<transition to="checkList~1~Has allergies \n [アレルギー有]" name="Yes [はい]"></transition>
+		<transition to="end-state1" name="No [いいえ]"></transition>
+	</decision>
+
+	<task-node name="checkList~1~Has allergies \n [アレルギー有]">
+		<task name="medication (薬)"></task>
+		<task name="egg (卵)"></task>
+		<task name="milk (牛乳)"></task>
+		<task name="other food (その他の食べ物)"></task>
+		<task name="others (その他)"></task>
+		<transition to="end-state1" name="Any"></transition>
+	</task-node>
+	<end-state name="end-state1"></end-state>
+</process-definition>
