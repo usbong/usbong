@@ -1,5 +1,5 @@
 --Usbong (beta)--
-ver: March 8, 2012v2
+ver: March 15, 2012
 
 --Team+Development Lead--
 --Usbong4LanguageLiteracy--
@@ -7,6 +7,16 @@ ver: March 8, 2012v2
 +Preparedness--
 --Usbong4HealthCare--
 Michael Syson, MSCS
+
+--Usbong4Multi-lingualMedicalTriage--
+Benjz Sevilla
+Angela Agravia
+Karina Casing
+Sean de Dios
+Niko Lok
+
+--Usbong4PeopleTracking--
+Jomel Araniego
 
 --Usbong4SPED--
 Ronjo Solis, MSECE Student
