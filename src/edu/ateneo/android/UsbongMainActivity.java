@@ -42,7 +42,7 @@ public class UsbongMainActivity extends Activity
 
 	private static int currScreen=MAIN_MENU_SCREEN;
 	
-	private Button newFormButton;
+	private Button newEntryButton;
 	private Button instructionsButton;
 	private Button aboutButton;
 	private Button settingsButton;
@@ -52,15 +52,15 @@ public class UsbongMainActivity extends Activity
 	private Button nextButton;	
 		
 	private static UsbongMainActivity instance;
-	
-			
+				
 	public static String timeStamp;
 	
 	private static String teamName="";
 	private static Date startTime;	
 	
 	protected UsbongDecisionTreeEngineActivity myUsbongDecisionTreeEngineActivity;
-
+	protected SettingsActivity mySettingsActivity;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) 
     {
@@ -99,16 +99,16 @@ public class UsbongMainActivity extends Activity
     {
     	currScreen=MAIN_MENU_SCREEN;
     	
-    	newFormButton = (Button)findViewById(R.id.newGame_button);
+    	newEntryButton = (Button)findViewById(R.id.newEntry_button);
     	instructionsButton = (Button)findViewById(R.id.instructions_button);
     	aboutButton = (Button)findViewById(R.id.about_button);
     	settingsButton = (Button)findViewById(R.id.settings_button);
     	exitButton = (Button)findViewById(R.id.exit_button);    	
 
-    	newFormButton.setOnClickListener(new OnClickListener() {
+    	newEntryButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				myUsbongDecisionTreeEngineActivity = new UsbongDecisionTreeEngineActivity();
+//				myUsbongDecisionTreeEngineActivity = new UsbongDecisionTreeEngineActivity();
 				
 				Intent toUsbongDecisionTreeEngineActivityIntent = new Intent().setClass(UsbongMainActivity.getInstance(), UsbongDecisionTreeEngineActivity.class);
 				toUsbongDecisionTreeEngineActivityIntent.putExtra("currScreen","0"); //make currScreen=0; meaning very first screen				
@@ -150,6 +150,10 @@ public class UsbongMainActivity extends Activity
     	settingsButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {				
+//				mySettingsActivity = new SettingsActivity();
+				
+				Intent toSettingsActivityIntent = new Intent().setClass(UsbongMainActivity.getInstance(), SettingsActivity.class);
+				startActivity(toSettingsActivityIntent);				
 			}
     	});
 

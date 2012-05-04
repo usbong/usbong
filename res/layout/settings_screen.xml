@@ -4,12 +4,19 @@
 	<ScrollView android:isScrollContainer="true"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
-	android:layout_weight="0.6">		 	
-		 <TextView android:id="@+id/settings_textview"
-				style="@style/UsbongDefaultTextView"
-			    android:text="Destination URL"/>		
-		 <EditText android:id="@+id/settings_edittext"
-				style="@style/UsbongDefaultTextView"
-			    android:text=""/>	
+	android:layout_weight="0.6">		
+		<LinearLayout style="@style/UsbongDefaultMainLayout">
+			android:gravity="center_vertical|center_horizontal">   		
+			 <TextView android:id="@+id/settings_textview"
+					style="@style/UsbongDefaultTextView"
+				    android:text="-Settings-"/>		
+
+			 <TextView android:id="@+id/settings_textview"
+					style="@style/UsbongDefaultTextView"
+				    android:text="Destination URL"/>		
+			 <EditText android:id="@+id/settings_edittext"
+					style="@style/UsbongDefaultSettingsTextView"
+				    android:text=""/>	
+		</LinearLayout>
 	</ScrollView>					    
 </LinearLayout>

@@ -17,8 +17,6 @@ package edu.ateneo.android.utils;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -26,9 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -46,12 +41,14 @@ import org.apache.http.message.BasicNameValuePair;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetManager;
-import android.util.Log;
+import android.net.Uri;
+import android.os.Environment;
 
 public class UsbongUtils {	
-	public static String BASE_FILE_PATH = "/sdcard/usbong/";
+	public static String BASE_FILE_PATH = Environment.getExternalStorageDirectory()+"/usbong/";
+//	public static String BASE_FILE_PATH = "/sdcard/usbong/";
 	private static String timeStamp;
-    
+    	
 	public static final int LANGUAGE_ENGLISH=0; 
 	public static final int LANGUAGE_FILIPINO=1; //uses English only
 	
@@ -87,6 +84,23 @@ public class UsbongUtils {
     	}    			
 		System.out.println(">>>> Leaving createUsbongFileStructure");
 	}	
+	
+	public static void createNewOutputFolderStructure() throws IOException {
+		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>> createNewOutputFolderStructure()");
+		System.out.println("BASE_FILE_PATH + UsbongUtils.getTimeStamp()+/): "+BASE_FILE_PATH + UsbongUtils.getTimeStamp()+"/");
+		//code below doesn't seem to work
+//		String baseFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "usbong/";
+		File directory = new File(BASE_FILE_PATH + UsbongUtils.getTimeStamp()+"/");
+		System.out.println(">>>> Directory: " + directory.getAbsolutePath());
+		
+		if (!directory.exists() && !directory.mkdirs()) 
+    	{
+			System.out.println(">>>> Creating new output folder structure for usbong");
+    		throw new IOException("Base File Path to file could not be created.");
+    	}    			
+		System.out.println(">>>> Leaving createNewOutputFolderStructure");
+	}	
+
 	
     public static String readTextFileInAssetsFolder(Activity a, String filename) {
 		//READ A FILE
@@ -168,8 +182,9 @@ public class UsbongUtils {
 			File file = new File(filePath);
 			if(!file.exists())
 			{
-				System.out.println(">>>>>> File " + filePath + " doesn't exist. Creating file.");
-				file.createNewFile();
+				System.out.println(">>>>>> File " + filePath + " doesn't exist."); //Creating file.
+//				file.createNewFile();
+				return null;
 			}
 	
 		      InputStream in = null;
@@ -272,8 +287,15 @@ public class UsbongUtils {
     	return LANGUAGE_ENGLISH;
     }
     
-    public static Intent performEmailProcess(String filepath) {
-		final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+    public static Intent performEmailProcess(String filepath, List<String> filePathsList) {
+//		final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+    	final Intent emailIntent;
+    	if (filePathsList!=null) {
+    		emailIntent = new Intent(android.content.Intent.ACTION_SEND_MULTIPLE);
+    	}
+    	else {
+    		emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+    	}
     	try {
 			InputStreamReader reader = UsbongUtils.getFileFromSDCard(filepath);
 			BufferedReader br = new BufferedReader(reader);    		
@@ -286,7 +308,22 @@ public class UsbongUtils {
 			emailIntent.setType("text/plain");
 			emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "usbong;"+timeStamp);
 			emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, currLineString); //body
-			emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, "masarapmabuhay@gmail.com"); 			
+//			emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"masarapmabuhay@gmail.com"});//"masarapmabuhay@gmail.com"); 	
+			
+			//Reference: http://stackoverflow.com/questions/2264622/android-multiple-email-attachments-using-intent
+			//last accessed: 14 March 2012
+			//has to be an ArrayList
+		    ArrayList<Uri> uris = new ArrayList<Uri>();
+		    //convert from paths to Android friendly Parcelable Uri's
+		    for (String file : filePathsList)
+		    {
+		        File fileIn = new File(file);
+		        Uri u = Uri.fromFile(fileIn);
+		        uris.add(u);
+		        System.out.println(">>>>>>>>>>>>>>>>>> u: "+u);
+		    }
+		    emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+		    
 		}
 		catch (Exception e) {
 			e.printStackTrace();

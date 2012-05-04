@@ -10,7 +10,7 @@
 	<string name="noStringValueEnglish">No</string>
 	<string name="yesStringValueEnglish">Yes</string>  
 
-	<string name="pleaseMakeSureThatInputTxtExistsString">Please make sure that \'input.xml\' exists in your SD Card\'s \'/usbong/usbong_trees/\' directory!</string>
+	<string name="pleaseMakeSureThatXMLTreeExistsString">Please make sure that an XML tree exists in your SD Card\'s \'/usbong/usbong_trees/\' directory!</string>
 
 	<string name="noStringValueFilipino">Hindi</string>
 	<string name="yesStringValueFilipino">Oo</string>  

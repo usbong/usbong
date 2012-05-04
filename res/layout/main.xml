@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	style="@style/UsbongMainMenuParentLayout">
 	
-	<Button android:id="@+id/newGame_button"
+	<Button android:id="@+id/newEntry_button"
 	style="@style/UsbongMainMenuButton" 
 	android:text="New Entry" />
 

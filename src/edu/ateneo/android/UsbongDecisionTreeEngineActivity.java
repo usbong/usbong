@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -95,6 +96,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	private Button recordButton;
 	private Button playButton;
 	
+	private static AudioRecorder currAudioRecorder;
+	
 	private Button photoCaptureButton;
 	private ImageView myImageView;
 	
@@ -128,7 +131,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 	private String myTreeDirectory="usbong_trees/";
 	private String myTree="input.xml";
-	private String myOutputDirectory="usbong_trees/output"; //add the ".csv" after appending the timestampe //output.csv
+	private String myOutputDirectory=UsbongUtils.getTimeStamp()+"/"; //add the ".csv" after appending the timestampe //output.csv
 	
 	private static UsbongDecisionTreeEngineActivity instance;
     private static TextToSpeech mTts;
@@ -143,10 +146,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	private ArrayAdapter<CharSequence> monthAdapter;
 	private ArrayAdapter<CharSequence> dayAdapter;
 	
-	//for date
-	private int monthNumPos;
-	private int dayNumPos;
-	
+	private List<String> attachmentFilePaths;
+		
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);        
@@ -176,7 +177,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     	checkBoxesContainer = new Vector<String>();
 
     	usedBackButton=false;
-    	
+    	    	
     	//default values
     	IS_IN_DEBUG_MODE=false;
     	UsbongUtils.destinationServerURL="127.0.0.1";//"192.168.1.105";
@@ -208,8 +209,22 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	    		e.printStackTrace();
 	    	}
 		}
-        
-        initTreeLoader();
+    	
+    	try{
+    		UsbongUtils.createNewOutputFolderStructure();
+    	}
+    	catch(IOException ioe) {
+    		ioe.printStackTrace();
+    	}
+    	
+    	//Reference: http://stackoverflow.com/questions/2793004/java-lista-addalllistb-fires-nullpointerexception
+    	//Last accessed: 14 March 2012
+    	attachmentFilePaths = new ArrayList<String>();;            	
+//		attachmentFilePaths.clear();
+//		System.out.println(">>>>>>>>> attachmentFilePaths.clear!");
+		currAudioRecorder = null;
+
+    	initTreeLoader();
     }
 
     public class MyOnItemSelectedListener implements OnItemSelectedListener {
@@ -229,7 +244,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	public void initTreeLoader()
 	{
 		setContentView(R.layout.tree_list_interface);
-		
+				
 		listOfTreesArrayList = UsbongUtils.getTreeArrayList(UsbongUtils.BASE_FILE_PATH + myTreeDirectory);
 		
 		mCustomAdapter = new CustomDataAdapter(this, R.layout.tree_loader, listOfTreesArrayList);
@@ -237,6 +252,23 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		treesListView = (ListView)findViewById(R.id.tree_list_view);
 		treesListView.setLongClickable(true);
 		treesListView.setAdapter(mCustomAdapter);
+
+    	String pleaseMakeSureThatXMLTreeExistsString = (String) getResources().getText(R.string.pleaseMakeSureThatXMLTreeExistsString);
+    	String alertString = (String) getResources().getText(R.string.alertStringValue);
+
+		if (listOfTreesArrayList.isEmpty()){
+        	new AlertDialog.Builder(UsbongDecisionTreeEngineActivity.this).setTitle(alertString)
+			.setMessage(pleaseMakeSureThatXMLTreeExistsString)
+			.setPositiveButton("OK", new DialogInterface.OnClickListener() {					
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+		    		finish();    
+					Intent toUsbongMainActivityIntent = new Intent(UsbongDecisionTreeEngineActivity.this, UsbongMainActivity.class);
+					toUsbongMainActivityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
+					startActivity(toUsbongMainActivityIntent);
+				}
+			}).show();	        		        	
+		  }
 	}
     
 	@Override
@@ -506,8 +538,6 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     //http://developer.android.com/reference/org/xmlpull/v1/XmlPullParser.html; last accessed on: Aug. 23, 2011
 	public void initParser() {
 		hasReachedEndOfAllDecisionTrees=false;
-    	String pleaseMakeSureThatInputTxtExistsString = (String) getResources().getText(R.string.pleaseMakeSureThatInputTxtExistsString);
-    	String alertString = (String) getResources().getText(R.string.alertStringValue);
 
 		try {
 		  XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
@@ -515,23 +545,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		  XmlPullParser parser = factory.newPullParser();		 		  
 		  
 		  //if *.xml is blank
-		  if (UsbongUtils.getFileFromSDCard(UsbongUtils.BASE_FILE_PATH + myTreeDirectory + myTree + ".xml") == null) { 
-	        	new AlertDialog.Builder(UsbongDecisionTreeEngineActivity.this).setTitle(alertString)
-				.setMessage(pleaseMakeSureThatInputTxtExistsString)
-				.setPositiveButton("OK", new DialogInterface.OnClickListener() {					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-			    		finish();    
-						Intent toUsbongMainActivityIntent = new Intent(UsbongDecisionTreeEngineActivity.this, UsbongMainActivity.class);
-						toUsbongMainActivityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
-						startActivity(toUsbongMainActivityIntent);
-					}
-				}).show();	        		        	
-	        	return;
-		  }
-		  else {
-			  parser.setInput(UsbongUtils.getFileFromSDCard(UsbongUtils.BASE_FILE_PATH + myTreeDirectory + myTree + ".xml"));	
-		  }
+//		  if (UsbongUtils.getFileFromSDCard(UsbongUtils.BASE_FILE_PATH + myTreeDirectory + myTree + ".xml") == null) { 
+		  parser.setInput(UsbongUtils.getFileFromSDCard(UsbongUtils.BASE_FILE_PATH + myTreeDirectory + myTree + ".xml"));	
 		  
 		  while(parser.nextTag() != XmlPullParser.END_DOCUMENT) {
 			  //if this tag does not have an attribute; e.g. END_TAG
@@ -939,8 +954,6 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		                this, R.array.months_array, android.R.layout.simple_spinner_item);
 		        monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		        dateMonthSpinner.setAdapter(monthAdapter);
-//		        dateMonthSpinner.getSelectedItem().toString()
-//		        dateMonthSpinner.setOnItemSelectedListener(new MyOnItemSelectedListener(monthNumPos));
 		        //-------------------------------------
 		        
 		        //day----------------------------------
@@ -949,7 +962,6 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		                this, R.array.day_array, android.R.layout.simple_spinner_item);
 		        dayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		        dateDaySpinner.setAdapter(dayAdapter);		        
-//		        dateMonthSpinner.setOnItemSelectedListener(new MyOnItemSelectedListener(dayNumPos));
 		        //-------------------------------------
 
 		        //year---------------------------------
@@ -1065,6 +1077,26 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				if (mTts.isSpeaking()) {
 					mTts.stop();
 				}
+				if (currAudioRecorder!=null) {
+					try {					
+						//if stop button is pressable
+						if (stopButton.isEnabled()) { 
+							currAudioRecorder.stop();
+						}
+						if (currAudioRecorder.isPlaying()){
+							currAudioRecorder.stopPlayback();
+						}					
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+					String path = currAudioRecorder.getPath();
+					System.out.println(">>>>>>>>>>>>>>>>>>>currAudioRecorder: "+currAudioRecorder);
+					if (!attachmentFilePaths.contains(path)) {
+						attachmentFilePaths.add(path);
+						System.out.println(">>>>>>>>>>>>>>>>adding path: "+path);
+					}							
+				}
 
 		    	//END_STATE_SCREEN = last screen
 		    	if (currScreen==END_STATE_SCREEN) {
@@ -1075,13 +1107,14 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    			outputStringBuffer.append(usbongAnswerContainer.elementAt(i));
 		    		}
 		    		
-		    		System.out.println(">>>>>>>>>>>>> outputStringBuffer: " + outputStringBuffer.toString());
+		    		myOutputDirectory=UsbongUtils.getTimeStamp()+"/";
+//		    		System.out.println(">>>>>>>>>>>>> outputStringBuffer: " + outputStringBuffer.toString());
 		    		UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv", outputStringBuffer.toString());
 		    		//send to server
 		    		UsbongUtils.performFileUpload(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv");
-
+		    		 
 		    		//send to email
-		    		Intent emailIntent = UsbongUtils.performEmailProcess(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv");
+		    		Intent emailIntent = UsbongUtils.performEmailProcess(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv", attachmentFilePaths);
 		    		emailIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //		    		emailIntent.addFlags(RESULT_OK);
 		    		startActivityForResult(Intent.createChooser(emailIntent, "Email:"),EMAIL_SENDING_SUCCESS);
@@ -1203,21 +1236,32 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     	});
     }
     
-    public void initRecordAudioScreen() {
+    public void initRecordAudioScreen() {    	    	
         String timeStamp = UsbongUtils.getTimeStamp();
+//        final AudioRecorder recorder = new AudioRecorder("/usbong/" + timeStamp,currUsbongNode);
+//        currAudioRecorder = recorder;        
         
         stopButton = (Button) findViewById(R.id.stop_button);
         stopButton.setEnabled(false); 
         recordButton = (Button) findViewById(R.id.record_button);
         playButton = (Button) findViewById(R.id.play_button);
-        playButton.setEnabled(false); 
-        final AudioRecorder recorder = new AudioRecorder("/usbong/" + timeStamp);
+        playButton.setEnabled(false);         	
+
+        /*
+        if ((currAudioRecorder!=null) && (!currAudioRecorder.hasRecordedData())) {
+            playButton.setEnabled(false);         	
+        }
+        else {
+        	currAudioRecorder = new AudioRecorder("/usbong/" + timeStamp,currUsbongNode);
+        }
+*/        
+    	currAudioRecorder = new AudioRecorder("/usbong/" + timeStamp,currUsbongNode);
 
         // add a click listener to the button
         recordButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 try {
-					recorder.start();
+                	currAudioRecorder.start();
 					stopButton.setEnabled(true);
 					recordButton.setEnabled(false);
 			        playButton.setEnabled(false);
@@ -1232,7 +1276,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
         stopButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	try {
-					recorder.stop();
+            		currAudioRecorder.stop();
 					recordButton.setEnabled(true); 
 					playButton.setEnabled(true);
 					stopButton.setEnabled(false);
@@ -1247,7 +1291,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
         playButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	try {
-					recorder.play();
+            		currAudioRecorder.play();
 					recordButton.setEnabled(true); 
 					//play.setEnabled(false);
 					stopButton.setEnabled(false);
@@ -1271,7 +1315,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     {
     	myPictureName=currUsbongNode; //make the name of the picture the name of the currUsbongNode
 
-		String path = "/sdcard/usbong/"+ UsbongUtils.getTimeStamp() +"/"+ myPictureName +".jpg";
+//		String path = "/sdcard/usbong/"+ UsbongUtils.getTimeStamp() +"/"+ myPictureName +".jpg";
+		String path = UsbongUtils.BASE_FILE_PATH + UsbongUtils.getTimeStamp()+"/"+ myPictureName +".jpg";		
+		//only add path if it's not already in attachmentFilePaths
+		if (!attachmentFilePaths.contains(path)) {
+			attachmentFilePaths.add(path);
+		}
+		
     	setContentView(R.layout.photo_capture_screen);
     	myImageView = (ImageView) findViewById(R.id.CameraImage);
 
