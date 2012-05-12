@@ -179,7 +179,7 @@
     </style>	   
 
     <style name="UsbongDefaultBackNextButton">
-		<item name="android:layout_width">128px</item>
+		<item name="android:layout_width">136px</item>
 		<item name="android:layout_height">wrap_content</item>
     </style>	   
 
@@ -189,22 +189,22 @@
     </style>	       
     
     <style name="UsbongMainMenuButton">
-		<item name="android:layout_width">200px</item>
+		<item name="android:layout_width">240px</item>
 		<item name="android:layout_height">wrap_content</item>
     </style>	           
 
     <style name="UsbongTitleStartButton">
-		<item name="android:layout_width">200px</item>
+		<item name="android:layout_width">240px</item>
 		<item name="android:layout_height">wrap_content</item>
     </style>	           
     
     <style name="UsbongAudioRecorderButton">
-		<item name="android:layout_width">200px</item>
+		<item name="android:layout_width">240px</item>
 		<item name="android:layout_height">wrap_content</item>
     </style>	               
     
     <style name="UsbongAudioPlayerButton">
-		<item name="android:layout_width">200px</item>
+		<item name="android:layout_width">240px</item>
 		<item name="android:layout_height">wrap_content</item>
     </style>	                   
     
@@ -225,7 +225,7 @@
     </style>	                       
     
     <style name="UsbongPhotoCaptureButton">
-		<item name="android:layout_width">200px</item>
+		<item name="android:layout_width">240px</item>
 		<item name="android:layout_height">wrap_content</item>		
     </style>	    
 
