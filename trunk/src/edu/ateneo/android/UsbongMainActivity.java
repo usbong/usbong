@@ -14,6 +14,9 @@
  */
 package edu.ateneo.android;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.Date;
 
 import android.app.Activity;
@@ -68,19 +71,9 @@ public class UsbongMainActivity extends Activity
 //    	if (instance==null) { //comment this out, since the app seems to retain the instance even after we do a finish to GameActivity to close the app...
 	        setContentView(R.layout.main);	        
 	        instance = this;
-		
 	    	startTime = new Date();
-	        	    	
-	        try 
-	        {
-	        	System.out.println(">>>>>> Creating file structure.");
-	        	UsbongUtils.createUsbongFileStructure();
-	        }
-	        catch (Exception e) {
-	        	System.out.println("ERROR creating usbong file structure! ");
-	        	e.printStackTrace();
-	        }
-	        resetGame();
+	    	
+	        reset();
 	        initMainMenuScreen();
     }
     
@@ -224,7 +217,7 @@ public class UsbongMainActivity extends Activity
     	return startTime;
     }
     
-    public void resetGame() {
+    public void reset() {
     	UsbongUtils.generateTimeStamp(); //create a new timestamp for this "New Entry"
     }
         
@@ -284,7 +277,7 @@ public class UsbongMainActivity extends Activity
 			case MAIN_MENU_SCREEN:
 		    	setContentView(R.layout.main);
 		    	initMainMenuScreen();
-		    	resetGame();
+		    	reset();
 		        break;    	
 /*
 			case GAME_SETTINGS_TEAM_NAME_SCREEN:
