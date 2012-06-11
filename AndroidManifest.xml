@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 
     <application android:label="@string/app_name" android:icon="@drawable/usbong_icon">
-        <activity android:name=".TitleActivity"
+        <activity android:name="SignInActivity"
                   android:label="@string/app_name" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,6 +21,7 @@
         <activity android:name="UsbongDecisionTreeEngineActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="CameraActivity" android:permission="android.permission.CAMERA" android:screenOrientation="nosensor"></activity>
 		<activity android:name="SettingsActivity" android:screenOrientation="portrait"></activity>
-
+		<activity android:name="RegisterActivity" android:screenOrientation="portrait"></activity>        
+		<activity android:name="TitleActivity" android:screenOrientation="portrait"></activity>        
     </application>
 </manifest>

@@ -68,9 +68,8 @@ import edu.ateneo.android.utils.UsbongUtils;
 
 public class UsbongDecisionTreeEngineActivity extends Activity implements TextToSpeech.OnInitListener{
 	private static final boolean USE_UNESCAPE=true; //allows the use of \n (new line) in the decision tree
-//	private static boolean USE_ENG_ONLY=true; //uses English only
-	
-	private static boolean IS_IN_DEBUG_MODE=false;
+//	private static boolean USE_ENG_ONLY=true; //uses English only	
+//	private static boolean UsbongUtils.IS_IN_DEBUG_MODE=false;
 
 	private int currLanguageBeingUsed;
 	
@@ -177,39 +176,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     	checkBoxesContainer = new Vector<String>();
 
     	usedBackButton=false;
-    	    	
-    	//default values
-    	IS_IN_DEBUG_MODE=false;
-    	UsbongUtils.destinationServerURL="127.0.0.1";//"192.168.1.105";
-		
-    	if (UsbongUtils.getFileFromSDCard(UsbongUtils.BASE_FILE_PATH + "usbong.config") == null) { 
-			IS_IN_DEBUG_MODE=false;
-		}
-		else {
-			StringBuffer sb = new StringBuffer();    		
-			try {
-				InputStreamReader reader = UsbongUtils.getFileFromSDCard(UsbongUtils.BASE_FILE_PATH + "usbong.config");
-				BufferedReader br = new BufferedReader(reader);    		
-	        	String currLineString;        	
-	        	while((currLineString=br.readLine())!=null)
-	        	{ 		
-	    			if (currLineString.equals("DEBUG_MODE=ON")) {
-	    				IS_IN_DEBUG_MODE=true;				
-	    			}
-	    			else if (currLineString.contains("DESTINATION_URL=")) {
-	    				UsbongUtils.destinationServerURL= currLineString.replace("DESTINATION_URL=", "");
-	    			}
-	    			/*
-	    			else {
-	    				IS_IN_DEBUG_MODE=false;		
-	    			}*/			
-	        	}	        				
-			}
-	    	catch(Exception e) {
-	    		e.printStackTrace();
-	    	}
-		}
-    	
+    	    	    	
     	try{
     		UsbongUtils.createNewOutputFolderStructure();
     	}
@@ -545,8 +512,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		  XmlPullParser parser = factory.newPullParser();		 		  
 		  
 		  //if *.xml is blank
-//		  if (UsbongUtils.getFileFromSDCard(UsbongUtils.BASE_FILE_PATH + myTreeDirectory + myTree + ".xml") == null) { 
-		  parser.setInput(UsbongUtils.getFileFromSDCard(UsbongUtils.BASE_FILE_PATH + myTreeDirectory + myTree + ".xml"));	
+//		  if (UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + myTreeDirectory + myTree + ".xml") == null) { 
+		  parser.setInput(UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + myTreeDirectory + myTree + ".xml"));	
 		  
 		  while(parser.nextTag() != XmlPullParser.END_DOCUMENT) {
 			  //if this tag does not have an attribute; e.g. END_TAG
@@ -1179,7 +1146,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 						currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
 		    			RadioGroup myRadioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);				        				        		    			
 
-		    			if (IS_IN_DEBUG_MODE==false) {
+		    			if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
 			    			if (myRadioGroup.getCheckedRadioButtonId()==-1) { //no radio button checked
 			    				showPleaseAnswerAlert();
 			    			}
@@ -1198,7 +1165,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
 				        TextView myTextFieldScreenEditText = (TextView)findViewById(R.id.textfield_edittext);
 
-				        if (IS_IN_DEBUG_MODE==false) {
+				        if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
 					        //if it's blank
 			    			if (myTextFieldScreenEditText.getText().toString().trim().equals("")) {
 			    				showPleaseAnswerAlert();

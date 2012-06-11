@@ -44,7 +44,9 @@ import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Environment;
 
-public class UsbongUtils {	
+public class UsbongUtils {		
+	public static boolean IS_IN_DEBUG_MODE=false;
+
 	public static String BASE_FILE_PATH = Environment.getExternalStorageDirectory()+"/usbong/";
 //	public static String BASE_FILE_PATH = "/sdcard/usbong/";
 	private static String timeStamp;
@@ -53,6 +55,9 @@ public class UsbongUtils {
 	public static final int LANGUAGE_FILIPINO=1; //uses English only
 	
 	public static String destinationServerURL;
+	
+	public static final String debug_username="usbong";
+	public static final String debug_password="usbong";
 	
     public static void generateTimeStamp() {
 		Calendar date = Calendar.getInstance();
@@ -174,8 +179,27 @@ public class UsbongUtils {
 		return (ArrayList<String>) ret;
 	}
     
+	public static PrintWriter getFileFromSDCardAsWriter(String filePath) {
+		try {
+			File file = new File(filePath);
+			if(!file.exists())
+			{
+				System.out.println(">>>>>> File " + filePath + " doesn't exist. Creating file.");
+				file.createNewFile();
+			}
+			
+			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(file,false)));
+			return out;
+		}
+    	catch(Exception e) {
+    		System.out.println("ERROR in reading FILE.");
+    		e.printStackTrace();
+    	}		
+    	return null;
+	}
+	
 	//Reference: AbakadaUtils.java; public static ArrayList<String> getWords(String filePath)
-	public static InputStreamReader getFileFromSDCard(String filePath) //example of file would be decision trees
+	public static InputStreamReader getFileFromSDCardAsReader(String filePath) //example of file would be decision trees
 	{
 		try 
 		{  	
@@ -297,7 +321,7 @@ public class UsbongUtils {
     		emailIntent = new Intent(android.content.Intent.ACTION_SEND);
     	}
     	try {
-			InputStreamReader reader = UsbongUtils.getFileFromSDCard(filepath);
+			InputStreamReader reader = UsbongUtils.getFileFromSDCardAsReader(filepath);
 			BufferedReader br = new BufferedReader(reader);    		
 	    	String currLineString;        	
 			currLineString=br.readLine();
@@ -317,10 +341,12 @@ public class UsbongUtils {
 		    //convert from paths to Android friendly Parcelable Uri's
 		    for (String file : filePathsList)
 		    {
-		        File fileIn = new File(file);
-		        Uri u = Uri.fromFile(fileIn);
-		        uris.add(u);
-		        System.out.println(">>>>>>>>>>>>>>>>>> u: "+u);
+		        File fileIn = new File(file);		        
+		        if (fileIn.exists()) { //added by Mike, May 13, 2012		        		        
+			        Uri u = Uri.fromFile(fileIn);
+			        uris.add(u);
+			        System.out.println(">>>>>>>>>>>>>>>>>> u: "+u);
+		        }
 		    }
 		    emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
 		    
@@ -333,7 +359,7 @@ public class UsbongUtils {
     
     public static void performFileUpload(String filepath) {
     		try {
-				InputStreamReader reader = UsbongUtils.getFileFromSDCard(filepath);
+				InputStreamReader reader = UsbongUtils.getFileFromSDCardAsReader(filepath);
 				BufferedReader br = new BufferedReader(reader);    		
 		    	String currLineString;        	
 				currLineString=br.readLine();

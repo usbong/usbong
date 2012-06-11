@@ -133,12 +133,13 @@
         <item name="android:gravity">center_vertical|center_horizontal</item>
     </style>	   
 
-	<style name="UsbongDefaultSettingsTextView">
+	<style name="UsbongSettingsTextView">
 		<item name="android:layout_width">fill_parent</item>
 		<item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">#FFFFFF</item>
         <item name="android:textSize">24px</item>
-        <item name="android:gravity">center_vertical|center_horizontal</item>
+        <item name="android:gravity">left</item>
+		<item name="android:layout_weight">8</item>        
     </style>	   
 
 	<style name="UsbongDefaultImageView">
@@ -211,6 +212,17 @@
     <style name="UsbongYesNoRadioButton">
     	<item name="android:textSize">24px</item>
     </style>	                   
+
+    <style name="UsbongSettingsCheckBox">
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">wrap_content</item>		
+    	<item name="android:textSize">20px</item>
+    	<item name="android:checked">false</item>
+    	<item name="android:ellipsize">marquee</item>
+    	<item name="android:layout_gravity">right</item>
+    	<item name="android:layout_weight">1</item>
+		<item name="android:paddingRight">5px</item>    	
+    </style>	                       
 
     <style name="UsbongMultipleRadioButtons">
     	<item name="android:textSize">20px</item>
