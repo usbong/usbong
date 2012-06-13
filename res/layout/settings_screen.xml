@@ -37,8 +37,10 @@
 						android:onClick="onCheckBoxSettingsDestinationURLClicked"/>
 			</LinearLayout>
 			<EditText android:id="@+id/settings_edittext"
-					style="@style/UsbongSettingsTextView"
-				    android:text=""/>	
+					style="@style/UsbongSettingsEditText"
+				    android:text=""
+				    android:state_enabled="false"
+				    android:inputType="text"/>	
 		</LinearLayout>
 	</ScrollView>					    
 </LinearLayout>
