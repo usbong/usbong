@@ -6,6 +6,7 @@
     <string name="group_b_name">Group B</string>    
     <string name="team_name_textview">Team Name:</string>    
 	<string name="pleaseChooseAnAnswerStringValue">Please choose an answer.\n答えを選択してください。</string>
+	<string name="pressTheMenuButtonToSaveStringValue">Please press the Menu button on your device to open the Save option.</string>
 
 	<string name="noStringValueEnglish">No</string>
 	<string name="yesStringValueEnglish">Yes</string>  

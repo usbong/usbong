@@ -1,17 +1,17 @@
 --Usbong (beta)--
-ver: June 11, 2012
+ver: June 13, 2012
 
 --Team+Development Lead--
---Usbong4LanguageLiteracy--
---Usbong4DisasterRelief
-+Preparedness--
 --Usbong4HealthCare--
+--Usbong4PeopleWithDisabilities--
+--Usbong4LanguageLiteracy--
+--Usbong4DisasterRelief--
 Michael Syson, MSCS
 
 --Usbong4PeopleTracking--
 Jomel Araniego
 
---Usbong4Multi-lingualMedicalTriage--
+--Usbong4FirstAid--
 Benjz Sevilla
 Angela Agravia
 Karina Casing
@@ -66,7 +66,6 @@ Ephpheta Foundation for the Blind, Inc.
 Laro, Lapis, at Libro, Inc. (LLLI)
 Ateneo Java Wireless Competency Center (AJWCC)
 Alsons Aquaculture Corp.
-St. Luke's Health and Wellness Center
 National Telehealth Center
 University of the Philippines-Manila
 Ateneo de Manila University
