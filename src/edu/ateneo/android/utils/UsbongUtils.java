@@ -291,14 +291,21 @@ public class UsbongUtils {
 	//Also, take note that in Android, you must add an extra escape character (e.g. \b becomes \\b)
     public static String convertFilipinoToSpanishAccentFriendlyText(String text) {    	
 //		text = text.toLowerCase(); //has problems when text input has symbols ?
-    	text = text.replaceAll("\\bANG\\b", "ang");
-    	text = text.replaceAll("\\n", "");
 
     	text = text.replace('h', 'j');
+    	text = text.replace('H', 'J');
 
     	text = text.replaceAll("\\bmga\\b", "manga");
+    	text = text.replaceAll("\\bMga\\b", "Manga");
+    	
 		text = text.replaceAll("\\bng\\b", "nang");
+		text = text.replaceAll("\\bNg\\b", "Nang");
+
 		text = text.replaceAll("gi", "ghi");		
+		text = text.replaceAll("Gi", "Ghi");		
+
+		text = text.replaceAll("\\n", "");
+
 		return text;
     }    
     
