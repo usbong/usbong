@@ -304,8 +304,6 @@ public class UsbongUtils {
 		text = text.replaceAll("gi", "ghi");		
 		text = text.replaceAll("Gi", "Ghi");		
 
-		text = text.replaceAll("\\n", "");
-
 		return text;
     }    
     
