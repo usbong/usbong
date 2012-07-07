@@ -815,6 +815,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		            checkBox.setText(StringEscapeUtils.unescapeJava(checkBoxesContainer.elementAt(i).toString()));
 		            checkBox.setChecked(false);
 		            checkBox.setTextSize(20);
+			        checkBox.setTextColor(Color.parseColor("#4a452a"));			        
 		            myMultipleCheckboxesLinearLayout.addView(checkBox);
 		        }		     		        
 		        break;
@@ -898,9 +899,12 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			        else {
 			        	myTextView.setText(bulletCount+") "+UsbongUtils.trimUsbongNodeName(classificationContainer.elementAt(i).toString()));		        	
 			        }
+	            	//add 5 so that the text does not touch the left border
+		            myTextView.setPadding(5, 0, 0, 0);
 			        myTextView.setTextSize(24);
-			        myTextView.setTextColor(Color.WHITE);
-		            myClassificationLinearLayout.addView(myTextView);
+//			        myTextView.setTextColor(Color.WHITE);
+			        myTextView.setTextColor(Color.parseColor("#4a452a"));			        
+			        myClassificationLinearLayout.addView(myTextView);
 		        }		     		        
 		        break;    	
 			case DATE_SCREEN:
@@ -975,8 +979,11 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        }		    	
 		        RadioButton myYesRadioButton = (RadioButton)findViewById(R.id.yes_radiobutton);
 		        myYesRadioButton.setText(yesStringValue);
+		        myYesRadioButton.setTextSize(20);
+
 		        RadioButton myNoRadioButton = (RadioButton)findViewById(R.id.no_radiobutton);		        
 		        myNoRadioButton.setText(noStringValue);
+		        myNoRadioButton.setTextSize(20);		        
 		        break;    	
 			case END_STATE_SCREEN:
 		    	setContentView(R.layout.end_state_screen);

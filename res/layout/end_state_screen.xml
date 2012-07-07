@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	style="@style/UsbongMainMenuParentLayout">	
+	style="@style/UsbongDefaultParentLayout">	
 		<TextView android:id="@+id/end_state_textview"
 		    style="@style/UsbongDefaultTextView"	    	
 		    android:text="@string/UsbongEndStateTextView_ENGLISH"
