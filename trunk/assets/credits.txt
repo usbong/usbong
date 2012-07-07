@@ -1,9 +1,10 @@
 --Usbong (beta)--
-ver: June 13, 2012
+ver: July 7, 2012
 
 --Team+Development Lead--
 --Usbong4HealthCare--
---Usbong4PeopleWithDisabilities--
+--Usbong4PeopleWith
+Disabilities--
 --Usbong4LanguageLiteracy--
 --Usbong4DisasterRelief--
 Michael Syson, MSCS

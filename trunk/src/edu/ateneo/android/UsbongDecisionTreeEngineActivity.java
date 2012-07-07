@@ -786,6 +786,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			        radioButton.setChecked(false);
 		            radioButton.setTextSize(20);
 		            radioButton.setId(i);
+		            radioButton.setTextColor(Color.parseColor("#4a452a"));			        
+
 /*		            
 		            radioButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 							@Override
