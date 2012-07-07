@@ -14,13 +14,17 @@
 		</LinearLayout>			    
 	</ScrollView>	
 	<LinearLayout
-	style="@style/UsbongDefaultBackNextButtonLayout">	
-	    <Button android:id="@+id/back_button"
-	    style="@style/UsbongDefaultBackNextButton"
-	    android:text="Back"/>
+	style="@style/UsbongDefaultBackNextButtonLayout">
+
+		<Button
+		    android:id="@+id/back_button"
+		    style="@style/UsbongDefaultBackNextButton"
+		    android:text="Back" />
+
+		<Button
+		    android:id="@+id/next_button"
+		    style="@style/UsbongDefaultBackNextButton"
+		    android:text="Next" />
 	    
-	   	<Button android:id="@+id/next_button"
-	    style="@style/UsbongDefaultBackNextButton"
-	    android:text="Next"/>	    
 	</LinearLayout>
 </LinearLayout>
