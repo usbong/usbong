@@ -45,14 +45,17 @@ public class RegisterActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main2);
+        setContentView(R.layout.registration_screen);
         
         //EditText declarations
-        final EditText etUsername = (EditText)findViewById(R.id.etUsername);
-        final EditText etPassword = (EditText)findViewById(R.id.etPassword);
+        final EditText etFirstName = (EditText)findViewById(R.id.reg_first_name);
+        final EditText etLastName = (EditText)findViewById(R.id.reg_last_name);
+        final EditText etEmail = (EditText)findViewById(R.id.reg_email);
+        final EditText etUsername = (EditText)findViewById(R.id.reg_username);
+        final EditText etPassword = (EditText)findViewById(R.id.reg_password);
         
         //Button declarations
-        Button btnSubmit = (Button)findViewById(R.id.btnSubmit);
+        Button btnSubmit = (Button)findViewById(R.id.register_button);
         
         btnSubmit.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -65,6 +68,9 @@ public class RegisterActivity extends Activity {
 					e1.printStackTrace();
 				}
 				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+				nameValuePairs.add(new BasicNameValuePair("firstname", etFirstName.getText().toString()));
+				nameValuePairs.add(new BasicNameValuePair("lastname", etLastName.getText().toString()));
+				nameValuePairs.add(new BasicNameValuePair("email", etEmail.getText().toString()));
 				nameValuePairs.add(new BasicNameValuePair("username", etUsername.getText().toString()));
 				nameValuePairs.add(new BasicNameValuePair("password", etPassword.getText().toString()));
 				try {
