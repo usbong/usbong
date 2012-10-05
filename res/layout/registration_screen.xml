@@ -1,50 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/UsbongEditTextFieldParentLayout"
-    android:stretchColumns="1">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/UsbongLoginParentLayout">
     <ImageView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:src="@drawable/usbong_logo"/>
-	    <EditText
-	        style="@style/UsbongLoginEditText"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:id="@+id/reg_first_name"
-	        android:hint="First name"
-	        />
-	    <EditText
-	        style="@style/UsbongLoginEditText"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:id="@+id/reg_last_name"
-	        android:hint="Last name"
-	        />
-	    <EditText
-	        style="@style/UsbongLoginEditText"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:id="@+id/reg_email"
-        	android:hint="Email"
-	        />
-	    <EditText
-	        style="@style/UsbongLoginEditText"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:id="@+id/reg_username"
-        	android:hint="Username"
-	        />
-	    <EditText
-	        style="@style/UsbongLoginEditText"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:inputType="textPassword"
-	        android:id="@+id/reg_password"
-	        android:hint="Password"
-	        />
-	    <Button
-	        style="@style/UsbongDefaultLoginButton"
-	        android:text="Register"
-	        android:id="@+id/register_button"
-	    />
-</TableLayout>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/usbong_logo"/>
+	<EditText
+        style="@style/UsbongLoginEditText"
+        android:id="@+id/reg_first_name"
+        android:hint="First name"
+	/>
+	<EditText
+        style="@style/UsbongLoginEditText"
+        android:id="@+id/reg_last_name"
+        android:hint="Last name"
+	/>
+	<EditText
+        style="@style/UsbongLoginEditText"
+        android:id="@+id/reg_email"
+       	android:hint="Email"
+	/>
+	<EditText
+        style="@style/UsbongLoginEditText"
+        android:id="@+id/reg_username"
+       	android:hint="Username"
+	/>
+	<EditText
+        style="@style/UsbongLoginEditText"
+        android:inputType="textPassword"
+        android:id="@+id/reg_password"
+        android:hint="Password"
+	/>
+	<Button
+        style="@style/UsbongDefaultButton"
+        android:text="Register"
+        android:id="@+id/register_button"
+	/>
+</LinearLayout>

@@ -1,9 +1,5 @@
-Usbong helps you create your own mobile applications to make your life and the lives of the people that matter to you more meaningful, more peaceful-- HAPPIER. =)
-
-"Usbong" in Filipino is both a noun and a verb. As a noun, it can mean "a bud, a sprout, a shoot". As a verb, it means "to sprout, to grow, to develop". In Bisaya, it means "to burgeon, to grow, to expand, and to flourish."
-
-For us (and hopefully for you too), "Usbong" also means an open-source platform that would allow people to create their own mobile applications by putting together components (like text inputs, checkboxes, radiobuttons, the camera, voice recorder, stop watches) and forming a tree using a Graphical User Interface (GUI). 
-
-Context -> Tree -> Mobile Application
-
-Right now, we are developing the Usbong platform at the Ateneo Innovation Center (AIC), but we would love to work with people from different parts of the world too.
+1) Select the "New Entry" button in the Main Menu.
+2) Select "usbong_demo_tree" for a guided tour on what you can do with Usbong
+3) For details on how to create your own trees, visit our website: https://sites.google.com/site/theusbongproject/
+4) For the source code itself, you may download it from http://code.google.com/p/usbong/
+4) If you have questions, comments, feature requests, and the like, feel free to get in touch with us via the mailing list: usbong-users@googlegroups.com

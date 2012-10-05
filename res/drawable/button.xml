@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- References: 
+[1] http://stackoverflow.com/questions/3882064/how-to-change-color-of-button-in-android-when-clicked; last accessed: 7 Aug. 2012
+[2] http://developer.android.com/reference/android/widget/ImageButton.html; last accessed: 7 Aug. 2012
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+     <item android:state_pressed="true"
+           android:drawable="@drawable/button_pressed" /> <!-- pressed -->
+     <item android:state_focused="true"
+           android:drawable="@drawable/button_focused" /> <!-- focused -->
+     <item android:drawable="@drawable/button_normal" /> <!-- default -->
+</selector>

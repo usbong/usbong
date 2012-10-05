@@ -1,20 +1,32 @@
 --Usbong (beta)--
-ver: July 7, 2012
+ver: Oct. 1, 2012
 
---Team+Development Lead--
---Usbong4HealthCare--
---Usbong4PeopleWith
-Disabilities--
---Usbong4LanguageLiteracy--
---Usbong4DisasterRelief--
+Usbong helps you create your own mobile applications to make your life and the lives of the people that matter to you more meaningful, more peaceful-- HAPPIER. =)
+
+"Usbong" in Filipino is both a noun and a verb. As a noun, it can mean "a bud, a sprout, a shoot". As a verb, it means "to sprout, to grow, to develop". In Bisaya, it means "to burgeon, to grow, to expand, and to flourish."
+
+For us (and hopefully for you too), "Usbong" also means an open-source platform that would allow people to create their own web-mobile systems by putting together components (like text inputs, checkboxes, radiobuttons, the camera, voice recorder, stop watches) and forming a tree using a Graphical User Interface (GUI) or a spreadsheet. 
+
+Context -> Tree -> Mobile + Web System
+
+Right now, we are developing the Usbong platform with the Ateneo Innovation Center (AIC), along with government, academe, and industry partners, and we would love to work with people from different parts of the world too.
+
+Usbong Social Systems, Inc.
+--Founder & Executive Director--
 Michael Syson, MSCS
 
---Usbong4PeopleTracking--
+--UsbongCommunityBuilder--
+Diane Gonzales
+
+--UsbongAccounts--
 Jomel Araniego
 
---Usbong4FirstAid--
+--Usbong4EventsResponse--
+Jomel Araniego
+Jabo Barrozo
+
+--Usbong4PrenatalCare--
 Benjz Sevilla
-Angela Agravia
 Karina Casing
 Sean de Dios
 Niko Lok
@@ -28,7 +40,7 @@ Kenneth Llanto, MSCS
 --Usbong4Telerehab--
 Erick Villegas, MSECE
 JP Talusan, MSECE Student
-Denica Oarde
+Denica Oarde, MSECE Student
 Charles Tiu
 
 --Usbong4PediatricCare--
@@ -73,6 +85,7 @@ Ateneo de Manila University
 
 Contact:
 Website: https://sites.google.com/site/theusbongproject
-Email: masarapmabuhay@gmail.com
+Mailing list: usbong-users@googlegroups.com
+Email: usbong.com@gmail.com
 
 Copyright 2011-2012.

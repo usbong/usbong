@@ -11,15 +11,7 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:padding="3dip"
-		android:textSize="30px"
-	/>
-	
-	<Button
-		android:id="@+id/select_tree_button"
-		android:gravity="center"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:padding="3dip"
-		android:text="Select"
+		android:textSize="30dp"
+		android:textColor="#4a452a"
 	/>
 </TableLayout>

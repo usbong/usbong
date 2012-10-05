@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- References: 
+[1] http://stackoverflow.com/questions/4247385/how-to-change-color-of-listview-items-on-focus-and-on-click; last accessed: 7 Aug. 2012
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true" android:drawable="@null" /> <!-- focused -->
+    <item android:state_pressed="true" android:drawable="@null" /> <!-- pressed -->
+    <item android:drawable="@null" /> <!-- default -->
+</selector> 

@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="edu.ateneo.android"
-      android:versionCode="1"
-      android:versionName="1.0">
+      package="usbong.android"
+      android:versionCode="5"
+      android:versionName="Oct. 1, 2012">
     <uses-sdk android:minSdkVersion="8" />
     <uses-permission android:name="android.permission.CAMERA"></uses-permission>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
     <uses-permission android:name="android.permission.RECORD_AUDIO"></uses-permission>
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
-
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-feature android:name="android.hardware.camera" />
+ 	<uses-feature android:name="android.hardware.camera.autofocus" />
+ 
     <application android:label="@string/app_name" android:icon="@drawable/usbong_icon"
         android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
         <activity android:name="SignInActivity"

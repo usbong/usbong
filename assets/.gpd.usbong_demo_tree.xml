@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root-container name="usbongDemoTree" width="589" height="361">
+  <node name="start-state1" x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="special~Usbong Demo Tree (ver.Aug21,2012)" x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="special~Welcome! Usbong is an open-source platform that allows you to create and run, what we call, &quot;Trees.&quot;" x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="special~&quot;Trees&quot; can be anything from branching storybooks, step-by-step guides, and even clinical pathways." x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="special~The idea is to create trees by putting together components such as checklists, radio buttons, text fields, the camera, the audio recorder, and even a canvas for drawing things.  You can also create your own components, say a stopwatch or a mini game,  by checking out usbong on Google Code, or sending us a request  through &quot;usbong-users@googlegroups.com&quot;." x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="special~To create your own &quot;Trees&quot;, you don&apos;t really have to be an experienced programmer. You can use a Graphical User Interface (GUI) (as well as a spreadsheet) to connect  the components together like a flowchart diagram, which is then converted into an XML file that can be played using Usbong." x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="special~For more info on this, do visit our website! https://sites.google.com/site/theusbongproject/" x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="At this point, do you want me to show you the various components that you can use?" x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="special~In the previous screen, you were asked a Yes/No question. That is actually a type of node called, &quot;decision node.&quot; Depending on your answer, you are led to a particular branching node." x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="From hereon, the rest of the nodes are called, &quot;task-nodes.&quot; What you see in this screen is an example of a &quot;textDisplay&quot; task-node, where text is simply displayed on the screen." x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="textImageDisplay~frame_13~You can display both a text and an image as well. This is called, &quot;textImageDisplay.&quot; If you only want to display an image, that type of node is called, &quot;imageDisplay.&quot;" x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="gps~If you want to get your GPS location, you can do so using the &quot;gps&quot; task-node." x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="photoCapture~The camera is also available for you to use!" x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="audioRecord~To record narrations, you can use the audio recorder!" x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="checkList~0~This is an example of a &quot;checkList&quot;, where you can tick more than one box. You can specify how many boxes should be checked to go to the &quot;Yes&quot; branch. If the checked boxes are too few, the person is led to a &quot;No&quot; branch." x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="radioButtons~Alternatively, you can use the &quot;radioButtons&quot; node. However, only one button can be ticked, and you are always led to just a single branch, called &quot;Any&quot;." x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="textField~This is an example of a &quot;textField&quot;. This allows a person to enter text onto the device." x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="textFieldWithUnit~kilogram(s)~Another variation of text fields is the &quot;textFieldWithUnit&quot;. Notice that only numbers are allowed to be entered." x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="date~To get the date today, you can use the &quot;date&quot; task-node." x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="textDisplay~There are many more components in the works, such as a canvas for drawing (or signing documents), and a QR code reader (for patient identification)." x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="textDisplay~As I&apos;ve said, you can create your own components (e.g. stop watches, mini games) by checking out usbong on Google Code or sending a request to &quot;usbong-users@googlegroups.com&quot;!" x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="textDisplay~The procedure we use is: The higher the number of people clamoring for a particular featuer, the higher it becomes in the priority list. You can look at Usbong as a kind of &quot;App Inventor&quot;." x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="textDisplay~Before I forget, data captured using Usbong can be sent to your favorite cloud-based service, like email or a social networking site. Alternatively, you can send data to your own web server!" x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="textDisplay~Oh, and one last thing. By pressing the menu button on the device (outside the screen), you can actually make Usbong read aloud the text on the screen! At present, Usbong can speak in Filipino and English." x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="Well, I hope this piqued your interest! If you have questions or concerns, do voice them out at &quot;usbong-users@googlegroups.com&quot;. Hooray! " x="0" y="0" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="end-state1" x="0" y="0" width="132" height="36"/>
+</root-container>
