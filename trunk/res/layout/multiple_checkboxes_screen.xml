@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	style="@style/UsbongDefaultParentLayout">
+	style="@style/UsbongDefaultParentLayout"
+	android:id="@+id/parent_layout_id"       	
+	>
 	<ScrollView android:isScrollContainer="true"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"

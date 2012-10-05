@@ -27,6 +27,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import usbong.android.UsbongDecisionTreeEngineActivity;
+import usbong.android.utils.UsbongUtils;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -49,8 +52,6 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
-import edu.ateneo.android.UsbongDecisionTreeEngineActivity;
-import edu.ateneo.android.utils.UsbongUtils;
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, OnTouchListener {
 	private static final String TAG = "UsbongCameraPreview";

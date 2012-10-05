@@ -1,52 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:stretchColumns="1">
-    <TableRow>
-	    <TextView
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="Username"
-	        android:layout_marginRight="10dp"
-	        />
-	    <EditText
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:id="@+id/etUsername"
-	        android:inputType="text"
-	        />
-	</TableRow>
-	<TableRow>
-	    <TextView
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="Password" 
-	        />
-	    <EditText
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:inputType="textPassword"
-	        android:id="@+id/etPassword"
-	        />
-	</TableRow>
-	<TableRow>
-	    <Button
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="Submit"
-	        android:layout_span="2"
-	        android:id="@+id/btnSubmit"
-	        />
-	</TableRow>
-	<TableRow>
-	    <TextView
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="Sign up"
-	        android:layout_gravity="right"
-	        android:layout_span="2"
-	        android:id="@+id/tvSignUp"
-	        />
-	</TableRow>
-</TableLayout>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	style="@style/UsbongLoginParentLayout">
+    <ImageView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:src="@drawable/usbong_logo"/>    
+    <EditText
+	   style="@style/UsbongLoginEditText"
+       android:id="@+id/signin_username"
+       android:hint="Username"
+    />
+	<EditText
+	   style="@style/UsbongLoginEditText"
+       android:inputType="textPassword"
+       android:id="@+id/signin_password"
+       android:hint="Password"
+	/>
+	<Button
+	    style="@style/UsbongDefaultButton"
+        android:text="Sign in"
+	    android:id="@+id/signin_button"
+	/>
+	<LinearLayout style="@style/UsbongSignupLayout">
+			<TextView
+				style="@style/UsbongSignupTextView"        
+		        android:text="Don't have an account?"
+		        android:id="@+id/signup_question"
+			/>
+			<TextView
+				style="@style/UsbongSignupTextView"        
+				android:text="@string/signup"
+		        android:id="@+id/signup"
+			/>
+	</LinearLayout>
+</LinearLayout>

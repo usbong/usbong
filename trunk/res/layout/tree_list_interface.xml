@@ -3,10 +3,14 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
+	android:background="@drawable/bg"
 >
 	<ListView
 		android:id="@+id/tree_list_view"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
+		android:cacheColorHint="#FFFFFF"
+		android:divider="#92d050"
+		android:dividerHeight="3dp"
 	/>
 </LinearLayout>
