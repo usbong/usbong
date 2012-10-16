@@ -48,6 +48,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
 import android.text.InputType;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -96,7 +97,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	public static final int DATE_SCREEN=11;	
 	public static final int GPS_LOCATION_SCREEN=12;		
 	public static final int VIDEO_FROM_FILE_SCREEN=13;	
-	public static final int END_STATE_SCREEN=14;		
+	public static final int LINK_SCREEN=14;			
+	public static final int END_STATE_SCREEN=15;		
 	
 	private static int currScreen=TEXTFIELD_SCREEN;
 	
@@ -276,6 +278,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		{
 			case(R.id.speak):
 				switch(currScreen) {
+			    	case LINK_SCREEN:
 			    	case MULTIPLE_RADIO_BUTTONS_SCREEN:
 				        if (UsbongUtils.USE_UNESCAPE) {
 				        	sb.append(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode))+". ");
@@ -658,18 +661,49 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 									//radioButtons by definition requires only 1 ticked button in the group
 									//requiredTotalCheckedBoxes = Integer.parseInt(st.nextToken());
-																		
+/*																		
 									String t=st.nextToken();
 									//do this so that we are sure that the token that we are going to check is the last token
 									while(st.hasMoreTokens()) {
 										t=st.nextToken();
 									}
+*/									
 									currScreen=MULTIPLE_RADIO_BUTTONS_SCREEN;
 									
 									radioButtonsContainer.removeAllElements();
 									while(!parser.getName().equals("transition")) {
 										  radioButtonsContainer.addElement(parser.getAttributeValue(0).toString());
 										  
+										  //do two nextTag()'s, because <task> has a closing tag
+										  parser.nextTag();
+										  parser.nextTag();		
+									}
+									parseYesNoAnswers(parser);
+								}
+								else if (myStringToken.equals("link")) {
+									//<task-node name="link~1~What will you do?">
+									//	<task name="textDisplay~You ate the fruit.~I will eat the fruit."></task>
+									//	<task name="textDisplay~You looked for another solution.~I will look for another solution"></task>
+									//	<transition to="textDisplay~You ate the fruit.~I will eat the fruit." name="Any"></transition>
+									//</task-node>
+									//the transition is the default
+									parser.nextTag(); //go to task tag
+
+									//radioButtons by definition requires only 1 ticked button in the group
+									//requiredTotalCheckedBoxes = Integer.parseInt(st.nextToken());
+/*																		
+									String t=st.nextToken();
+									//do this so that we are sure that the token that we are going to check is the last token
+									while(st.hasMoreTokens()) {
+										t=st.nextToken();
+									}
+*/									
+									currScreen=LINK_SCREEN;
+									
+									radioButtonsContainer.removeAllElements();
+									while(!parser.getName().equals("transition")) {
+										  radioButtonsContainer.addElement(parser.getAttributeValue(0).toString());
+										  Log.d(">>>>>parser.getAttributeValue(0).toString()",parser.getAttributeValue(0).toString());
 										  //do two nextTag()'s, because <task> has a closing tag
 										  parser.nextTag();
 										  parser.nextTag();		
@@ -687,12 +721,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 									//</task-node>
 									parser.nextTag(); //go to task tag
 									requiredTotalCheckedBoxes = Integer.parseInt(st.nextToken());
-																		
+/*																		
 									String t=st.nextToken();
 									//do this so that we are sure that the token that we are going to check is the last token
 									while(st.hasMoreTokens()) {
 										t=st.nextToken();
 									}
+*/									
 /*									
 									//added by Mike, Aug. 20, 2010; st.nextToken()
 									if (t.equals(GENERAL_DANGER_SIGNS_CHECKBOX_QUESTION)) { //Does the question pertain to general danger signs?
@@ -834,34 +869,14 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    	setContentView(R.layout.multiple_radio_buttons_screen);
 		        initBackNextButtons();
 		        TextView myMultipleRadioButtonsScreenTextView = (TextView)findViewById(R.id.radio_buttons_textview);
-		        UsbongUtils.applyTagsInView(myMultipleRadioButtonsScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
-/*
-		        if (UsbongUtils.USE_UNESCAPE) {
-		        	myMultipleRadioButtonsScreenTextView = UsbongUtils.applyTagsInTextView(myMultipleRadioButtonsScreenTextView, StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
-//		        	myMultipleRadioButtonsScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
-		        }
-		        else {
-		        	myMultipleRadioButtonsScreenTextView = UsbongUtils.applyTagsInTextView(myMultipleRadioButtonsScreenTextView, UsbongUtils.trimUsbongNodeName(currUsbongNode));
-//		        	myMultipleRadioButtonsScreenTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
-		        }
-*/		        
+		        myMultipleRadioButtonsScreenTextView = (TextView) UsbongUtils.applyTagsInView(myMultipleRadioButtonsScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+
 		        RadioGroup radioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);
 		        int totalRadioButtonsInContainer = radioButtonsContainer.size();
 		        for (int i=0; i<totalRadioButtonsInContainer; i++) {
 		            View radioButtonView = new RadioButton(getBaseContext());
 		            RadioButton radioButton = (RadioButton) UsbongUtils.applyTagsInView(radioButtonView, UsbongUtils.IS_RADIOBUTTON, radioButtonsContainer.elementAt(i).toString());
-
-		            /*
-		            if (UsbongUtils.USE_UNESCAPE) {
-			        	radioButton = UsbongUtils.applyTagsInRadioButton(radioButton, StringEscapeUtils.unescapeJava(radioButtonsContainer.elementAt(i).toString()));
-//			        	radioButton.setText(StringEscapeUtils.unescapeJava(radioButtonsContainer.elementAt(i).toString()));
-			        }
-			        else {
-			        	radioButton = UsbongUtils.applyTagsInRadioButton(radioButton, radioButtonsContainer.elementAt(i).toString());
-//			        	radioButton.setText(radioButtonsContainer.elementAt(i).toString());			        	
-			        }
-*/			        
-			        radioButton.setChecked(false);
+		            radioButton.setChecked(false);
 		            radioButton.setTextSize(20);
 		            radioButton.setId(i);
 		            radioButton.setTextColor(Color.parseColor("#4a452a"));			        
@@ -869,24 +884,50 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		            radioGroup.addView(radioButton);
 		        }		     		        
 				break;
+	    	case LINK_SCREEN:
+	    		//use same contentView as multiple_radio_buttons_screen
+		    	setContentView(R.layout.multiple_radio_buttons_screen);
+		        initBackNextButtons();
+		        TextView myLinkScreenTextView = (TextView)findViewById(R.id.radio_buttons_textview);
+		        myLinkScreenTextView = (TextView) UsbongUtils.applyTagsInView(myLinkScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+
+		        RadioGroup myLinkScreenRadioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);
+		        int myLinkScreenTotalRadioButtonsInContainer = radioButtonsContainer.size();
+		        for (int i=0; i<myLinkScreenTotalRadioButtonsInContainer; i++) {
+		            View radioButtonView = new RadioButton(getBaseContext());
+		            RadioButton radioButton = (RadioButton) UsbongUtils.applyTagsInView(radioButtonView, UsbongUtils.IS_RADIOBUTTON, UsbongUtils.trimUsbongNodeName(radioButtonsContainer.elementAt(i).toString()));
+
+					Log.d(">>>>>radioButton",radioButton.getText().toString());
+
+		            radioButton.setChecked(false);
+		            radioButton.setTextSize(20);
+		            radioButton.setId(i);
+		            radioButton.setTextColor(Color.parseColor("#4a452a"));			        
+
+		            myLinkScreenRadioGroup.addView(radioButton);
+		        }		     		        
+				break;
 	    	case MULTIPLE_CHECKBOXES_SCREEN:
 		    	setContentView(R.layout.multiple_checkboxes_screen);
 		        initBackNextButtons();
 		        TextView myMultipleCheckBoxesScreenTextView = (TextView)findViewById(R.id.checkboxes_textview);
+		        myMultipleCheckBoxesScreenTextView = (TextView) UsbongUtils.applyTagsInView(myMultipleCheckBoxesScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+/*
 		        if (UsbongUtils.USE_UNESCAPE) {
-		        	myMultipleCheckBoxesScreenTextView = UsbongUtils.applyTagsInTextView(myMultipleCheckBoxesScreenTextView, StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
+		        	myMultipleCheckBoxesScreenTextView = (TextView) UsbongUtils.applyTagsInView(myMultipleCheckBoxesScreenTextView, UsbongUtils.IS_TEXTVIEW, StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
 //		        	myMultipleCheckBoxesScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
 		        }
 		        else {
-		        	myMultipleCheckBoxesScreenTextView = UsbongUtils.applyTagsInTextView(myMultipleCheckBoxesScreenTextView, UsbongUtils.trimUsbongNodeName(currUsbongNode));
+		        	myMultipleCheckBoxesScreenTextView = (TextView) UsbongUtils.applyTagsInView(myMultipleCheckBoxesScreenTextView, UsbongUtils.IS_TEXTVIEW, UsbongUtils.trimUsbongNodeName(currUsbongNode));
 //		        	myMultipleCheckBoxesScreenTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
 		        }
+*/		        
 		        LinearLayout myMultipleCheckboxesLinearLayout = (LinearLayout)findViewById(R.id.multiple_checkboxes_linearlayout);
 		        int totalCheckBoxesInContainer = checkBoxesContainer.size();
 		        for (int i=0; i<totalCheckBoxesInContainer; i++) {
 		            CheckBox checkBox = new CheckBox(getBaseContext());
 //		            checkBox.setText(StringEscapeUtils.unescapeJava(checkBoxesContainer.elementAt(i).toString()));
-		            checkBox = UsbongUtils.applyTagsInCheckBox(checkBox, StringEscapeUtils.unescapeJava(checkBoxesContainer.elementAt(i).toString()));
+		            checkBox = (CheckBox) UsbongUtils.applyTagsInView(checkBox, UsbongUtils.IS_CHECKBOX, StringEscapeUtils.unescapeJava(checkBoxesContainer.elementAt(i).toString()));
 			            
 		            checkBox.setChecked(false);
 		            checkBox.setTextSize(20);
@@ -900,12 +941,15 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        initBackNextButtons();
 
 		        TextView myAudioRecorderTextView = (TextView)findViewById(R.id.audio_recorder_textview);
+		        myAudioRecorderTextView = (TextView) UsbongUtils.applyTagsInView(myAudioRecorderTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+/*
 		        if (UsbongUtils.USE_UNESCAPE) {
 		        	myAudioRecorderTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
 		        }
 		        else {
 		        	myAudioRecorderTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
 		        }
+*/		        
 		        break;
 	        case PHOTO_CAPTURE_SCREEN:
 		    	setContentView(R.layout.photo_capture_screen);
@@ -915,37 +959,45 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    	initBackNextButtons();
 
 		        TextView myPhotoCaptureScreenTextView = (TextView)findViewById(R.id.photo_capture_textview);
+		        myPhotoCaptureScreenTextView = (TextView) UsbongUtils.applyTagsInView(myPhotoCaptureScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+/*
 		        if (UsbongUtils.USE_UNESCAPE) {
 		        	myPhotoCaptureScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
 		        }
 		        else {
 		        	myPhotoCaptureScreenTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
 		        }		    	
+*/		        
 		    	break;		    	
 			case TEXTFIELD_SCREEN:
 		    	setContentView(R.layout.textfield_screen);
 		        initBackNextButtons();
 
 		        TextView myTextFieldScreenTextView = (TextView)findViewById(R.id.textfield_textview);
+		        myTextFieldScreenTextView = (TextView) UsbongUtils.applyTagsInView(myTextFieldScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+/*
 		        if (UsbongUtils.USE_UNESCAPE) {
 		        	myTextFieldScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
 		        }
 		        else {
 		        	myTextFieldScreenTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
 		        }
+*/		        
 		        break;    	
 			case TEXTFIELD_WITH_UNIT_SCREEN:
 		    	setContentView(R.layout.textfield_with_unit_screen);
 		        initBackNextButtons();
 
 		        TextView myTextFieldWithUnitScreenTextView = (TextView)findViewById(R.id.textfield_textview);
+		        myTextFieldWithUnitScreenTextView = (TextView) UsbongUtils.applyTagsInView(myTextFieldWithUnitScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+/*
 		        if (UsbongUtils.USE_UNESCAPE) {
 		        	myTextFieldWithUnitScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
 		        }
 		        else {
 		        	myTextFieldWithUnitScreenTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
 		        }
-		        
+*/		        
 		        TextView myEditText = (TextView)findViewById(R.id.textfield_edittext);
 		        myEditText.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);
 
@@ -956,17 +1008,21 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    	setContentView(R.layout.classification_screen);
 		        initBackNextButtons();
 		        TextView myClassificationScreenTextView = (TextView)findViewById(R.id.classification_textview);
+		        myClassificationScreenTextView = (TextView) UsbongUtils.applyTagsInView(myClassificationScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+/*
 		        if (UsbongUtils.USE_UNESCAPE) {
 		        	myClassificationScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
 		        }
 		        else {
 		        	myClassificationScreenTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
 		        }
-		        
+*/		        
 		        LinearLayout myClassificationLinearLayout = (LinearLayout)findViewById(R.id.classification_linearlayout);
 		        int totalClassificationsInContainer = classificationContainer.size();
 		        for (int i=0; i<totalClassificationsInContainer; i++) {
 		            TextView myTextView = new TextView(getBaseContext());
+		            myTextView = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+
 		        	int bulletCount = i+1;
 		            if (UsbongUtils.USE_UNESCAPE) {
 			        	myTextView.setText(bulletCount+") "+StringEscapeUtils.unescapeJava(classificationContainer.elementAt(i).toString()));
@@ -987,13 +1043,16 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        initBackNextButtons();
 		        
 		        TextView myDateScreenTextView = (TextView)findViewById(R.id.date_textview);
+		        myDateScreenTextView = (TextView) UsbongUtils.applyTagsInView(myDateScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+
+		        /*
 		        if (UsbongUtils.USE_UNESCAPE) {
 		        	myDateScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
 		        }
 		        else {
 		        	myDateScreenTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
 		        }
-
+*/
 		        //Reference: http://code.google.com/p/android/issues/detail?id=2037
 		        //last accessed: 21 Aug. 2012
 		        Configuration userConfig = new Configuration();
@@ -1040,12 +1099,15 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        initBackNextButtons();
 
 		        TextView mySpecialScreenTextView = (TextView)findViewById(R.id.special_textview);
+		        mySpecialScreenTextView = (TextView) UsbongUtils.applyTagsInView(mySpecialScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+/*
 		        if (UsbongUtils.USE_UNESCAPE) {
 		        	mySpecialScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
 		        }
 		        else {
 		        	mySpecialScreenTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
 		        }
+*/		        
 		        break;    	
 			case IMAGE_DISPLAY_SCREEN:
 		    	setContentView(R.layout.image_display_screen);
@@ -1078,13 +1140,15 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        initBackNextButtons();
 
 		        TextView mytextImageDisplayTextView = (TextView)findViewById(R.id.special_textview);
+		        mytextImageDisplayTextView = (TextView) UsbongUtils.applyTagsInView(mytextImageDisplayTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+/*
 		        if (UsbongUtils.USE_UNESCAPE) {
 		        	mytextImageDisplayTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
 		        }
 		        else {
 		        	mytextImageDisplayTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
 		        }
-
+*/
 		        ImageView myTextImageDisplayImageView = (ImageView)findViewById(R.id.special_imageview);		       
 		        
 //		        if (!UsbongUtils.setImageDisplay(myTextImageDisplayImageView, /*UsbongUtils.USBONG_TREES_FILE_PATH + */myTree+".utree/res/" +UsbongUtils.getResName(currUsbongNode))) {
@@ -1100,13 +1164,15 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        initBackNextButtons();
 
 		        TextView myGPSLocationTextView = (TextView)findViewById(R.id.gps_location_textview);
+		        myGPSLocationTextView = (TextView) UsbongUtils.applyTagsInView(myGPSLocationTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+		        /*
 		        if (UsbongUtils.USE_UNESCAPE) {
 		        	myGPSLocationTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
 		        }
 		        else {
 		        	myGPSLocationTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
 		        }
-
+*/
 		        final TextView myLongitudeTextView = (TextView)findViewById(R.id.longitude_textview);
             	final TextView myLatitudeTextView = (TextView)findViewById(R.id.latitude_textview);
 
@@ -1143,12 +1209,15 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        initBackNextButtons();
 
 		        TextView myYesNoDecisionScreenTextView = (TextView)findViewById(R.id.yes_no_decision_textview);
+		        myYesNoDecisionScreenTextView = (TextView) UsbongUtils.applyTagsInView(myYesNoDecisionScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+/*
 		        if (UsbongUtils.USE_UNESCAPE) {
 		        	myYesNoDecisionScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
 		        }
 		        else {
 		        	myYesNoDecisionScreenTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
 		        }		    	
+*/		        
 		        RadioButton myYesRadioButton = (RadioButton)findViewById(R.id.yes_radiobutton);
 		        myYesRadioButton.setText(yesStringValue);
 		        myYesRadioButton.setTextSize(20);
@@ -1239,10 +1308,10 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 						e.printStackTrace();
 					}
 					String path = currAudioRecorder.getPath();
-					System.out.println(">>>>>>>>>>>>>>>>>>>currAudioRecorder: "+currAudioRecorder);
+//					System.out.println(">>>>>>>>>>>>>>>>>>>currAudioRecorder: "+currAudioRecorder);
 					if (!attachmentFilePaths.contains(path)) {
 						attachmentFilePaths.add(path);
-						System.out.println(">>>>>>>>>>>>>>>>adding path: "+path);
+//						System.out.println(">>>>>>>>>>>>>>>>adding path: "+path);
 					}							
 				}
 
@@ -1321,8 +1390,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        }				        
 		    			usbongAnswerContainer.addElement(sb.toString());
 				        initParser();
-		    		}
-		    		
+		    		}		    		
 		    		else if (currScreen==MULTIPLE_RADIO_BUTTONS_SCREEN) {
 						currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
 		    			RadioGroup myRadioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);				        				        		    			
@@ -1340,6 +1408,33 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
 					        initParser();		    				
 		    			}
+		    		}
+		    		else if (currScreen==LINK_SCREEN) {		    			
+		    			RadioGroup myRadioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);				        				        		    			
+
+		    			try {
+		    				currUsbongNode = UsbongUtils.getLinkFromRadioButton(radioButtonsContainer.elementAt(myRadioGroup.getCheckedRadioButtonId()));		    				
+		    			}
+		    			catch(Exception e) {
+		    				//if the user hasn't ticked any radio button yet
+		    				//put the currUsbongNode to default
+			    			currUsbongNode = UsbongUtils.getLinkFromRadioButton(nextUsbongNodeIfYes); //nextUsbongNodeIfNo will also do, since this is "Any"
+			    			//of course, showPleaseAnswerAlert() will be called			    			  
+		    			}		    			
+//		    			if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
+			    			if (myRadioGroup.getCheckedRadioButtonId()==-1) { //no radio button checked
+			    				showPleaseAnswerAlert();
+			    			}
+			    			else {
+				    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
+						        initParser();
+			    			}
+/*		    			}
+		    			else {
+			    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
+					        initParser();		    				
+		    			}
+*/		    			
 		    		}
 		    		else if ((currScreen==TEXTFIELD_SCREEN) 
 		    				|| (currScreen==TEXTFIELD_WITH_UNIT_SCREEN)) {
