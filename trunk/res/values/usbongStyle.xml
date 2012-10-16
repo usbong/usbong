@@ -214,9 +214,8 @@
 		<style name="UsbongTextImageDisplayImageView">
 		<item name="android:layout_width">fill_parent</item>
 		<item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center_horizontal</item>
-    </style>	   
-	
+		<item name="android:adjustViewBounds">true</item>
+    </style>	   	
 	
 	<style name="UsbongResultsTextView">
 		<item name="android:layout_width">fill_parent</item>

@@ -54,6 +54,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.Html;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
@@ -296,6 +298,21 @@ public class UsbongUtils {
 		String myStringToken = st.nextToken();
 		myStringToken = st.nextToken(); 
 		return myStringToken;
+    }
+
+    //This methods gets the name of the next node
+    //example: <task-node name="textDisplay~this is item one~I choose to go to sleep.">
+    //becomes "textDisplay~this is item one"
+    //"textDisplay~this is item one" is the name of the next node
+    //if the first item in the Radio Button list is ticked
+    public static String getLinkFromRadioButton(String itemString) {
+
+    	StringBuffer sb = new StringBuffer("");
+    	
+		StringTokenizer st = new StringTokenizer(itemString, "~");
+		sb = sb.append(st.nextToken()+"~");				
+		sb = sb.append(st.nextToken()); 
+		return sb.toString();
     }
 
     
@@ -922,63 +939,30 @@ public class UsbongUtils {
         	styledText = UsbongUtils.trimUsbongNodeName(myCurrUsbongNode);
         }
     	
-		styledText = UsbongUtils.processIndent(styledText);
+    	styledText = replaceAllCurlyBracesWithGreaterThanLessThanSign(styledText);
+    	//keep the curly braces for <indent>
+//    	styledText = styledText.replaceAll("<indent>", "{indent}");//"\u0020\u0020\u0020\u0020\u0020");					
+    	styledText = processIndent(styledText);
+
+		Spanned mySpanned = Html.fromHtml(styledText);
 
 		switch(type) {
 			case IS_TEXTVIEW:
-				((TextView)myView).setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
+				((TextView)myView).setText(mySpanned, TextView.BufferType.SPANNABLE);
+				((TextView)myView).setMovementMethod(LinkMovementMethod.getInstance());
 				break;
 			case IS_RADIOBUTTON:
-				((RadioButton)myView).setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
+				((RadioButton)myView).setText(mySpanned, TextView.BufferType.SPANNABLE);
+				((RadioButton)myView).setMovementMethod(LinkMovementMethod.getInstance());
 				break;
 			case IS_CHECKBOX:
-				((CheckBox)myView).setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
+				((CheckBox)myView).setText(mySpanned, TextView.BufferType.SPANNABLE);
+				((CheckBox)myView).setMovementMethod(LinkMovementMethod.getInstance());
 				break;				
 		}
-		
+
 		return myView;
     }
-
-    
-    public static TextView applyTagsInTextView(TextView tv, String myText) {
-		String styledText = myText;
-		styledText = UsbongUtils.processIndent(styledText);
-		
-		//added by Mike, Sept. 27, 2012
-		//answer from Chistopher, stackoverflow
-		//Reference: http://stackoverflow.com/questions/2730706/highlighting-text-color-using-html-fromhtml-in-android;
-		//last accessed: 19 Sept. 2012
-		tv.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
-
-		return tv;
-    }
-
-    public static RadioButton applyTagsInRadioButton(RadioButton rb, String myText) {
-		String styledText = myText;
-		styledText = UsbongUtils.processIndent(styledText);
-		
-		//added by Mike, Sept. 27, 2012
-		//answer from Chistopher, stackoverflow
-		//Reference: http://stackoverflow.com/questions/2730706/highlighting-text-color-using-html-fromhtml-in-android;
-		//last accessed: 19 Sept. 2012
-		rb.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
-
-		return rb;
-    }
-
-    public static CheckBox applyTagsInCheckBox(CheckBox cb, String myText) {
-		String styledText = myText;
-		styledText = UsbongUtils.processIndent(styledText);
-		
-		//added by Mike, Sept. 27, 2012
-		//answer from Chistopher, stackoverflow
-		//Reference: http://stackoverflow.com/questions/2730706/highlighting-text-color-using-html-fromhtml-in-android;
-		//last accessed: 19 Sept. 2012
-		cb.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
-
-		return cb;
-    }
-
     
 	//added by Mike, Sept. 19, 2012
 	public static String processIndent(String myText) {
@@ -986,8 +970,25 @@ public class UsbongUtils {
 		//Reference: http://stackoverflow.com/questions/3611635/java-regex-replaceall-does-not-replace-string;
 		//--> must assign new value to myText
 		//last accessed: 19 Sept. 2012
-		myText = myText.replaceAll("<indent>", "<font color=\'#f5f2f2\'>ttttt</font>");			
+//		myText = myText.replaceAll("<indent>", "<font color=\'#f5f2f2\'>ttttt</font>");			
+//		myText = myText.replaceAll("\\{indent\\}", "\u0020\u0020\u0020\u0020\u0020");					
+
+		//answer from MylesCLin, linuxquestions
+		//Reference: http://www.linuxquestions.org/questions/programming-9/html-how-do-i-insert-empty-spaces-287930/;
+		//last accessed: 16 Oct. 2012
+		myText = myText.replaceAll("<indent>", "&nbsp&nbsp&nbsp&nbsp&nbsp");					
 		return myText;
 	}
-
+	
+	//added by Mike, Oct. 16, 2012
+	public static String replaceAllCurlyBracesWithGreaterThanLessThanSign(String myText) {		
+		//use escape character, "\\", 
+		//answer from dave, stackoverflow
+		//Reference: http://stackoverflow.com/questions/3611560/java-regex-problem-replacing-a-string;
+		//last accessed: 16 Oct. 2012
+		myText = myText.replaceAll("\\{", "<");	
+		myText = myText.replaceAll("\\}", ">");	
+		
+		return myText;
+	}
 }
