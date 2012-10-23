@@ -74,7 +74,7 @@ public class UsbongUtils {
 	public static final int LANGUAGE_ENGLISH=0; 
 	public static final int LANGUAGE_FILIPINO=1; //uses English only
 	
-	public static String destinationServerURL;
+	private static String destinationServerURL;
 	
 	public static final String debug_username="usbong";
 	public static final String debug_password="usbong";
@@ -106,6 +106,14 @@ public class UsbongUtils {
 	public static boolean checkEmail(String email) {
         return EMAIL_ADDRESS_PATTERN.matcher(email).matches();
 	}
+	
+	public static String getDestinationServerURL() {
+		return destinationServerURL;
+	}
+	
+	public static void setDestinationServerURL(String s) {
+		destinationServerURL = s;
+	}	
 	
     public static void generateTimeStamp() {
 		Calendar date = Calendar.getInstance();
@@ -648,6 +656,27 @@ public class UsbongUtils {
 		return emailIntent;
     }
     
+    public static void setDestinationServerURLFromConfigFile() {
+    	if (UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + "usbong.config") != null) { 
+			InputStreamReader reader = UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + "usbong.config");
+			BufferedReader br = new BufferedReader(reader);    		
+        	String currLineString;      
+        	
+        	try {
+	        	while((currLineString=br.readLine())!=null)
+	        	{ 		
+	        		if (currLineString.contains("DESTINATION_URL=")) {
+	    				UsbongUtils.setDestinationServerURL(currLineString.replace("DESTINATION_URL=", ""));
+	    				System.out.println(">>>>>>>DestiantionServerURL: "+UsbongUtils.getDestinationServerURL());
+	    			}
+	        	}	        				
+        	}
+        	catch(Exception e) {
+        		e.printStackTrace();
+        	}
+		}
+    }
+    
     public static void performFileUpload(String filepath) {
     		try {
 				InputStreamReader reader = UsbongUtils.getFileFromSDCardAsReader(filepath);
@@ -662,14 +691,29 @@ public class UsbongUtils {
         	{ 		
         	}
 */
-        	
-		  HttpClient client = new DefaultHttpClient();
+				if (getDestinationServerURL()==null) {
+					setDestinationServerURLFromConfigFile();
+				}
+				
+				HttpClient client = new DefaultHttpClient();
 		    	    	  
     	  //added by Mike, 10 Dec. 2011
 //    	  HttpPost httppost = new HttpPost("http://192.168.1.105/"); 
 //		  destinationServerURL="192.168.1.104";
-		  HttpPost httppost = new HttpPost("http://"+destinationServerURL+"/");
 		  
+		  if (!getDestinationServerURL().startsWith("http://") || !getDestinationServerURL().startsWith("https://")) {
+			  setDestinationServerURL("http://"+getDestinationServerURL());
+		  }			  
+		  if (!getDestinationServerURL().endsWith("/")) {
+			  setDestinationServerURL(destinationServerURL+"/");			  
+		  }
+		  
+//		  HttpPost httppost = new HttpPost("http://"+destinationServerURL+"/");
+		  HttpPost httppost = new HttpPost(destinationServerURL);
+				  
+		  System.out.println(">>>>>>inside performFileUpload;destinationServerURL: "+destinationServerURL);
+//		  HttpPost httppost = new HttpPost(destinationServerURL);
+				  
     	  //Reference: http://stackoverflow.com/questions/3288823/how-to-add-parameters-in-android-http-post
     	  //last accessed: 11 Dec. 2011
     	  //Add your data  
