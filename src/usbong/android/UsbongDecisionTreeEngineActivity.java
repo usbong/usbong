@@ -98,7 +98,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	public static final int GPS_LOCATION_SCREEN=12;		
 	public static final int VIDEO_FROM_FILE_SCREEN=13;	
 	public static final int LINK_SCREEN=14;			
-	public static final int END_STATE_SCREEN=15;		
+	public static final int SEND_TO_WEBSERVER_SCREEN=15;		
+	public static final int SEND_TO_CLOUD_BASED_SERVICE_SCREEN=16;		
+	public static final int END_STATE_SCREEN=17;		
 	
 	private static int currScreen=TEXTFIELD_SCREEN;
 	
@@ -376,6 +378,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 					case VIDEO_FROM_FILE_SCREEN:							
 				        break;    	
 					case YES_NO_DECISION_SCREEN:
+					case SEND_TO_WEBSERVER_SCREEN:
+					case SEND_TO_CLOUD_BASED_SERVICE_SCREEN:
 				        if (UsbongUtils.USE_UNESCAPE) {
 				        	sb.append(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode))+". ");
 				        }
@@ -752,6 +756,16 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 										  parser.nextTag();		
 									}
 									parseYesNoAnswers(parser);
+								}
+								else if (myStringToken.equals("sendToWebServer")) { 								
+								  currScreen=SEND_TO_WEBSERVER_SCREEN;
+								  parser.nextTag(); //go to the next tag
+								  parseYesNoAnswers(parser);
+								}
+								else if (myStringToken.equals("sendToCloudBasedService")) { 								
+								  currScreen=SEND_TO_CLOUD_BASED_SERVICE_SCREEN;
+								  parser.nextTag(); //go to the next tag
+								  parseYesNoAnswers(parser);
 								}
 								else if (myStringToken.equals("textField")) { 
 									//<task-node name="textField~For how many days?">
@@ -1226,6 +1240,39 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        myNoRadioButton.setText(noStringValue);
 		        myNoRadioButton.setTextSize(20);		        
 		        break;    	
+			case SEND_TO_CLOUD_BASED_SERVICE_SCREEN:
+		    	setContentView(R.layout.yes_no_decision_screen);
+		        initBackNextButtons();
+
+		        TextView mySendToCloudBasedServiceScreenTextView = (TextView)findViewById(R.id.yes_no_decision_textview);
+		        mySendToCloudBasedServiceScreenTextView = (TextView) UsbongUtils.applyTagsInView(mySendToCloudBasedServiceScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+
+		        RadioButton mySendToCloudBasedServiceScreenYesRadioButton = (RadioButton)findViewById(R.id.yes_radiobutton);
+		        mySendToCloudBasedServiceScreenYesRadioButton.setText(yesStringValue);
+		        mySendToCloudBasedServiceScreenYesRadioButton.setTextSize(20);
+
+		        RadioButton mySendToCloudBasedServiceScreenNoRadioButton = (RadioButton)findViewById(R.id.no_radiobutton);		        
+		        mySendToCloudBasedServiceScreenNoRadioButton.setText(noStringValue);
+		        mySendToCloudBasedServiceScreenNoRadioButton.setTextSize(20);		        
+		        break;    	
+			case SEND_TO_WEBSERVER_SCREEN:
+		    	setContentView(R.layout.send_to_webserver_screen);
+		        initBackNextButtons();
+
+		        TextView mySendToWebserverScreenTextView = (TextView)findViewById(R.id.send_to_webserver_textview);
+		        mySendToWebserverScreenTextView = (TextView) UsbongUtils.applyTagsInView(mySendToWebserverScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+
+		        TextView myWebserverURLScreenTextView = (TextView)findViewById(R.id.webserver_url_textview);
+		        myWebserverURLScreenTextView.setText(UsbongUtils.getDestinationServerURL());
+		        
+		        RadioButton mySendToWebserverYesRadioButton = (RadioButton)findViewById(R.id.yes_radiobutton);
+		        mySendToWebserverYesRadioButton.setText(yesStringValue);
+		        mySendToWebserverYesRadioButton.setTextSize(20);
+
+		        RadioButton mySendToWebserverNoRadioButton = (RadioButton)findViewById(R.id.no_radiobutton);		        
+		        mySendToWebserverNoRadioButton.setText(noStringValue);
+		        mySendToWebserverNoRadioButton.setTextSize(20);		        
+		        break;    	
 			case END_STATE_SCREEN:
 		    	setContentView(R.layout.end_state_screen);
 
@@ -1323,10 +1370,10 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    		for(int i=0; i<usbongAnswerContainerSize;i++) {
 		    			outputStringBuffer.append(usbongAnswerContainer.elementAt(i));
 		    		}
-		        			    		
 		    		myOutputDirectory=UsbongUtils.getTimeStamp()+"/";
 //		    		System.out.println(">>>>>>>>>>>>> outputStringBuffer: " + outputStringBuffer.toString());
 		    		UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv", outputStringBuffer.toString());
+/*
 		    		//send to server
 		    		UsbongUtils.performFileUpload(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv");
 		    		 
@@ -1335,15 +1382,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    		emailIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //		    		emailIntent.addFlags(RESULT_OK);
 		    		startActivityForResult(Intent.createChooser(emailIntent, "Email:"),EMAIL_SENDING_SUCCESS);
-
-/*
-		    		if (emailIntent.getFlags()==RESULT_OK) {
-			    		finish();    		
-						Intent toUsbongMainActivityIntent = new Intent(UsbongDecisionTreeEngineActivity.this, UsbongMainActivity.class);
-						toUsbongMainActivityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
-						startActivity(toUsbongMainActivityIntent);					
-		    		}
-*/		    		
+*/
+		    		finish();
 		    	}
 		    	else {			
 		    		if (currScreen==YES_NO_DECISION_SCREEN) {
@@ -1363,6 +1403,70 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        else { //if no radio button was checked				        	
 			    				showPleaseAnswerAlert();
 				        }
+		    		}	
+		    		else if (currScreen==SEND_TO_WEBSERVER_SCREEN) {
+				        RadioButton myYesRadioButton = (RadioButton)findViewById(R.id.yes_radiobutton);
+				        RadioButton myNoRadioButton = (RadioButton)findViewById(R.id.no_radiobutton);
+
+				        if (myYesRadioButton.isChecked()) {
+				    		//"save" the output into the SDCard as "output.txt"
+				    		int usbongAnswerContainerSize = usbongAnswerContainer.size();
+				    		StringBuffer outputStringBuffer = new StringBuffer();
+				    		for(int i=0; i<usbongAnswerContainerSize;i++) {
+				    			outputStringBuffer.append(usbongAnswerContainer.elementAt(i));
+				    		}
+
+				        	myOutputDirectory=UsbongUtils.getTimeStamp()+"/";
+				    		UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv", outputStringBuffer.toString());
+
+				    		//send to server
+				    		UsbongUtils.performFileUpload(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv");
+				        }
+				        else if (myNoRadioButton.isChecked()) {
+				        }
+				        else { //if no radio button was checked				        	
+			    				showPleaseAnswerAlert();
+				        }
+				        
+						currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+						usbongAnswerContainer.addElement("Any;");															
+						initParser();				
+		    		}	
+		    		else if (currScreen==SEND_TO_CLOUD_BASED_SERVICE_SCREEN) {
+				        RadioButton myYesRadioButton = (RadioButton)findViewById(R.id.yes_radiobutton);
+				        RadioButton myNoRadioButton = (RadioButton)findViewById(R.id.no_radiobutton);
+
+				        if (myYesRadioButton.isChecked()) {
+				    		//"save" the output into the SDCard as "output.txt"
+				    		int usbongAnswerContainerSize = usbongAnswerContainer.size();
+				    		StringBuffer outputStringBuffer = new StringBuffer();
+				    		for(int i=0; i<usbongAnswerContainerSize;i++) {
+				    			outputStringBuffer.append(usbongAnswerContainer.elementAt(i));
+				    		}
+
+				        	myOutputDirectory=UsbongUtils.getTimeStamp()+"/";
+				    		UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv", outputStringBuffer.toString());
+
+				    		//send to email
+				    		Intent emailIntent = UsbongUtils.performEmailProcess(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv", attachmentFilePaths);
+				    		/*emailIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+*/
+//				    		emailIntent.addFlags(RESULT_OK);
+//				    		startActivityForResult(Intent.createChooser(emailIntent, "Email:"),EMAIL_SENDING_SUCCESS);
+				    		//answer from Llango J, stackoverflow
+				    		//Reference: http://stackoverflow.com/questions/7479883/problem-with-sending-email-goes-back-to-previous-activity;
+				    		//last accessed: 22 Oct. 2012
+				    		startActivity(Intent.createChooser(emailIntent, "Email:"));
+				        }
+				        else if (myNoRadioButton.isChecked()) {
+				        }
+				        else { //if no radio button was checked				        	
+			    				showPleaseAnswerAlert();
+				        }
+				        
+						currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+						usbongAnswerContainer.addElement("Any;");															
+						initParser();				
 		    		}	
 		    		else if (currScreen==MULTIPLE_CHECKBOXES_SCREEN) {
 //			    		requiredTotalCheckedBoxes	
@@ -1473,7 +1577,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        EditText myDateYearEditText = (EditText)findViewById(R.id.date_edittext);
 		    			usbongAnswerContainer.addElement(monthAdapter.getItem(dateMonthSpinner.getSelectedItemPosition()).toString() +
 								 						 dayAdapter.getItem(dateDaySpinner.getSelectedItemPosition()).toString() + "," +
-								 						 myDateYearEditText.getText().toString());		    					
+								 						 myDateYearEditText.getText().toString()+";");		    					
 				        
 		    			System.out.println(">>>>>>>>>>>>>Date screen: "+usbongAnswerContainer.lastElement());
 		    			initParser();				        	
