@@ -62,7 +62,7 @@ public class SignInActivity extends Activity {
         	
         	//default values
         	UsbongUtils.IS_IN_DEBUG_MODE=false;
-        	UsbongUtils.destinationServerURL="127.0.0.1";//"192.168.1.105";
+        	UsbongUtils.setDestinationServerURL("127.0.0.1");//"192.168.1.105";
     		
         	if (UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + "usbong.config") == null) { 
         		UsbongUtils.IS_IN_DEBUG_MODE=false;    			
@@ -80,7 +80,8 @@ public class SignInActivity extends Activity {
 	    				UsbongUtils.IS_IN_DEBUG_MODE=true;				
 	    			}
 	    			else if (currLineString.contains("DESTINATION_URL=")) {
-	    				UsbongUtils.destinationServerURL= currLineString.replace("DESTINATION_URL=", "");
+	    				UsbongUtils.setDestinationServerURL(currLineString.replace("DESTINATION_URL=", ""));
+	    				System.out.println(">>>>>>>DestiantionServerURL: "+UsbongUtils.getDestinationServerURL());
 	    			}
 	    			/*
 	    			else {
