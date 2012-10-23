@@ -134,7 +134,9 @@ public class SettingsActivity extends Activity {
 				}
 				out.println("DESTINATION_URL="+myDestinationURLEditText.getText().toString());
 			    out.close();
-				return true;
+
+			    UsbongUtils.setDestinationServerURL(myDestinationURLEditText.getText().toString());
+			    return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
