@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	style="@style/UsbongDefaultParentLayout"
+	android:id="@+id/parent_layout_id"       	
+	>
+	<ScrollView android:isScrollContainer="true"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:layout_weight="0.6">		 	
+		<LinearLayout
+			style="@style/UsbongMultipleRadioButtonsMainLayout"> 
+			<TextView android:id="@+id/send_to_webserver_textview"
+				style="@style/UsbongDefaultTextView"
+			    android:text="this is the default."/>
+			<TextView android:id="@+id/webserver_url_textview"
+				style="@style/UsbongDefaultTextView"
+			    android:text="https:/sites.google.com/site/theubsongproject"/>
+					
+			<LinearLayout
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content">		 				
+					<RadioGroup android:id="@+id/multiple_radio_buttons_radiogroup"
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical"
+					>    
+						
+						<RadioButton android:id="@+id/yes_radiobutton"
+						    android:checked="false"
+							android:text="@string/yesStringValue" 
+							android:textColor="#4a452a" />
+														    
+						<RadioButton android:id="@+id/no_radiobutton"
+						    android:checked="false"
+							android:text="@string/noStringValue"
+							android:textColor="#4a452a" />
+															    	        
+					</RadioGroup>    	
+			</LinearLayout>
+		</LinearLayout>		
+	</ScrollView>			
+	<LinearLayout
+	style="@style/UsbongDefaultBackNextButtonLayout">	
+	    <Button android:id="@+id/back_button"
+	    style="@style/UsbongDefaultBackNextButton"
+	    android:text="Back"/>
+	    
+	   	<Button android:id="@+id/next_button"
+	    style="@style/UsbongDefaultBackNextButton"
+	    android:text="Next"/>	    
+	</LinearLayout>		    
+</LinearLayout>
