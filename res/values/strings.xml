@@ -105,4 +105,8 @@
     <dimen name="defTextSize">30px</dimen>
     <color name="defTextColor">#FFFFFF</color>
     <dimen name="defPaddingTop">16px</dimen>        
+    
+    <string name="select_language">Select language.</string>
+    <string name="select">Select</string>
+    <string name="cancel">Cancel</string>
 </resources>

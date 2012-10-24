@@ -44,6 +44,8 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -62,6 +64,7 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class UsbongUtils {		
 	public static boolean IS_IN_DEBUG_MODE=false;
@@ -72,7 +75,9 @@ public class UsbongUtils {
 	private static String timeStamp;
     	
 	public static final int LANGUAGE_ENGLISH=0; 
-	public static final int LANGUAGE_FILIPINO=1; //uses English only
+	public static final int LANGUAGE_FILIPINO=1;
+	public static final int LANGUAGE_JAPANESE=2;
+	
 	
 	private static String destinationServerURL;
 	
@@ -87,6 +92,11 @@ public class UsbongUtils {
 	public static final int IS_RADIOBUTTON = 1;
 	public static final int IS_CHECKBOX = 2;
 	
+	public static String myTreeFileName="";
+	
+	public static String usbongDefaultLanguage="English"; //default is English
+	public static String usbongSetLanguage=usbongDefaultLanguage; //default is English
+		
 	public static final boolean USE_UNESCAPE=true; //allows the use of \n (new line) in the decision tree
 	
 	//Reference: Andrei Buneyeu's answer in http://stackoverflow.com/questions/1819142/how-should-i-validate-an-e-mail-address-on-android;
@@ -418,10 +428,15 @@ public class UsbongUtils {
     	return null;
 	}
 
+	public static void setmyTreeFileName(String myTree) {
+		myTreeFileName = myTree;
+	}
 	
 	//Reference: AbakadaUtils.java; public static ArrayList<String> getWords(String filePath)
 	public static InputStreamReader getTreeFromSDCardAsReader(String treeFile) //example of file would be decision trees
 	{
+		setmyTreeFileName(treeFile);
+		
 		is_a_utree=false; //this variable is not yet used anywhere, Mike, Sept 2, 2012
 		try 
 		{  	
@@ -578,7 +593,41 @@ public class UsbongUtils {
 		
 		return (ArrayList<String>) ret;
 	}
-	
+
+	public static ArrayList<String> getAvailableTranslationsArrayList(String treeFile)
+	{
+		List<String> ret = new ArrayList<String>();
+				
+		String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + treeFile+".utree/trans/";
+		File file = new File(filePath);
+		if(!file.exists())
+		{
+			file = new File(UsbongUtils.USBONG_TREES_FILE_PATH+"temp/"+treeFile+".utree/trans/");
+
+			if(!file.exists()) {						
+				return null;
+			}
+		}
+		//if this point is reached, this means that the .utree has a 'trans' folder
+				
+		try 
+		{  							
+			UsbongFileFilter myFileFilter = new UsbongFileFilter("xml");			
+			String[] listOfTrans = file.list(myFileFilter); //file.list();
+			int totalTrans = listOfTrans.length;
+			
+			for(int i=0; i<totalTrans; i++) {
+				ret.add(listOfTrans[i].replace(".xml", "")); //remove the ".xml" at the end
+			}			
+    	}
+    	catch(Exception e) {
+    		System.out.println("ERROR in reading FILE.");
+    		e.printStackTrace();
+    	}
+		
+		return (ArrayList<String>) ret;
+	}
+
     //converts the Filipino Text to Spanish Accent-friendly text
 	//based on the following rules
 	//Reference: http://answers.oreilly.com/topic/217-how-to-match-whole-words-with-a-regular-expression/; last accessed 27 Sept 2011
@@ -606,8 +655,39 @@ public class UsbongUtils {
 	    	if (s.equals("Filipino")) {
 	    		return LANGUAGE_FILIPINO;
 	    	}
+	    	else if (s.equals("Japanese")) {
+	    		return LANGUAGE_JAPANESE;
+	    	}
     	}
     	return LANGUAGE_ENGLISH;
+    }
+    
+    public static String getLanguageBasedOnID(int currLanguageBeingUsed) {
+    	switch (currLanguageBeingUsed) {
+    		case LANGUAGE_FILIPINO:
+    			return "Filipino";
+    		case LANGUAGE_JAPANESE:
+    			return "Japanese";
+    		default:
+    			return "English";
+    	}
+    }
+
+    public static String getDefaultLanguage() {
+    	return usbongDefaultLanguage;
+    }
+    
+    public static String getSetLanguage() {
+    	return usbongSetLanguage;
+    }
+
+    public static void setDefaultLanguage(String s) {
+    	usbongDefaultLanguage = s;
+    	usbongSetLanguage = usbongDefaultLanguage;
+    }
+    
+    public static void setLanguage(String s) {
+    	usbongSetLanguage = s;
     }
     
     public static Intent performEmailProcess(String filepath, List<String> filePathsList) {
@@ -988,6 +1068,8 @@ public class UsbongUtils {
 //    	styledText = styledText.replaceAll("<indent>", "{indent}");//"\u0020\u0020\u0020\u0020\u0020");					
     	styledText = processIndent(styledText);
 
+    	styledText = performTranslation(styledText);
+    	
 		Spanned mySpanned = Html.fromHtml(styledText);
 
 		switch(type) {
@@ -1034,5 +1116,62 @@ public class UsbongUtils {
 		myText = myText.replaceAll("\\}", ">");	
 		
 		return myText;
+	}
+	
+	public static String performTranslation(String origString) {
+		String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/trans/"+getSetLanguage()+".xml";
+		File file = new File(filePath);
+		if(!file.exists())
+		{
+			file = new File(UsbongUtils.USBONG_TREES_FILE_PATH+"temp/"+myTreeFileName+".utree/trans/"+getSetLanguage()+".xml");
+
+			if(!file.exists()) {						
+				return origString; //just send the original string
+			}
+		}
+		//if this point is reached, this means that trans file exists
+
+		try {
+			  XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+		      factory.setNamespaceAware(true);
+			  XmlPullParser parser = factory.newPullParser();		 		  
+			  
+		      InputStream in = null;
+		      InputStreamReader reader;
+		      try {
+		          in = new BufferedInputStream(new FileInputStream(file));
+		      }  
+		      catch(Exception e) {
+		    	  e.printStackTrace();
+		      }
+		      reader = new InputStreamReader(in,"UTF-8"); 
+			  
+			  parser.setInput(reader);	
+				  
+			  //Reference: http://developer.android.com/training/basics/network-ops/xml.html;
+			  //last accessed: 24 Oct. 2012
+			  while(parser.next() != XmlPullParser.END_DOCUMENT) {
+				  if (parser.getEventType() != XmlPullParser.START_TAG) {
+			            continue;
+			      }
+				  
+				  if (parser.getName().equals("string")) {					  
+//					  Log.d(">>>>>parser.getAttributeValue(null, 'name'): ",parser.getAttributeValue(null, "name"));
+//					  Log.d(">>>>>origString: ",origString);
+
+					  if (parser.getAttributeValue(null, "name").equals(origString)) {
+						  if (parser.next() == XmlPullParser.TEXT) {
+//							  Log.d(">>>>>parser.getText();: ",parser.getText());
+							  return parser.getText();
+						  }
+					  }
+				  }
+			  }
+		} 
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return origString; //default; just return the original string
 	}
 }

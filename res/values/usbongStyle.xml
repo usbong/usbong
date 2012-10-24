@@ -7,7 +7,14 @@
         <item name="android:orientation">vertical</item>  
         <item name="android:gravity">center</item>      
     </style>	   
-	
+
+	<style name="UsbongSetLanguageParentLayout">
+		<item name="android:layout_width">fill_parent</item>
+		<item name="android:layout_height">fill_parent</item>
+        <item name="android:orientation">vertical</item>  
+        <item name="android:gravity">center</item>      
+    </style>	   
+		
 	<style name="UsbongSettingsParentLayout">
 		<item name="android:layout_width">fill_parent</item>
 		<item name="android:layout_height">fill_parent</item>
@@ -242,7 +249,7 @@
     </style>	   
 
     <style name="UsbongDefaultBackNextButton">
-		<item name="android:layout_width">136px</item>
+		<item name="android:layout_width">136dp</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:textColor">#4a452a</item>
 		<item name="android:textSize">20px</item>		
@@ -250,7 +257,7 @@
     </style>	   
 
     <style name="UsbongDefaultButton">
-		<item name="android:layout_width">136px</item>
+		<item name="android:layout_width">136dp</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:textColor">#4a452a</item>
 		<item name="android:textSize">20px</item>		
@@ -261,6 +268,13 @@
     <style name="UsbongDefaultNextButton">
 		<item name="android:layout_width">fill_parent</item>
 		<item name="android:layout_height">wrap_content</item>
+	</style>	       
+
+    <style name="UsbongDefaultSelectCancelButton">
+		<item name="android:layout_width">136dp</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:textSize">20px</item>		
+		<item name="android:layout_gravity">center</item>
 	</style>	       
     
     <style name="UsbongMainMenuButton">
