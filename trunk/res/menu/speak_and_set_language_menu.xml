@@ -2,4 +2,7 @@
 	<item android:id="@+id/speak"
 		  android:title="Speak"
 	/>
+	<item android:id="@+id/set_language"
+		  android:title="Set Language"
+	/>	
 </menu>

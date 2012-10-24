@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/parent_layout_id"   
+	style="@style/UsbongSetLanguageParentLayout"> 
+	
+	<ScrollView android:isScrollContainer="true"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:layout_weight="0.6">		 	
+		<LinearLayout
+			style="@style/UsbongMultipleRadioButtonsMainLayout"> 
+			<TextView android:id="@+id/set_language_textview"
+				style="@style/UsbongDefaultTextView"
+				android:textColor="#FFFFFF"
+			    android:text="@string/select_language"/>
+		
+			<LinearLayout
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content">		 				
+					<RadioGroup android:id="@+id/multiple_radio_buttons_radiogroup"
+					    android:textColor="#FFFFFF"
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical">        	        
+					</RadioGroup>    	
+			</LinearLayout>
+		</LinearLayout>		
+	</ScrollView>			
+	<LinearLayout
+	    style="@style/UsbongDefaultBackNextButtonLayout"
+	    >
+	   	<Button android:id="@+id/select_button"
+	    style="@style/UsbongDefaultSelectCancelButton"
+	    android:text="@string/select"/>
+	    
+	   	<Button android:id="@+id/cancel_button"
+	    style="@style/UsbongDefaultSelectCancelButton"
+	    android:text="@string/cancel"/>	    
+	</LinearLayout>		    
+</LinearLayout>
