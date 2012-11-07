@@ -5,7 +5,10 @@
     <string name="group_a_name">Group A</string>    
     <string name="group_b_name">Group B</string>    
     <string name="team_name_textview">Team Name:</string>    
-	<string name="pleaseChooseAnAnswerStringValue">Please choose an answer.\n答えを選択してください。</string>
+	<string name="pleaseChooseAnAnswerStringValue">Please choose an answer.</string>
+	<string name="pleaseChooseAnAnswerStringValueJapanese">答えを選んでください。</string>
+	<string name="pleaseChooseAnAnswerStringValueFilipino">Mangyaring pumili ng isang sagot.</string>
+	
 	<string name="pressTheMenuButtonToSaveStringValue">Please press the Menu button on your device to open the Save option.</string>
 
 	<string name="signup"><u>Sign Up</u></string>
@@ -18,13 +21,16 @@
 
 	<string name="noStringValueFilipino">Hindi</string>
 	<string name="yesStringValueFilipino">Oo</string>  
-
+	<string name="noStringValueJapanese">いいえ</string>
+	<string name="yesStringValueJapanese">はい</string>  
+	
 	<string name="noStringValue">No [いいえ] [不要]</string>
 	<string name="yesStringValue">Yes [はい] [要]</string>  
 	<string name="alertStringValue">Alert! 注意！</string>  
 
     <string name="UsbongEndStateTextView_FILIPINO">Narating mo na ang dulo.</string>        
     <string name="UsbongEndStateTextView_ENGLISH">You\'ve now reached the end.</string>        
+    <string name="UsbongEndStateTextView_JAPANESE">終点に着いた。</string>        
     
     <string name="UsbongEndStateTextView">You\'ve now reached the end. \n　終点に着いた。 \n　你已经到了终点。</string>        
     <string name="default_textview">default</string>    
