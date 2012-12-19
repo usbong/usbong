@@ -77,6 +77,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import usbong.android.features.node.PaintActivity;
+
 public class UsbongDecisionTreeEngineActivity extends Activity implements TextToSpeech.OnInitListener{
 //	private static final boolean UsbongUtils.USE_UNESCAPE=true; //allows the use of \n (new line) in the decision tree
 
@@ -103,8 +105,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	public static final int VIDEO_FROM_FILE_SCREEN=13;	
 	public static final int LINK_SCREEN=14;			
 	public static final int SEND_TO_WEBSERVER_SCREEN=15;		
-	public static final int SEND_TO_CLOUD_BASED_SERVICE_SCREEN=16;		
-	public static final int END_STATE_SCREEN=17;		
+	public static final int SEND_TO_CLOUD_BASED_SERVICE_SCREEN=16;	
+	public static final int PAINT_SCREEN=17;
+	public static final int END_STATE_SCREEN=18;		
 	
 	private static int currScreen=TEXTFIELD_SCREEN;
 	
@@ -116,13 +119,16 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	private Button playButton;
 	
 	private static AudioRecorder currAudioRecorder;
-	
+
+	private Button paintButton;
 	private Button photoCaptureButton;
 	private ImageView myImageView;
 	
 	public static Intent photoCaptureIntent;
+	public static Intent paintIntent;
 	
 	private static String myPictureName="default"; //change this later in the code
+	private static String myPaintName="default"; //change this later in the code
 
 	private boolean hasReachedEndOfAllDecisionTrees;
 	private boolean isFirstQuestionForDecisionTree;
@@ -130,7 +136,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	private boolean usedBackButton;
 	
 	private boolean performedCapturePhoto;
-
+	private boolean performedCapturePaint;
+	
 	private String currUsbongNode="";
 	private String nextUsbongNodeIfYes;
 	private String nextUsbongNodeIfNo;
@@ -214,7 +221,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     	
     	//Reference: http://stackoverflow.com/questions/2793004/java-lista-addalllistb-fires-nullpointerexception
     	//Last accessed: 14 March 2012
-    	attachmentFilePaths = new ArrayList<String>();;            	
+    	attachmentFilePaths = new ArrayList<String>();            	
 //		attachmentFilePaths.clear();
 //		System.out.println(">>>>>>>>> attachmentFilePaths.clear!");
 		currAudioRecorder = null;
@@ -374,7 +381,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				dialog.show();
 				return true;
 			case(R.id.speak):
-				Log.d(">>>>currScreen",currScreen+"");
+//				Log.d(">>>>currScreen",currScreen+"");
 				switch(currScreen) {
 			    	case LINK_SCREEN:
 			    	case MULTIPLE_RADIO_BUTTONS_SCREEN:
@@ -404,9 +411,18 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        sb.append(stopButton.getText()+". ");
 				        sb.append(playButton.getText()+". ");
 				        break;
-			        case PHOTO_CAPTURE_SCREEN:
-				        sb.append(((TextView) UsbongUtils.applyTagsInView(new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
-			        	break;
+					case PAINT_SCREEN:
+			    		sb.append(((TextView) UsbongUtils.applyTagsInView(new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
+
+			    		Button paintButton = (Button)findViewById(R.id.paint_button);
+				        sb.append(paintButton.getText()+". ");
+			    		break;
+					case PHOTO_CAPTURE_SCREEN:
+			    		sb.append(((TextView) UsbongUtils.applyTagsInView(new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
+
+			    		Button photoCaptureButton = (Button)findViewById(R.id.photo_capture_button);
+				        sb.append(photoCaptureButton.getText()+". ");
+			    		break;
 					case TEXTFIELD_SCREEN:
 					case TEXTFIELD_WITH_UNIT_SCREEN:
 				        sb.append(((TextView) UsbongUtils.applyTagsInView(new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
@@ -424,7 +440,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 					case TEXT_IMAGE_DISPLAY_SCREEN:
 					case GPS_LOCATION_SCREEN:
 				        sb.append(((TextView) UsbongUtils.applyTagsInView(new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
-				        Log.d(">>>>sb",sb.toString());
+//				        Log.d(">>>>sb",sb.toString());
 				        break;
 					case IMAGE_DISPLAY_SCREEN:
 					case VIDEO_FROM_FILE_SCREEN:							
@@ -436,6 +452,19 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        sb.append(yesStringValue+". ");
 				        sb.append(noStringValue+". ");
 				        break;    	
+/*						
+					case PAINT_SCREEN:
+				    	if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
+							sb.append((String) getResources().getText(R.string.UsbongPaintScreenTextView_FILIPINO));
+				    	}
+				    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
+							sb.append((String) getResources().getText(R.string.UsbongPaintScreenTextView_JAPANESE));				    						    		
+				    	}
+				    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
+							sb.append((String) getResources().getText(R.string.UsbongPaintScreenTextView_ENGLISH));				    						    		
+				    	}
+				    	break;    		
+*/				    	
 					case END_STATE_SCREEN:
 				    	if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
 							sb.append((String) getResources().getText(R.string.UsbongEndStateTextView_FILIPINO));				    		
@@ -922,7 +951,12 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 									parseYesNoAnswers(parser);
 								}
+								else if (myStringToken.equals("paint")) { 
+									parser.nextTag(); //go to transition tag
+									currScreen=PAINT_SCREEN;
 
+									parseYesNoAnswers(parser);
+								}
 							}
 					  }
 					  else { //this is a currIMCICaseList number
@@ -1034,7 +1068,28 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 		        TextView myAudioRecorderTextView = (TextView)findViewById(R.id.audio_recorder_textview);
 		        myAudioRecorderTextView = (TextView) UsbongUtils.applyTagsInView(myAudioRecorderTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
-/*
+
+		        Button recordButton = (Button)findViewById(R.id.record_button);
+		        Button stopButton = (Button)findViewById(R.id.stop_button);
+		        Button playButton = (Button)findViewById(R.id.play_button);
+
+		        if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
+		    		recordButton.setText((String) getResources().getText(R.string.UsbongRecordTextView_FILIPINO));				    		
+		    		stopButton.setText((String) getResources().getText(R.string.UsbongStopTextView_FILIPINO));				    		
+		    		playButton.setText((String) getResources().getText(R.string.UsbongPlayTextView_FILIPINO));				    		
+		        }
+		    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
+		    		recordButton.setText((String) getResources().getText(R.string.UsbongRecordTextView_JAPANESE));				    		
+		    		stopButton.setText((String) getResources().getText(R.string.UsbongStopTextView_JAPANESE));				    		
+		    		playButton.setText((String) getResources().getText(R.string.UsbongPlayTextView_JAPANESE));				    		
+		    	}
+		    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
+		    		recordButton.setText((String) getResources().getText(R.string.UsbongRecordTextView_ENGLISH));				    		
+		    		stopButton.setText((String) getResources().getText(R.string.UsbongStopTextView_ENGLISH));				    		
+		    		playButton.setText((String) getResources().getText(R.string.UsbongPlayTextView_ENGLISH));				    		
+		    	}
+
+		        /*
 		        if (UsbongUtils.USE_UNESCAPE) {
 		        	myAudioRecorderTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
 		        }
@@ -1052,7 +1107,49 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 		        TextView myPhotoCaptureScreenTextView = (TextView)findViewById(R.id.photo_capture_textview);
 		        myPhotoCaptureScreenTextView = (TextView) UsbongUtils.applyTagsInView(myPhotoCaptureScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
-/*
+	    		Button photoCaptureButton = (Button)findViewById(R.id.photo_capture_button);
+
+		        if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
+		        	photoCaptureButton.setText((String) getResources().getText(R.string.UsbongTakePhotoTextView_FILIPINO));				    		
+		        }
+		    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
+		    		photoCaptureButton.setText((String) getResources().getText(R.string.UsbongTakePhotoTextView_JAPANESE));				    		
+		    	}
+		    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
+		    		photoCaptureButton.setText((String) getResources().getText(R.string.UsbongTakePhotoTextView_ENGLISH));				    		
+		    	}
+		        /*
+		        if (UsbongUtils.USE_UNESCAPE) {
+		        	myPhotoCaptureScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
+		        }
+		        else {
+		        	myPhotoCaptureScreenTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
+		        }		    	
+*/		        
+		    	break;		    	
+	        case PAINT_SCREEN:
+		    	setContentView(R.layout.paint_screen);
+		    	if (!performedCapturePaint) {
+ 		    	  initPaintScreen();
+		    	}
+		    	initBackNextButtons();
+
+		        TextView myPaintScreenTextView = (TextView)findViewById(R.id.paint_textview);
+		        myPaintScreenTextView = (TextView) UsbongUtils.applyTagsInView(myPaintScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+
+	    		Button paintButton = (Button)findViewById(R.id.paint_button);
+
+		        if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
+		        	paintButton.setText((String) getResources().getText(R.string.UsbongRunPaintTextView_FILIPINO));				    		
+		        }
+		    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
+		    		paintButton.setText((String) getResources().getText(R.string.UsbongRunPaintTextView_JAPANESE));				    		
+		    	}
+		    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
+		    		paintButton.setText((String) getResources().getText(R.string.UsbongRunPaintTextView_ENGLISH));				    		
+		    	}
+
+		        /*
 		        if (UsbongUtils.USE_UNESCAPE) {
 		        	myPhotoCaptureScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
 		        }
@@ -1788,6 +1885,44 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
     }
 
+    public void initPaintScreen()
+    {
+    	myPaintName=currUsbongNode; //make the name of the picture the name of the currUsbongNode
+
+//		String path = "/sdcard/usbong/"+ UsbongUtils.getTimeStamp() +"/"+ myPictureName +".jpg";
+		String path = UsbongUtils.BASE_FILE_PATH + UsbongUtils.getTimeStamp()+"/"+ myPaintName +".jpg";		
+
+		//only add path if it's not already in attachmentFilePaths
+		if (!attachmentFilePaths.contains(path)) {
+			attachmentFilePaths.add(path);
+		}
+
+    	setContentView(R.layout.paint_screen);
+    	myImageView = (ImageView) findViewById(R.id.PaintImage);
+
+    	File imageFile = new File(path);
+        if(imageFile.exists())
+        {
+        	Bitmap myBitmap = BitmapFactory.decodeFile(path);
+        	if(myBitmap != null)
+        	{
+        		myImageView.setImageBitmap(myBitmap);
+        	}
+        	//Read more: http://www.brighthub.com/mobile/google-android/articles/64048.aspx#ixzz0yXLCazcU                	  
+        }
+        else
+        {        	
+        }
+    	paintButton = (Button)findViewById(R.id.paint_button);
+    	paintIntent = new Intent().setClass(this, PaintActivity.class);
+		paintIntent.putExtra("myPaintName",myPaintName);
+		paintButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivity(UsbongDecisionTreeEngineActivity.paintIntent);
+			}
+    	});
+    }
 
     public void decrementCurrScreen() {
     	currScreen--;

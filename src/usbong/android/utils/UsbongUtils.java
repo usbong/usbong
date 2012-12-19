@@ -1062,13 +1062,13 @@ public class UsbongUtils {
         else {
         	styledText = UsbongUtils.trimUsbongNodeName(myCurrUsbongNode);
         }
-    	
+
+    	styledText = performTranslation(styledText);
+
     	styledText = replaceAllCurlyBracesWithGreaterThanLessThanSign(styledText);
     	//keep the curly braces for <indent>
 //    	styledText = styledText.replaceAll("<indent>", "{indent}");//"\u0020\u0020\u0020\u0020\u0020");					
     	styledText = processIndent(styledText);
-
-    	styledText = performTranslation(styledText);
     	
 		Spanned mySpanned = Html.fromHtml(styledText);
 
