@@ -55,6 +55,18 @@
     <string name="UsbongRunPaintTextView_FILIPINO">Patakbuhin ang Paint</string>        
     <string name="UsbongRunPaintTextView_ENGLISH">Run Paint</string>        
     <string name="UsbongRunPaintTextView_JAPANESE">ペイントを起動する</string>       
+
+    <string name="UsbongQRCodeReaderTextView_FILIPINO">Kunin ang QR Code</string>        
+    <string name="UsbongQRCodeReaderTextView_ENGLISH">Get QR Code</string>        
+    <string name="UsbongQRCodeReaderTextView_JAPANESE">QRコードを取る</string>       
+
+    <string name="UsbongQRCodeReaderContentResultNone_FILIPINO">Wala pang naka-save na QR Code content!</string>        
+    <string name="UsbongQRCodeReaderContentResultNone_ENGLISH">No QR Code content has been saved yet!</string>        
+    <string name="UsbongQRCodeReaderContentResultNone_JAPANESE">保存されたQRコードの内容はまだない！</string>       
+
+    <string name="UsbongQRCodeReaderContentResult_FILIPINO">Nai-save ang laman ng QR Code!</string>        
+    <string name="UsbongQRCodeReaderContentResult_ENGLISH">QR Code content successfully saved!</string>        
+    <string name="UsbongQRCodeReaderContentResult_JAPANESE">QRコードの内容が保存された！</string>       
     
     <string name="UsbongEndStateTextView">You\'ve now reached the end. \n　終点に着いた。 \n　你已经到了终点。</string>        
     <string name="default_textview">default</string>    
@@ -120,9 +132,9 @@
 	<string name="audio_recorder_textview">Audio Recorder</string>
     
 	<string name="photo_capture_textview">Photo Capture</string>
-
 	<string name="paint_textview">Paint Screen</string>
-	
+	<string name="qr_code_reader_textview">QR Code Reader</string>
+		
     <string name="vocab_list_filename">vocab_list.txt</string>
     
     <string name="group_a_hint_textview">The word to be guessed by the other group is: </string>

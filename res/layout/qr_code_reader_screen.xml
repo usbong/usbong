@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	style="@style/UsbongImageViewerParentLayout"
+	android:id="@+id/parent_layout_id"       	
+	>
+	<ScrollView 
+	    style="@style/UsbongDefaultScrollView">		
+		<LinearLayout style="@style/UsbongPhotoCaptureMainLayout">	 		
+			<TextView android:id="@+id/qr_code_reader_textview"
+			    style="@style/UsbongDefaultTextView"	    	
+			    android:text="@string/qr_code_reader_textview" />	
+			<Button android:id="@+id/qr_code_reader_button"
+			    style="@style/UsbongPhotoCaptureButton"	    	
+			    android:text="Get QR Code" />
+			<TextView android:id="@+id/qr_code_reader_result_textview"
+				style="@style/UsbongDefaultTextView"/>
+			<TextView android:id="@+id/qr_code_reader_content_textview"
+				style="@style/UsbongDefaultTextView"/>
+		</LinearLayout>
+	</ScrollView>	    	    
+	<LinearLayout
+		style="@style/UsbongDefaultBackNextButtonLayout">	
+	    <Button android:id="@+id/back_button"
+		    style="@style/UsbongDefaultBackNextButton"
+		    android:text="Back"/>
+		    
+	   	<Button android:id="@+id/next_button"
+		    style="@style/UsbongDefaultBackNextButton"
+		    android:text="Next"/>	    
+	</LinearLayout>
+</LinearLayout>

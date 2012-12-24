@@ -103,7 +103,7 @@ public class UsbongMainActivity extends Activity
 			@Override
 			public void onClick(View v) {
 //				myUsbongDecisionTreeEngineActivity = new UsbongDecisionTreeEngineActivity();
-				
+				reset(); //generate new timestamp
 				Intent toUsbongDecisionTreeEngineActivityIntent = new Intent().setClass(UsbongMainActivity.getInstance(), UsbongDecisionTreeEngineActivity.class);
 				toUsbongDecisionTreeEngineActivityIntent.putExtra("currScreen","0"); //make currScreen=0; meaning very first screen				
 				startActivity(toUsbongDecisionTreeEngineActivityIntent);				
@@ -170,11 +170,12 @@ public class UsbongMainActivity extends Activity
 			}
     	});
     }
-    
+/*  
     public String getTeamName() {
     	return teamName;
     }
-    
+*/    
+/*    
     public void initBackNextButtons()
     {
     	initBackButton();
@@ -185,7 +186,8 @@ public class UsbongMainActivity extends Activity
     {
     	initBackButton();
     }
-
+*/    
+/*
     public void initBackButton()
     {
     	backButton = (Button)findViewById(R.id.back_button);
@@ -213,15 +215,16 @@ public class UsbongMainActivity extends Activity
 			}
     	});
     }
-        
+*/        
+/*    
     public Date getStartTime() {
     	return startTime;
     }
-    
+*/    
     public void reset() {
     	UsbongUtils.generateTimeStamp(); //create a new timestamp for this "New Entry"
     }
-        
+/*        
     public void decrementCurrScreen() {
     	currScreen--;
     	manageScreens();
@@ -231,7 +234,8 @@ public class UsbongMainActivity extends Activity
     	currScreen++;
     	manageScreens();
     }
-
+*/
+/*    
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -263,7 +267,8 @@ public class UsbongMainActivity extends Activity
         }
         return super.onKeyDown(keyCode, event);
     }
-    
+*/    
+/*    
     public void manageScreens() {
     	System.out.println("CURR SCREEN: "+currScreen);
     	if (currScreen<0) {
@@ -280,15 +285,14 @@ public class UsbongMainActivity extends Activity
 		    	initMainMenuScreen();
 		    	reset();
 		        break;    	
-/*
-			case GAME_SETTINGS_TEAM_NAME_SCREEN:
-    	    	setContentView(R.layout.game_settings_team_name);
-    	        initBackNextButtons();
-    			break;
-*/    			
+
+//			case GAME_SETTINGS_TEAM_NAME_SCREEN:
+//    	    	setContentView(R.layout.game_settings_team_name);
+//    	        initBackNextButtons();
+//    			break;
     	}
     }
-    
+*/    
     private void showStatusDialog(String status)
 	{
 		AlertDialog.Builder prompt = new AlertDialog.Builder(UsbongMainActivity.this);

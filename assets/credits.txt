@@ -1,5 +1,5 @@
 --Usbong (beta)--
-ver: Dec. 19, 2012
+ver: Dec. 24, 2012
 
 Usbong helps you create your own mobile applications to make your life and the lives of the people that matter to you more meaningful, more peaceful-- HAPPIER. =)
 
