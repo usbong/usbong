@@ -28,6 +28,8 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import usbong.android.features.node.PaintActivity;
+import usbong.android.features.node.QRCodeReaderActivity;
 import usbong.android.multimedia.audio.AudioRecorder;
 import usbong.android.utils.FedorMyLocation;
 import usbong.android.utils.FedorMyLocation.LocationResult;
@@ -77,8 +79,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import usbong.android.features.node.PaintActivity;
-
 public class UsbongDecisionTreeEngineActivity extends Activity implements TextToSpeech.OnInitListener{
 //	private static final boolean UsbongUtils.USE_UNESCAPE=true; //allows the use of \n (new line) in the decision tree
 
@@ -107,7 +107,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	public static final int SEND_TO_WEBSERVER_SCREEN=15;		
 	public static final int SEND_TO_CLOUD_BASED_SERVICE_SCREEN=16;	
 	public static final int PAINT_SCREEN=17;
-	public static final int END_STATE_SCREEN=18;		
+	public static final int QR_CODE_READER_SCREEN=18;
+	public static final int END_STATE_SCREEN=19;		
 	
 	private static int currScreen=TEXTFIELD_SCREEN;
 	
@@ -123,12 +124,16 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	private Button paintButton;
 	private Button photoCaptureButton;
 	private ImageView myImageView;
-	
+
+	private Button qrCodeReaderButton;
+
 	public static Intent photoCaptureIntent;
 	public static Intent paintIntent;
+	public static Intent qrCodeReaderIntent;
 	
 	private static String myPictureName="default"; //change this later in the code
 	private static String myPaintName="default"; //change this later in the code
+	private static String myQRCodeReaderName="default"; //change this later in the code
 
 	private boolean hasReachedEndOfAllDecisionTrees;
 	private boolean isFirstQuestionForDecisionTree;
@@ -136,7 +141,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	private boolean usedBackButton;
 	
 	private boolean performedCapturePhoto;
-	private boolean performedCapturePaint;
+	private boolean performedRunPaint;
+	private boolean performedGetQRCode;
 	
 	private String currUsbongNode="";
 	private String nextUsbongNodeIfYes;
@@ -177,6 +183,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	private FedorMyLocation myLocation;
 	
 	private boolean isInTreeLoader;
+	
+	private static String myQRCodeContent;
+    private static boolean hasReturnedFromAnotherActivity; //camera, paint, email, etc
 			
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -225,6 +234,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 //		attachmentFilePaths.clear();
 //		System.out.println(">>>>>>>>> attachmentFilePaths.clear!");
 		currAudioRecorder = null;
+		
+		myQRCodeContent="";
+	    hasReturnedFromAnotherActivity=false; //camera, paint, email, etc
 		
     	initTreeLoader();
     }
@@ -439,6 +451,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 					case TEXT_DISPLAY_SCREEN:
 					case TEXT_IMAGE_DISPLAY_SCREEN:
 					case GPS_LOCATION_SCREEN:
+					case QR_CODE_READER_SCREEN:
 				        sb.append(((TextView) UsbongUtils.applyTagsInView(new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
 //				        Log.d(">>>>sb",sb.toString());
 				        break;
@@ -522,7 +535,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
     protected void onActivityResult(
             int requestCode, int resultCode, Intent data) {
-        if (requestCode == MY_DATA_CHECK_CODE) {
+
+    	if (requestCode == MY_DATA_CHECK_CODE) {
             if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
                 // success, create the TTS instance
                 mTts = new TextToSpeech(this, this);
@@ -580,6 +594,11 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     public void onRestart() 
     {
         super.onRestart();
+        
+    	//added by Mike, Dec. 24, 2012
+//    	Log.d(">>>>>> onActivityResult", "inside!!!");
+        hasReturnedFromAnotherActivity=true; //camera, paint, email, etc
+
         switch(currScreen) {
         	case PHOTO_CAPTURE_SCREEN:
         		initTakePhotoScreen();
@@ -700,6 +719,10 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 					  currUsbongNode=parser.getAttributeValue(0).toString();
 					  
 					  isFirstQuestionForDecisionTree=true;
+
+					  //added by Mike, Dec. 24, 2012
+					  //reset myQRCodeContent to blank
+					  myQRCodeContent="";
 					  continue;
 				  }
 				  if ((!currUsbongNode.equals("")) && (parser.getAttributeValue(0).toString().equals(currUsbongNode)) &&
@@ -874,6 +897,14 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 								  parser.nextTag(); //go to the next tag
 								  parseYesNoAnswers(parser);
 								}
+								else if (myStringToken.equals("qrCodeReader")) { 								
+									//<task-node name="qrCodeReader~Scan Patient's QR Code ID?">
+									//  <transition to="textField~Family Name:" name="Any"></transition>
+									//</task-node>
+									currScreen=QR_CODE_READER_SCREEN;
+									parser.nextTag(); //go to the next tag
+									parseYesNoAnswers(parser);
+								}
 								else if (myStringToken.equals("textField")) { 
 									//<task-node name="textField~For how many days?">
 									//  <transition to="Does the child have wheezing? (child must be calm)" name="Any"></transition>
@@ -958,12 +989,12 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 									parseYesNoAnswers(parser);
 								}
 							}
-					  }
+					  }/*
 					  else { //this is a currIMCICaseList number
 						usbongNodeContainerCounter++;
 						currUsbongNode=(String)usbongNodeContainer.elementAt(usbongNodeContainerCounter);
 						continue;
-					  }
+					  }*/
 					  break;
 				  }
 				  //TODO dosage guide/table
@@ -975,12 +1006,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			e.printStackTrace();
 		}
 		
-		if (!usedBackButton) {
+		if ((!usedBackButton) && (!hasReturnedFromAnotherActivity)){
 			usbongNodeContainer.addElement(currUsbongNode);
 			usbongNodeContainerCounter++;
 		}
 		else {
 			usedBackButton=false;
+			hasReturnedFromAnotherActivity=false;
 		}
 		initUsbongScreen();
 	}
@@ -1129,7 +1161,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    	break;		    	
 	        case PAINT_SCREEN:
 		    	setContentView(R.layout.paint_screen);
-		    	if (!performedCapturePaint) {
+		    	if (!performedRunPaint) {
  		    	  initPaintScreen();
 		    	}
 		    	initBackNextButtons();
@@ -1148,15 +1180,30 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
 		    		paintButton.setText((String) getResources().getText(R.string.UsbongRunPaintTextView_ENGLISH));				    		
 		    	}
+		    	break;		    	
+	        case QR_CODE_READER_SCREEN:
+		    	setContentView(R.layout.qr_code_reader_screen);
 
-		        /*
-		        if (UsbongUtils.USE_UNESCAPE) {
-		        	myPhotoCaptureScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
+		    	if (!performedGetQRCode) {
+ 		    	  initQRCodeReaderScreen();
+		    	}
+		    	
+		    	initBackNextButtons();
+
+		        TextView myQRCodeReaderScreenTextView = (TextView)findViewById(R.id.qr_code_reader_textview);
+		        myQRCodeReaderScreenTextView = (TextView) UsbongUtils.applyTagsInView(myQRCodeReaderScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+
+	    		Button qrCodeReaderButton = (Button)findViewById(R.id.qr_code_reader_button);
+
+		        if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
+		        	qrCodeReaderButton .setText((String) getResources().getText(R.string.UsbongQRCodeReaderTextView_FILIPINO));				    		
 		        }
-		        else {
-		        	myPhotoCaptureScreenTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
-		        }		    	
-*/		        
+		    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
+		    		qrCodeReaderButton .setText((String) getResources().getText(R.string.UsbongQRCodeReaderTextView_JAPANESE));				    		
+		    	}
+		    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
+		    		qrCodeReaderButton .setText((String) getResources().getText(R.string.UsbongQRCodeReaderTextView_ENGLISH));				    		
+		    	}		    	
 		    	break;		    	
 			case TEXTFIELD_SCREEN:
 		    	setContentView(R.layout.textfield_screen);
@@ -1354,14 +1401,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 		        TextView myGPSLocationTextView = (TextView)findViewById(R.id.gps_location_textview);
 		        myGPSLocationTextView = (TextView) UsbongUtils.applyTagsInView(myGPSLocationTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
-		        /*
-		        if (UsbongUtils.USE_UNESCAPE) {
-		        	myGPSLocationTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
-		        }
-		        else {
-		        	myGPSLocationTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
-		        }
-*/
+
 		        final TextView myLongitudeTextView = (TextView)findViewById(R.id.longitude_textview);
             	final TextView myLatitudeTextView = (TextView)findViewById(R.id.latitude_textview);
 
@@ -1399,14 +1439,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 		        TextView myYesNoDecisionScreenTextView = (TextView)findViewById(R.id.yes_no_decision_textview);
 		        myYesNoDecisionScreenTextView = (TextView) UsbongUtils.applyTagsInView(myYesNoDecisionScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
-/*
-		        if (UsbongUtils.USE_UNESCAPE) {
-		        	myYesNoDecisionScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
-		        }
-		        else {
-		        	myYesNoDecisionScreenTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
-		        }		    	
-*/		        
+
 		        RadioButton myYesRadioButton = (RadioButton)findViewById(R.id.yes_radiobutton);
 		        myYesRadioButton.setText(yesStringValue);
 		        myYesRadioButton.setTextSize(20);
@@ -1570,16 +1603,17 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 				        if (myYesRadioButton.isChecked()) {
 							currUsbongNode = nextUsbongNodeIfYes;
-							usbongAnswerContainer.addElement("Yes;");															
+							usbongAnswerContainer.addElement("Y;");															
 							initParser();								        	
 				        }
 				        else if (myNoRadioButton.isChecked()) {
 							currUsbongNode = nextUsbongNodeIfNo; 
-							usbongAnswerContainer.addElement("No;");															
+							usbongAnswerContainer.addElement("N;");															
 							initParser();								        					        	
 				        }
 				        else { //if no radio button was checked				        	
 			    				showPleaseAnswerAlert();
+			    				return;
 				        }
 		    		}	
 		    		else if (currScreen==SEND_TO_WEBSERVER_SCREEN) {
@@ -1587,6 +1621,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        RadioButton myNoRadioButton = (RadioButton)findViewById(R.id.no_radiobutton);
 
 				        if (myYesRadioButton.isChecked()) {
+							currUsbongNode = nextUsbongNodeIfYes; 
+							usbongAnswerContainer.addElement("Y;");															
+
 				    		//"save" the output into the SDCard as "output.txt"
 				    		int usbongAnswerContainerSize = usbongAnswerContainer.size();
 				    		StringBuffer outputStringBuffer = new StringBuffer();
@@ -1601,13 +1638,17 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				    		UsbongUtils.performFileUpload(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv");
 				        }
 				        else if (myNoRadioButton.isChecked()) {
+							currUsbongNode = nextUsbongNodeIfNo; 
+							usbongAnswerContainer.addElement("N;");															
 				        }
 				        else { //if no radio button was checked				        	
 			    				showPleaseAnswerAlert();
+			    				return;
 				        }
-				        
+				        /*
 						currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
 						usbongAnswerContainer.addElement("Any;");															
+*/						
 						initParser();				
 		    		}	
 		    		else if (currScreen==SEND_TO_CLOUD_BASED_SERVICE_SCREEN) {
@@ -1615,10 +1656,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        RadioButton myNoRadioButton = (RadioButton)findViewById(R.id.no_radiobutton);
 
 				        if (myYesRadioButton.isChecked()) {
+							currUsbongNode = nextUsbongNodeIfYes; 
+							usbongAnswerContainer.addElement("Y;");															
+
 				    		//"save" the output into the SDCard as "output.txt"
 				    		int usbongAnswerContainerSize = usbongAnswerContainer.size();
 				    		StringBuffer outputStringBuffer = new StringBuffer();
-				    		for(int i=0; i<usbongAnswerContainerSize;i++) {
+				    		for(int i=0; i<usbongAnswerContainerSize; i++) {
 				    			outputStringBuffer.append(usbongAnswerContainer.elementAt(i));
 				    		}
 
@@ -1637,13 +1681,17 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				    		startActivity(Intent.createChooser(emailIntent, "Email:"));
 				        }
 				        else if (myNoRadioButton.isChecked()) {
+							currUsbongNode = nextUsbongNodeIfNo; 
+							usbongAnswerContainer.addElement("N;");															
 				        }
 				        else { //if no radio button was checked				        	
 			    				showPleaseAnswerAlert();
+			    				return;
 				        }
-				        
+/*				        
 						currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
 						usbongAnswerContainer.addElement("Any;");															
+*/						
 						initParser();				
 		    		}	
 		    		else if (currScreen==MULTIPLE_CHECKBOXES_SCREEN) {
@@ -1680,6 +1728,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    			if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
 			    			if (myRadioGroup.getCheckedRadioButtonId()==-1) { //no radio button checked
 			    				showPleaseAnswerAlert();
+			    				return;
 			    			}
 			    			else {
 				    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
@@ -1760,9 +1809,20 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    			System.out.println(">>>>>>>>>>>>>Date screen: "+usbongAnswerContainer.lastElement());
 		    			initParser();				        	
 		    		}		    		
+		    		else if (currScreen==QR_CODE_READER_SCREEN) {
+		    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
+
+		    			if (!myQRCodeContent.equals("")) {
+		    				usbongAnswerContainer.addElement("Y,"+myQRCodeContent+";");							
+		    			}
+		    			else {
+		    				usbongAnswerContainer.addElement("N;");									    				
+		    			}
+		    			initParser();				        	
+		    		}
 		    		else { //TODO: do this for now
 						currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-						usbongAnswerContainer.addElement("Any;");															
+						usbongAnswerContainer.addElement("A;");															
 						initParser();				
 		    		}
 		    	}
@@ -1922,6 +1982,55 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				startActivity(UsbongDecisionTreeEngineActivity.paintIntent);
 			}
     	});
+    }
+    
+    public void initQRCodeReaderScreen() {
+    	myQRCodeReaderName=currUsbongNode; 
+    	setContentView(R.layout.qr_code_reader_screen);
+
+    	TextView qrCodeReaderResultTextView = (TextView)findViewById(R.id.qr_code_reader_result_textview);
+    	TextView qrCodeReaderContentTextView = (TextView)findViewById(R.id.qr_code_reader_content_textview);
+    	
+    	if (!myQRCodeContent.equals("")) {
+	    	if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
+	    		qrCodeReaderResultTextView.setText((String) getResources().getText(R.string.UsbongQRCodeReaderContentResult_FILIPINO));
+	    	}
+	    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
+	    		qrCodeReaderResultTextView.setText((String) getResources().getText(R.string.UsbongQRCodeReaderContentResult_JAPANESE));				    						    		
+	    	}
+	    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
+	    		qrCodeReaderResultTextView.setText((String) getResources().getText(R.string.UsbongQRCodeReaderContentResult_ENGLISH));				    						    		
+	    	}
+
+//    		qrCodeReaderResultTextView.setText("QR Code content successfully saved!");
+    		qrCodeReaderContentTextView.setText("--\n"+myQRCodeContent);
+    	}
+    	else {
+    		if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
+	    		qrCodeReaderResultTextView.setText((String) getResources().getText(R.string.UsbongQRCodeReaderContentResultNone_FILIPINO));
+	    	}
+	    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
+	    		qrCodeReaderResultTextView.setText((String) getResources().getText(R.string.UsbongQRCodeReaderContentResultNone_JAPANESE));				    						    		
+	    	}
+	    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
+	    		qrCodeReaderResultTextView.setText((String) getResources().getText(R.string.UsbongQRCodeReaderContentResultNone_ENGLISH));				    						    		
+	    	}
+//    		qrCodeReaderResultTextView.setText("No QR Code content has been saved yet!");    		
+    	}
+
+    	qrCodeReaderButton = (Button)findViewById(R.id.qr_code_reader_button);
+    	qrCodeReaderIntent = new Intent().setClass(this, QRCodeReaderActivity.class);
+    	qrCodeReaderIntent.putExtra("myQRCodeReaderName",myQRCodeReaderName);
+    	qrCodeReaderButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivity(UsbongDecisionTreeEngineActivity.qrCodeReaderIntent);
+			}
+    	});    	
+    }
+    
+    public static void setQRCodeContent(String s) {
+    	myQRCodeContent = s;
     }
 
     public void decrementCurrScreen() {
