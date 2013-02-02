@@ -157,6 +157,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	private Vector<String> radioButtonsContainer;
 	private Vector<String> usbongAnswerContainer;
 	private Vector<String> checkBoxesContainer;
+	private Vector<String> decisionTrackerContainer; //added by Mike, Feb. 2, 2013
 
 	private String noStringValue;
 	private String yesStringValue;
@@ -186,7 +187,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	
 	private static String myQRCodeContent;
     private static boolean hasReturnedFromAnotherActivity; //camera, paint, email, etc
-			
+	private static boolean wasNextButtonPressed;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);        
@@ -216,6 +218,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     	radioButtonsContainer = new Vector<String>();
     	usbongAnswerContainer = new Vector<String>();
     	checkBoxesContainer = new Vector<String>();
+    	decisionTrackerContainer = new Vector<String>();
 
     	usedBackButton=false;
     	    	    	
@@ -468,25 +471,25 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 /*						
 					case PAINT_SCREEN:
 				    	if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
-							sb.append((String) getResources().getText(R.string.UsbongPaintScreenTextView_FILIPINO));
+							sb.append((String) getResources().getText(R.string.UsbongPaintScreenTextViewFILIPINO));
 				    	}
 				    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
-							sb.append((String) getResources().getText(R.string.UsbongPaintScreenTextView_JAPANESE));				    						    		
+							sb.append((String) getResources().getText(R.string.UsbongPaintScreenTextViewJAPANESE));				    						    		
 				    	}
 				    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
-							sb.append((String) getResources().getText(R.string.UsbongPaintScreenTextView_ENGLISH));				    						    		
+							sb.append((String) getResources().getText(R.string.UsbongPaintScreenTextViewENGLISH));				    						    		
 				    	}
 				    	break;    		
 */				    	
 					case END_STATE_SCREEN:
 				    	if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
-							sb.append((String) getResources().getText(R.string.UsbongEndStateTextView_FILIPINO));				    		
+							sb.append((String) getResources().getText(R.string.UsbongEndStateTextViewFILIPINO));				    		
 				    	}
 				    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
-							sb.append((String) getResources().getText(R.string.UsbongEndStateTextView_JAPANESE));				    						    		
+							sb.append((String) getResources().getText(R.string.UsbongEndStateTextViewJAPANESE));				    						    		
 				    	}
 				    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
-							sb.append((String) getResources().getText(R.string.UsbongEndStateTextView_ENGLISH));				    						    		
+							sb.append((String) getResources().getText(R.string.UsbongEndStateTextViewENGLISH));				    						    		
 				    	}
 				    	break;    		
 				}
@@ -577,17 +580,23 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     	currScreen=cs;
     }
     
+    /*
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-/*
-    	if (getParent()!=null) { //this means that this is a child activity in our TabActivity (i.e. MediaActivity)
+    	if (getParent()!=null) { 
 	        if (keyCode == KeyEvent.KEYCODE_BACK) {
-	        	GameActivity.getInstance().decrementCurrScreen();
-	            return super.onKeyDown(keyCode, event);
+	        	processReturnToMainMenuActivity();
+	        	return false;
 	        }
     	}
-*/    	
         return super.onKeyDown(keyCode, event);
+    }
+    */
+    
+    //added by Mike, Feb. 2, 2013
+    @Override
+	public void onBackPressed() {
+    	processReturnToMainMenuActivity();    
     }
     
     @Override
@@ -664,6 +673,11 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     //http://developer.android.com/reference/org/xmlpull/v1/XmlPullParser.html; last accessed on: Aug. 23, 2011
 	public void initParser() {
 		hasReachedEndOfAllDecisionTrees=false;
+		
+		if (wasNextButtonPressed) {
+			decisionTrackerContainer.addElement(usbongAnswerContainer.lastElement());
+			wasNextButtonPressed=false;
+		}
 
 		try {
 		  XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
@@ -691,13 +705,11 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			  //if this is the first process-definition tag
 			  else if (parser.getAttributeCount()>1) { 
 				  if ((currUsbongNode.equals("")) && (parser.getName().equals("process-definition"))) {
-//					  Log.d(">>>>>>process-definition","1");
 					  currLanguageBeingUsed=UsbongUtils.getLanguageID(parser.getAttributeValue(null, "lang"));
-//					  Log.d(">>>>>>process-definition","2: "+currLanguageBeingUsed);
-
 					  UsbongUtils.setDefaultLanguage(UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed));
-//					  System.out.println("currLanguageBeingUsed: "+currLanguageBeingUsed);				  
-//					  Log.d(">>>>>>process-definition","3");
+					  
+					  //added by Mike, Feb. 2, 2013
+					  decisionTrackerContainer.removeAllElements();					  
 				  }
 				  continue;
 			  }
@@ -1106,19 +1118,19 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        Button playButton = (Button)findViewById(R.id.play_button);
 
 		        if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
-		    		recordButton.setText((String) getResources().getText(R.string.UsbongRecordTextView_FILIPINO));				    		
-		    		stopButton.setText((String) getResources().getText(R.string.UsbongStopTextView_FILIPINO));				    		
-		    		playButton.setText((String) getResources().getText(R.string.UsbongPlayTextView_FILIPINO));				    		
+		    		recordButton.setText((String) getResources().getText(R.string.UsbongRecordTextViewFILIPINO));				    		
+		    		stopButton.setText((String) getResources().getText(R.string.UsbongStopTextViewFILIPINO));				    		
+		    		playButton.setText((String) getResources().getText(R.string.UsbongPlayTextViewFILIPINO));				    		
 		        }
 		    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
-		    		recordButton.setText((String) getResources().getText(R.string.UsbongRecordTextView_JAPANESE));				    		
-		    		stopButton.setText((String) getResources().getText(R.string.UsbongStopTextView_JAPANESE));				    		
-		    		playButton.setText((String) getResources().getText(R.string.UsbongPlayTextView_JAPANESE));				    		
+		    		recordButton.setText((String) getResources().getText(R.string.UsbongRecordTextViewJAPANESE));				    		
+		    		stopButton.setText((String) getResources().getText(R.string.UsbongStopTextViewJAPANESE));				    		
+		    		playButton.setText((String) getResources().getText(R.string.UsbongPlayTextViewJAPANESE));				    		
 		    	}
 		    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
-		    		recordButton.setText((String) getResources().getText(R.string.UsbongRecordTextView_ENGLISH));				    		
-		    		stopButton.setText((String) getResources().getText(R.string.UsbongStopTextView_ENGLISH));				    		
-		    		playButton.setText((String) getResources().getText(R.string.UsbongPlayTextView_ENGLISH));				    		
+		    		recordButton.setText((String) getResources().getText(R.string.UsbongRecordTextViewENGLISH));				    		
+		    		stopButton.setText((String) getResources().getText(R.string.UsbongStopTextViewENGLISH));				    		
+		    		playButton.setText((String) getResources().getText(R.string.UsbongPlayTextViewENGLISH));				    		
 		    	}
 
 		        /*
@@ -1142,13 +1154,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	    		Button photoCaptureButton = (Button)findViewById(R.id.photo_capture_button);
 
 		        if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
-		        	photoCaptureButton.setText((String) getResources().getText(R.string.UsbongTakePhotoTextView_FILIPINO));				    		
+		        	photoCaptureButton.setText((String) getResources().getText(R.string.UsbongTakePhotoTextViewFILIPINO));				    		
 		        }
 		    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
-		    		photoCaptureButton.setText((String) getResources().getText(R.string.UsbongTakePhotoTextView_JAPANESE));				    		
+		    		photoCaptureButton.setText((String) getResources().getText(R.string.UsbongTakePhotoTextViewJAPANESE));				    		
 		    	}
 		    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
-		    		photoCaptureButton.setText((String) getResources().getText(R.string.UsbongTakePhotoTextView_ENGLISH));				    		
+		    		photoCaptureButton.setText((String) getResources().getText(R.string.UsbongTakePhotoTextViewENGLISH));				    		
 		    	}
 		        /*
 		        if (UsbongUtils.USE_UNESCAPE) {
@@ -1172,13 +1184,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	    		Button paintButton = (Button)findViewById(R.id.paint_button);
 
 		        if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
-		        	paintButton.setText((String) getResources().getText(R.string.UsbongRunPaintTextView_FILIPINO));				    		
+		        	paintButton.setText((String) getResources().getText(R.string.UsbongRunPaintTextViewFILIPINO));				    		
 		        }
 		    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
-		    		paintButton.setText((String) getResources().getText(R.string.UsbongRunPaintTextView_JAPANESE));				    		
+		    		paintButton.setText((String) getResources().getText(R.string.UsbongRunPaintTextViewJAPANESE));				    		
 		    	}
 		    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
-		    		paintButton.setText((String) getResources().getText(R.string.UsbongRunPaintTextView_ENGLISH));				    		
+		    		paintButton.setText((String) getResources().getText(R.string.UsbongRunPaintTextViewENGLISH));				    		
 		    	}
 		    	break;		    	
 	        case QR_CODE_READER_SCREEN:
@@ -1196,13 +1208,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	    		Button qrCodeReaderButton = (Button)findViewById(R.id.qr_code_reader_button);
 
 		        if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
-		        	qrCodeReaderButton .setText((String) getResources().getText(R.string.UsbongQRCodeReaderTextView_FILIPINO));				    		
+		        	qrCodeReaderButton .setText((String) getResources().getText(R.string.UsbongQRCodeReaderTextViewFILIPINO));				    		
 		        }
 		    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
-		    		qrCodeReaderButton .setText((String) getResources().getText(R.string.UsbongQRCodeReaderTextView_JAPANESE));				    		
+		    		qrCodeReaderButton .setText((String) getResources().getText(R.string.UsbongQRCodeReaderTextViewJAPANESE));				    		
 		    	}
 		    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
-		    		qrCodeReaderButton .setText((String) getResources().getText(R.string.UsbongQRCodeReaderTextView_ENGLISH));				    		
+		    		qrCodeReaderButton .setText((String) getResources().getText(R.string.UsbongQRCodeReaderTextViewENGLISH));				    		
 		    	}		    	
 		    	break;		    	
 			case TEXTFIELD_SCREEN:
@@ -1486,13 +1498,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 		        TextView endStateTextView = (TextView)findViewById(R.id.end_state_textview);
 		    	if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
-		    		endStateTextView.setText((String) getResources().getText(R.string.UsbongEndStateTextView_FILIPINO));				    		
+		    		endStateTextView.setText((String) getResources().getText(R.string.UsbongEndStateTextViewFILIPINO));				    		
 		    	}
 		    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
-		    		endStateTextView.setText((String) getResources().getText(R.string.UsbongEndStateTextView_JAPANESE));				    						    		
+		    		endStateTextView.setText((String) getResources().getText(R.string.UsbongEndStateTextViewJAPANESE));				    						    		
 		    	}
 		    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
-		    		endStateTextView.setText((String) getResources().getText(R.string.UsbongEndStateTextView_ENGLISH));				    						    		
+		    		endStateTextView.setText((String) getResources().getText(R.string.UsbongEndStateTextViewENGLISH));				    						    		
 		    	}
 		    	initBackNextButtons();
 		        break;    	
@@ -1521,24 +1533,27 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 				usedBackButton=true;
 				
+				decisionTrackerContainer.addElement("B;");
+				
 				if (!usbongAnswerContainer.isEmpty()) {
 					usbongAnswerContainer.removeElementAt(usbongAnswerContainer.size()-1);
 				}
-				
-                usbongNodeContainer.removeElementAt(usbongNodeContainerCounter);                            
-                usbongNodeContainerCounter--;
+
+				if (!usbongNodeContainer.isEmpty()) {
+					usbongNodeContainer.removeElementAt(usbongNodeContainerCounter);                            
+	                usbongNodeContainerCounter--;
+				}
+
                 if (usbongNodeContainerCounter>=0) {
-                        currUsbongNode=(String)usbongNodeContainer.elementAt(usbongNodeContainerCounter);
+                	currUsbongNode=(String)usbongNodeContainer.elementAt(usbongNodeContainerCounter);
                 }
                 else { 
-                	//return to main activity
-		    		finish();    
-					Intent toUsbongMainActivityIntent = new Intent(UsbongDecisionTreeEngineActivity.this, UsbongMainActivity.class);
-					toUsbongMainActivityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
-					startActivity(toUsbongMainActivityIntent);
+                	processReturnToMainMenuActivity();
+/*                	initParser();
+                	return;
+*/
                 }
-                initParser();
-                return;                
+            	initParser();
 			}
     	});    
     }
@@ -1549,6 +1564,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     	nextButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				wasNextButtonPressed=true;
+				
 				if (mTts.isSpeaking()) {
 					mTts.stop();
 				}
@@ -1623,6 +1640,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        if (myYesRadioButton.isChecked()) {
 							currUsbongNode = nextUsbongNodeIfYes; 
 							usbongAnswerContainer.addElement("Y;");															
+							decisionTrackerContainer.addElement(usbongAnswerContainer.lastElement());
+							wasNextButtonPressed=false; //no need to make this true, because "Y;" has already been added to decisionTrackerContainer
 
 				    		//"save" the output into the SDCard as "output.txt"
 				    		int usbongAnswerContainerSize = usbongAnswerContainer.size();
@@ -1658,7 +1677,16 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        if (myYesRadioButton.isChecked()) {
 							currUsbongNode = nextUsbongNodeIfYes; 
 							usbongAnswerContainer.addElement("Y;");															
+							decisionTrackerContainer.addElement(usbongAnswerContainer.lastElement());
+							wasNextButtonPressed=false; //no need to make this true, because "Y;" has already been added to decisionTrackerContainer
 
+							
+							StringBuffer sb = new StringBuffer();
+							for (int i=0; i<decisionTrackerContainer.size();i++) {
+								sb.append(decisionTrackerContainer.elementAt(i));
+							}
+							Log.d(">>>>>>>>>>>>>decisionTrackerContainer", sb.toString());								
+							
 				    		//"save" the output into the SDCard as "output.txt"
 				    		int usbongAnswerContainerSize = usbongAnswerContainer.size();
 				    		StringBuffer outputStringBuffer = new StringBuffer();
@@ -1993,13 +2021,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     	
     	if (!myQRCodeContent.equals("")) {
 	    	if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
-	    		qrCodeReaderResultTextView.setText((String) getResources().getText(R.string.UsbongQRCodeReaderContentResult_FILIPINO));
+	    		qrCodeReaderResultTextView.setText((String) getResources().getText(R.string.UsbongQRCodeReaderContentResultFILIPINO));
 	    	}
 	    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
-	    		qrCodeReaderResultTextView.setText((String) getResources().getText(R.string.UsbongQRCodeReaderContentResult_JAPANESE));				    						    		
+	    		qrCodeReaderResultTextView.setText((String) getResources().getText(R.string.UsbongQRCodeReaderContentResultJAPANESE));				    						    		
 	    	}
 	    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
-	    		qrCodeReaderResultTextView.setText((String) getResources().getText(R.string.UsbongQRCodeReaderContentResult_ENGLISH));				    						    		
+	    		qrCodeReaderResultTextView.setText((String) getResources().getText(R.string.UsbongQRCodeReaderContentResultENGLISH));				    						    		
 	    	}
 
 //    		qrCodeReaderResultTextView.setText("QR Code content successfully saved!");
@@ -2007,13 +2035,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     	}
     	else {
     		if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
-	    		qrCodeReaderResultTextView.setText((String) getResources().getText(R.string.UsbongQRCodeReaderContentResultNone_FILIPINO));
+	    		qrCodeReaderResultTextView.setText((String) getResources().getText(R.string.UsbongQRCodeReaderContentResultNoneFILIPINO));
 	    	}
 	    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
-	    		qrCodeReaderResultTextView.setText((String) getResources().getText(R.string.UsbongQRCodeReaderContentResultNone_JAPANESE));				    						    		
+	    		qrCodeReaderResultTextView.setText((String) getResources().getText(R.string.UsbongQRCodeReaderContentResultNoneJAPANESE));				    						    		
 	    	}
 	    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
-	    		qrCodeReaderResultTextView.setText((String) getResources().getText(R.string.UsbongQRCodeReaderContentResultNone_ENGLISH));				    						    		
+	    		qrCodeReaderResultTextView.setText((String) getResources().getText(R.string.UsbongQRCodeReaderContentResultNoneENGLISH));				    						    		
 	    	}
 //    		qrCodeReaderResultTextView.setText("No QR Code content has been saved yet!");    		
     	}
@@ -2042,6 +2070,54 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     public void incrementCurrScreen() {
     	currScreen++;
     	initUsbongScreen();
+    }
+    
+    private void processReturnToMainMenuActivity() {
+	    	String myPromptTitle="";
+	    	String myPromptMessage="";
+	    	String myPromptPositiveButtonText="";
+	    	String myPromptNegativeButtonText="";
+	    	
+	    	if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
+	    		myPromptTitle = ((String) getResources().getText(R.string.alertFilipino));
+	    		myPromptMessage = ((String) getResources().getText(R.string.areYouSureYouWantToReturnToMainMenuFilipino));
+	    		myPromptPositiveButtonText=(String) getResources().getText(R.string.yesStringValueFilipino);
+	    		myPromptNegativeButtonText=(String) getResources().getText(R.string.noStringValueFilipino);  
+	    	}
+	    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
+	    		myPromptTitle = ((String) getResources().getText(R.string.alertJapanese));				    						    		
+	    		myPromptMessage = ((String) getResources().getText(R.string.areYouSureYouWantToReturnToMainMenuJapanese));
+	    		myPromptPositiveButtonText=(String) getResources().getText(R.string.yesStringValueJapanese);
+	    		myPromptNegativeButtonText=(String) getResources().getText(R.string.noStringValueJapanese);  
+	    	}
+	    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
+	    		myPromptTitle = ((String) getResources().getText(R.string.alertEnglish));				    						    		        	    		
+	    		myPromptMessage = ((String) getResources().getText(R.string.areYouSureYouWantToReturnToMainMenuEnglish));
+	    		myPromptPositiveButtonText=(String) getResources().getText(R.string.yesStringValueEnglish);
+	    		myPromptNegativeButtonText=(String) getResources().getText(R.string.noStringValueEnglish);  
+	    	}
+	
+	    	//added by Mike, Feb. 2, 2013
+	    	AlertDialog.Builder prompt = new AlertDialog.Builder(UsbongDecisionTreeEngineActivity.this);
+			prompt.setTitle(myPromptTitle);
+			prompt.setMessage(myPromptMessage); 
+			prompt.setPositiveButton(myPromptPositiveButtonText, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					decisionTrackerContainer.removeAllElements();
+					//return to main activity
+		    		finish();    
+					Intent toUsbongMainActivityIntent = new Intent(UsbongDecisionTreeEngineActivity.this, UsbongMainActivity.class);
+					toUsbongMainActivityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
+					startActivity(toUsbongMainActivityIntent);
+				}
+			});
+			prompt.setNegativeButton(myPromptNegativeButtonText, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+				}
+			});
+			prompt.show();
     }
     
 	private class CustomDataAdapter extends ArrayAdapter<String>
