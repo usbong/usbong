@@ -5,7 +5,7 @@
 	>	
 		<TextView android:id="@+id/end_state_textview"
 		    style="@style/UsbongDefaultTextView"	    	
-		    android:text="@string/UsbongEndStateTextView_ENGLISH"
+		    android:text="@string/UsbongEndStateTextViewENGLISH"
 		/>	
 		
 		<LinearLayout
