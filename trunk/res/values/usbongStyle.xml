@@ -218,10 +218,11 @@
         <item name="android:gravity">center_vertical|center_horizontal</item>
     </style>	   
 
-		<style name="UsbongTextImageDisplayImageView">
-		<item name="android:layout_width">fill_parent</item>
+	<style name="UsbongTextImageDisplayImageView">
+		<item name="android:layout_width">wrap_content</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:adjustViewBounds">true</item>
+		<item name="android:scaleType">fitXY</item>
     </style>	   	
 	
 	<style name="UsbongResultsTextView">
