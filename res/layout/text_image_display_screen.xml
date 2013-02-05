@@ -6,12 +6,12 @@
 	<ScrollView style="@style/UsbongDefaultScrollView"
 	>		 	
 	<LinearLayout style="@style/UsbongTextImageMainLayout">
-		<TextView android:id="@+id/text_clickable_image_display_textview"
+		<TextView android:id="@+id/text_image_display_textview"
 		    style="@style/UsbongDefaultTextView"	    	
 		    android:text="@string/default_textview" 
 		/>
 	    
-	    <ImageButton android:id="@+id/special_imageview"
+	    <ImageView android:id="@+id/image_display_imageview"
 		    style="@style/UsbongTextImageDisplayImageView"	    	
 		/>
 	</LinearLayout>	

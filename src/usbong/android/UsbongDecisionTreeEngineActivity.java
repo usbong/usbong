@@ -1473,17 +1473,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    	setContentView(R.layout.text_image_display_screen);
 		        initBackNextButtons();
 
-		        TextView mytextImageDisplayTextView = (TextView)findViewById(R.id.special_textview);
+		        TextView mytextImageDisplayTextView = (TextView)findViewById(R.id.text_image_display_textview);
 		        mytextImageDisplayTextView = (TextView) UsbongUtils.applyTagsInView(mytextImageDisplayTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
-/*
-		        if (UsbongUtils.USE_UNESCAPE) {
-		        	mytextImageDisplayTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
-		        }
-		        else {
-		        	mytextImageDisplayTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
-		        }
-*/
-		        ImageView myTextImageDisplayImageView = (ImageView)findViewById(R.id.special_imageview);		       
+		        ImageView myTextImageDisplayImageView = (ImageView)findViewById(R.id.image_display_imageview);		       
 		        
 //		        if (!UsbongUtils.setImageDisplay(myTextImageDisplayImageView, /*UsbongUtils.USBONG_TREES_FILE_PATH + */myTree+".utree/res/" +UsbongUtils.getResName(currUsbongNode))) {
 		        if (!UsbongUtils.setImageDisplay(myTextImageDisplayImageView, myTree, UsbongUtils.getResName(currUsbongNode))) {
