@@ -1,21 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	style="@style/UsbongSpecialParentLayout"
-	android:id="@+id/parent_layout_id"       	
+	android:id="@+id/parent_layout_id"       
 	>
-	<ScrollView style="@style/UsbongDefaultScrollView"
-	>		 	
-	<LinearLayout style="@style/UsbongTextImageMainLayout">
-		<TextView android:id="@+id/text_clickable_image_display_textview"
-		    style="@style/UsbongDefaultTextView"	    	
-		    android:text="@string/default_textview" 
+	<LinearLayout style="@style/UsbongSpecialImageMainLayout">
+		<ImageButton android:id="@+id/clickable_image_display_imagebutton"
+		    style="@style/UsbongDefaultImageView"	    	
 		/>
-	    
-	    <ImageButton android:id="@+id/special_imageview"
-		    style="@style/UsbongTextImageDisplayImageView"	    	
-		/>
-	</LinearLayout>	
-	</ScrollView>	    	        
+	</LinearLayout>
 	<LinearLayout
 		style="@style/UsbongDefaultBackNextButtonLayout">	
 	    <Button android:id="@+id/back_button"
