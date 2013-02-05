@@ -61,10 +61,10 @@ import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class UsbongUtils {		
 	public static boolean IS_IN_DEBUG_MODE=false;
@@ -293,7 +293,7 @@ public class UsbongUtils {
         }
     }
     
-    //This methods removes ~
+    //This methods gets the last string token element using '~' as delimeter
     //example: <task-node name="radioButtons~1~Life is good">
     //becomes "Life is good"
     public static String trimUsbongNodeName(String currUsbongNode) {
@@ -305,6 +305,21 @@ public class UsbongUtils {
 		return myStringToken;
     }
 
+    //This methods gets the second to the last string token element using '~' as delimeter
+    //example: <task-node name="textClickableImageDisplay~frame_1~You've just clicked the image!~Life is good">
+    //becomes "Life is good"
+    public static String getAlertName(String currUsbongNode) {
+		StringTokenizer st = new StringTokenizer(currUsbongNode, "~");
+		String myStringToken = st.nextToken();
+		String myPreviousStringToken="";
+		while (st.hasMoreTokens()) {
+			myPreviousStringToken = myStringToken;
+			myStringToken = st.nextToken(); 
+		}
+		return myPreviousStringToken;
+    }
+
+    
     //This methods gets the name of the image resource
     //example: <task-node name="textImageDisplay~frame_13~Happy Mike">
     //becomes "frame_13"
@@ -913,6 +928,29 @@ public class UsbongUtils {
         return false; //not successful!
     }
 
+    public static boolean setClickableImageDisplay(ImageButton myImageButton, String myTree, String resFileName) {
+    	String path = getPathOfImageFile(myTree, resFileName);
+        if(!path.equals("null"))
+        {
+        	System.out.println(">>>>>>>>>>>>>>>>>> INSIDE!!!");                	
+        	Bitmap myBitmap = BitmapFactory.decodeFile(path);
+        	if(myBitmap != null)
+        	{
+        		//Reference: CommonsWare and Doomsknight's answer from:
+        		//http://stackoverflow.com/questions/13103484/how-can-i-set-a-bitmap-on-button;
+        		//last accessed: 4 Feb 2013
+        		myImageButton.setImageBitmap(myBitmap);
+        	}
+        	else {
+        		return false;
+        	}
+        	//Read more: http://www.brighthub.com/mobile/google-android/articles/64048.aspx#ixzz0yXLCazcU                	  
+        	return true; //success!
+        }
+        return false; //not successful!
+    }
+
+    
     //supports .png and .jpg
     public static boolean setBackgroundImage(View myLayout, String myTree, String resFileName) {
     	String path = getPathOfImageFile(myTree, resFileName);
@@ -1048,12 +1086,9 @@ public class UsbongUtils {
 
         fileOrDirectory.delete();
     }
-
-	//added by Mike, Sept. 27, 2012
-	//answer from Chistopher, stackoverflow
-	//Reference: http://stackoverflow.com/questions/2730706/highlighting-text-color-using-html-fromhtml-in-android;
-	//last accessed: 19 Sept. 2012
-    public static View applyTagsInView(View myView, int type, String myCurrUsbongNode) {
+    
+    //added by Mike, Feb. 4, 2013
+    public static Spanned applyTagsInString(String myCurrUsbongNode) {
     	String styledText;
 
     	if (USE_UNESCAPE) {
@@ -1069,9 +1104,20 @@ public class UsbongUtils {
     	//keep the curly braces for <indent>
 //    	styledText = styledText.replaceAll("<indent>", "{indent}");//"\u0020\u0020\u0020\u0020\u0020");					
     	styledText = processIndent(styledText);
-    	
-		Spanned mySpanned = Html.fromHtml(styledText);
+    
+    	Spanned mySpanned = Html.fromHtml(styledText);
+//		return styledText;
+    	return mySpanned;
+    }
 
+	//added by Mike, Sept. 27, 2012
+	//answer from Chistopher, stackoverflow
+	//Reference: http://stackoverflow.com/questions/2730706/highlighting-text-color-using-html-fromhtml-in-android;
+	//last accessed: 19 Sept. 2012
+    public static View applyTagsInView(View myView, int type, String myCurrUsbongNode) {
+//    	String styledText = applyTagsInString(myCurrUsbongNode);
+//    	Spanned mySpanned = Html.fromHtml(styledText);
+    	Spanned mySpanned = applyTagsInString(myCurrUsbongNode);
 		switch(type) {
 			case IS_TEXTVIEW:
 				((TextView)myView).setText(mySpanned, TextView.BufferType.SPANNABLE);

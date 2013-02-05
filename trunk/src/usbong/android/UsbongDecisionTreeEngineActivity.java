@@ -51,6 +51,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
 import android.text.InputType;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -69,6 +70,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -96,8 +98,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	public static final int PHOTO_CAPTURE_SCREEN=4;	
 	public static final int TEXTFIELD_SCREEN=5;	
 	public static final int TEXTFIELD_WITH_UNIT_SCREEN=6;	
-	public static final int TEXT_DISPLAY_SCREEN=7;	//change to textDisplay
-	public static final int IMAGE_DISPLAY_SCREEN=8;	 //change to imageDisplay
+	public static final int TEXT_DISPLAY_SCREEN=7;	
+	public static final int IMAGE_DISPLAY_SCREEN=8;
 	public static final int TEXT_IMAGE_DISPLAY_SCREEN=9;
 	public static final int CLASSIFICATION_SCREEN=10;		
 	public static final int DATE_SCREEN=11;	
@@ -108,7 +110,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	public static final int SEND_TO_CLOUD_BASED_SERVICE_SCREEN=16;	
 	public static final int PAINT_SCREEN=17;
 	public static final int QR_CODE_READER_SCREEN=18;
-	public static final int END_STATE_SCREEN=19;		
+	public static final int CLICKABLE_IMAGE_DISPLAY_SCREEN=19;
+	public static final int TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN=20;
+	public static final int END_STATE_SCREEN=21;		
 	
 	private static int currScreen=TEXTFIELD_SCREEN;
 	
@@ -458,6 +462,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        sb.append(((TextView) UsbongUtils.applyTagsInView(new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
 //				        Log.d(">>>>sb",sb.toString());
 				        break;
+					case CLICKABLE_IMAGE_DISPLAY_SCREEN:				       
 					case IMAGE_DISPLAY_SCREEN:
 					case VIDEO_FROM_FILE_SCREEN:							
 				        break;    	
@@ -504,7 +509,6 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        mTts.setEngineByPackageName("com.svox.classic"); //note: this method is already deprecated
 						mTts.setLanguage(new Locale("ja", "ja_JP"));
 						mTts.speak(sb.toString(), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
-						Log.d(">>>>inside LANGUAGE_JAPANESE:","dito");
 						break;
 					case UsbongUtils.LANGUAGE_ENGLISH:
 						mTts.setLanguage(new Locale("eng", "EN"));
@@ -960,9 +964,21 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 									parseYesNoAnswers(parser);
 								}
+								else if (myStringToken.equals("clickableImageDisplay")) { 
+									parser.nextTag(); //go to transition tag
+									currScreen=CLICKABLE_IMAGE_DISPLAY_SCREEN;
+
+									parseYesNoAnswers(parser);
+								}
 								else if (myStringToken.equals("textImageDisplay")) { //special?
 									parser.nextTag(); //go to transition tag
 									currScreen=TEXT_IMAGE_DISPLAY_SCREEN;
+
+									parseYesNoAnswers(parser);
+								}
+								else if (myStringToken.equals("textClickableImageDisplay")) { 
+									parser.nextTag(); //go to transition tag
+									currScreen=TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
@@ -1370,6 +1386,76 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			        myImageDisplayScreenImageView.setImageDrawable(myDrawableImage);		        		        	
 		        }		        
 		        break;    	
+			case CLICKABLE_IMAGE_DISPLAY_SCREEN:
+		    	setContentView(R.layout.clickable_image_display_screen);
+		        initBackNextButtons();
+		        ImageButton myClickableImageDisplayScreenImageButton = (ImageButton)findViewById(R.id.clickable_image_display_imagebutton);		       
+		        
+		        if (!UsbongUtils.setClickableImageDisplay(myClickableImageDisplayScreenImageButton, myTree, UsbongUtils.getResName(currUsbongNode))) {
+		        //Reference: http://www.anddev.org/tinytut_-_get_resources_by_name__getidentifier_-t460.html; last accessed 14 Sept 2011
+//			        Resources myRes = getResources();
+			        myDrawableImage = myRes.getDrawable(myRes.getIdentifier("no_image", "drawable", myPackageName));
+			        myClickableImageDisplayScreenImageButton.setBackgroundDrawable(myDrawableImage);		        		        	
+		        }		  
+		        myClickableImageDisplayScreenImageButton.setOnClickListener(new OnClickListener() {
+	                @Override
+	                public void onClick(View v) {
+//	                	myMessage = UsbongUtils.applyTagsInString(currUsbongNode).toString();	    				
+	                	
+	                	TextView tv = (TextView) UsbongUtils.applyTagsInView(new TextView(UsbongDecisionTreeEngineActivity.getInstance()), UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+	                	if (tv.toString().equals("")) {
+	                		tv.setText("No message.");
+	                	}
+
+	                	new AlertDialog.Builder(UsbongDecisionTreeEngineActivity.this).setTitle("Hey!")
+//	            		.setMessage(myMessage)
+	            		.setView(tv)
+	            		.setPositiveButton("OK", new DialogInterface.OnClickListener() {					
+	            			@Override
+	            			public void onClick(DialogInterface dialog, int which) {	            				
+	            			}
+	            		}).show();
+	                }
+		        });
+		        break;    			        
+			case TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN:
+		    	setContentView(R.layout.text_clickable_image_display_screen);
+		        initBackNextButtons();
+
+		        TextView myTextClickableImageDisplayTextView = (TextView)findViewById(R.id.text_clickable_image_display_textview);
+		        myTextClickableImageDisplayTextView = (TextView) UsbongUtils.applyTagsInView(myTextClickableImageDisplayTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+
+		        
+		        ImageButton myTextClickableImageDisplayScreenImageButton = (ImageButton)findViewById(R.id.clickable_image_display_imagebutton);	
+		        
+		        if (!UsbongUtils.setClickableImageDisplay(myTextClickableImageDisplayScreenImageButton, myTree, UsbongUtils.getResName(currUsbongNode))) {
+		        //Reference: http://www.anddev.org/tinytut_-_get_resources_by_name__getidentifier_-t460.html; last accessed 14 Sept 2011
+//			        Resources myRes = getResources();
+			        myDrawableImage = myRes.getDrawable(myRes.getIdentifier("no_image", "drawable", myPackageName));
+			        myTextClickableImageDisplayScreenImageButton.setBackgroundDrawable(myDrawableImage);		        		        	
+		        }		  
+		        myTextClickableImageDisplayScreenImageButton.setOnClickListener(new OnClickListener() {
+	                @Override
+	                public void onClick(View v) {
+//	                	myMessage = UsbongUtils.applyTagsInString(currUsbongNode).toString();	    				
+	                	
+	                	TextView tv = (TextView) UsbongUtils.applyTagsInView(new TextView(UsbongDecisionTreeEngineActivity.getInstance()), UsbongUtils.IS_TEXTVIEW, UsbongUtils.getAlertName(currUsbongNode));
+	                	if (tv.toString().equals("")) {
+	                		tv.setText("No message.");
+	                	}
+
+	                	new AlertDialog.Builder(UsbongDecisionTreeEngineActivity.this).setTitle("Hey!")
+//	            		.setMessage(myMessage)
+	            		.setView(tv)
+	            		.setPositiveButton("OK", new DialogInterface.OnClickListener() {					
+	            			@Override
+	            			public void onClick(DialogInterface dialog, int which) {	            				
+	            			}
+	            		}).show();
+	                }
+		        });
+		        break;    	
+
 			case VIDEO_FROM_FILE_SCREEN:
 		    	setContentView(R.layout.video_from_file_screen);
 		        initBackNextButtons();
@@ -1601,7 +1687,10 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    		myOutputDirectory=UsbongUtils.getTimeStamp()+"/";
 //		    		System.out.println(">>>>>>>>>>>>> outputStringBuffer: " + outputStringBuffer.toString());
 		    		UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv", outputStringBuffer.toString());
-/*
+
+					wasNextButtonPressed=false; //no need to make this true, because this is the last node
+		    		
+		    		/*
 		    		//send to server
 		    		UsbongUtils.performFileUpload(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv");
 		    		 
@@ -1679,7 +1768,6 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 							usbongAnswerContainer.addElement("Y;");															
 							decisionTrackerContainer.addElement(usbongAnswerContainer.lastElement());
 							wasNextButtonPressed=false; //no need to make this true, because "Y;" has already been added to decisionTrackerContainer
-
 							
 							StringBuffer sb = new StringBuffer();
 							for (int i=0; i<decisionTrackerContainer.size();i++) {
