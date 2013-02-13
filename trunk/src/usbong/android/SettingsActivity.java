@@ -91,7 +91,7 @@ public class SettingsActivity extends Activity {
 		}
 		
     	String pressTheMenuButtonToSaveStringValue = (String) getResources().getText(R.string.pressTheMenuButtonToSaveStringValue);
-    	String alertString = (String) getResources().getText(R.string.alertStringValue);
+    	String alertString = (String) getResources().getText(R.string.alertStringValueEnglish);
 
     	new AlertDialog.Builder(SettingsActivity.this).setTitle(alertString)
 		.setMessage(pressTheMenuButtonToSaveStringValue)
@@ -119,9 +119,11 @@ public class SettingsActivity extends Activity {
 				PrintWriter out = UsbongUtils.getFileFromSDCardAsWriter(UsbongUtils.BASE_FILE_PATH + "usbong.config");
 				if (myDebugModeCheckBox.isChecked()) {
 		    		out.println("IS_IN_DEBUG_MODE=ON");
+		    		UsbongUtils.setDebugMode(true);
 				}
 				else {
 		    		out.println("IS_IN_DEBUG_MODE=OFF");					
+		    		UsbongUtils.setDebugMode(false);
 				}
 
 				if (myDestinationURLCheckBox.isChecked()) {
