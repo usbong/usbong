@@ -98,23 +98,29 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	public static final int PHOTO_CAPTURE_SCREEN=4;	
 	public static final int TEXTFIELD_SCREEN=5;	
 	public static final int TEXTFIELD_WITH_UNIT_SCREEN=6;	
-	public static final int TEXT_DISPLAY_SCREEN=7;	
-	public static final int IMAGE_DISPLAY_SCREEN=8;
-	public static final int TEXT_IMAGE_DISPLAY_SCREEN=9;
-	public static final int CLASSIFICATION_SCREEN=10;		
-	public static final int DATE_SCREEN=11;	
-	public static final int GPS_LOCATION_SCREEN=12;		
-	public static final int VIDEO_FROM_FILE_SCREEN=13;	
-	public static final int LINK_SCREEN=14;			
-	public static final int SEND_TO_WEBSERVER_SCREEN=15;		
-	public static final int SEND_TO_CLOUD_BASED_SERVICE_SCREEN=16;	
-	public static final int PAINT_SCREEN=17;
-	public static final int QR_CODE_READER_SCREEN=18;
-	public static final int CLICKABLE_IMAGE_DISPLAY_SCREEN=19;
-	public static final int TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN=20;
-	public static final int END_STATE_SCREEN=21;		
+	public static final int TEXTFIELD_NUMERICAL_SCREEN=7;
+	public static final int TEXTAREA_SCREEN=8;
+	public static final int TEXT_DISPLAY_SCREEN=9;	
+	public static final int IMAGE_DISPLAY_SCREEN=10;
+	public static final int TEXT_IMAGE_DISPLAY_SCREEN=11;
+	public static final int CLASSIFICATION_SCREEN=12;		
+	public static final int DATE_SCREEN=13;	
+	public static final int GPS_LOCATION_SCREEN=14;		
+	public static final int VIDEO_FROM_FILE_SCREEN=15;	
+	public static final int LINK_SCREEN=16;			
+	public static final int SEND_TO_WEBSERVER_SCREEN=17;		
+	public static final int SEND_TO_CLOUD_BASED_SERVICE_SCREEN=18;	
+	public static final int PAINT_SCREEN=19;
+	public static final int QR_CODE_READER_SCREEN=20;
+	public static final int CLICKABLE_IMAGE_DISPLAY_SCREEN=21;
+	public static final int TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN=22;
+	public static final int END_STATE_SCREEN=23;		
 	
 	private static int currScreen=TEXTFIELD_SCREEN;
+	
+	public static final int PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE=0;
+	public static final int PLEASE_ANSWER_FIELD_ALERT_TYPE=1;
+
 	
 	private Button backButton;
 	private Button nextButton;	
@@ -192,6 +198,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	private static String myQRCodeContent;
     private static boolean hasReturnedFromAnotherActivity; //camera, paint, email, etc
 	private static boolean wasNextButtonPressed;
+	
+	private static boolean isAnOptionalNode;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -277,7 +285,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		treesListView.setAdapter(mCustomAdapter);
 
     	String pleaseMakeSureThatXMLTreeExistsString = (String) getResources().getText(R.string.pleaseMakeSureThatXMLTreeExistsString);
-    	String alertString = (String) getResources().getText(R.string.alertStringValue);
+    	String alertString = (String) getResources().getText(R.string.alertStringValueEnglish);
 
 		if (listOfTreesArrayList.isEmpty()){
         	new AlertDialog.Builder(UsbongDecisionTreeEngineActivity.this).setTitle(alertString)
@@ -444,6 +452,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			    		break;
 					case TEXTFIELD_SCREEN:
 					case TEXTFIELD_WITH_UNIT_SCREEN:
+					case TEXTFIELD_NUMERICAL_SCREEN:
+					case TEXTAREA_SCREEN:
 				        sb.append(((TextView) UsbongUtils.applyTagsInView(new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
 				        break;    	
 					case CLASSIFICATION_SCREEN:
@@ -931,7 +941,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 									parseYesNoAnswers(parser);
 								}
 								else if (myStringToken.equals("textFieldWithUnit")) { 
-									//<task-node name="textField~Days~For how many days?">
+									//<task-node name="textFieldWithUnit~Days~For how many days?">
 									//  <transition to="Does the child have wheezing? (child must be calm)" name="Any"></transition>
 									//</task-node>
 									parser.nextTag(); //go to transition tag
@@ -940,6 +950,25 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 									
 									parseYesNoAnswers(parser);
 								}																								
+								else if (myStringToken.equals("textFieldNumerical")) { 
+									//<task-node name="textFieldNumerical~PatientID">
+									//  <transition to="Does the child have wheezing? (child must be calm)" name="Any"></transition>
+									//</task-node>
+									parser.nextTag(); //go to transition tag
+									currScreen=TEXTFIELD_NUMERICAL_SCREEN;
+									
+									parseYesNoAnswers(parser);
+								}																								
+								else if (myStringToken.equals("textArea")) { 
+									//<task-node name="textArea~Comments">
+									//  <transition to="Does the child have wheezing? (child must be calm)" name="Any"></transition>
+									//</task-node>
+									parser.nextTag(); //go to transition tag
+									currScreen=TEXTAREA_SCREEN;
+									
+									parseYesNoAnswers(parser);
+								}
+
 								else if (myStringToken.equals("date")) { //special?
 									//<task-node name="date~Birthday">
 									//  <transition to="Address" name="Any"></transition>
@@ -1049,6 +1078,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
         //Reference: http://www.anddev.org/tinytut_-_get_resources_by_name__getidentifier_-t460.html; last accessed 14 Sept 2011
         Resources myRes = getResources();
         Drawable myDrawableImage;
+        
+        //added by Mike, Feb. 13, 2013
+        isAnOptionalNode = UsbongUtils.isAnOptionalNode(currUsbongNode);
 
 		switch(currScreen) {
 	    	case MULTIPLE_RADIO_BUTTONS_SCREEN:
@@ -1239,34 +1271,38 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 		        TextView myTextFieldScreenTextView = (TextView)findViewById(R.id.textfield_textview);
 		        myTextFieldScreenTextView = (TextView) UsbongUtils.applyTagsInView(myTextFieldScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
-/*
-		        if (UsbongUtils.USE_UNESCAPE) {
-		        	myTextFieldScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
-		        }
-		        else {
-		        	myTextFieldScreenTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
-		        }
-*/		        
+
+		        EditText myTextFieldScreenEditText = (EditText)findViewById(R.id.textfield_edittext);
+		        break;    	
+			case TEXTAREA_SCREEN:
+		    	setContentView(R.layout.textarea_screen);
+		        initBackNextButtons();
+
+		        TextView myTextAreaScreenTextView = (TextView)findViewById(R.id.textarea_textview);
+		        myTextAreaScreenTextView = (TextView) UsbongUtils.applyTagsInView(myTextAreaScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+
+		        EditText myTextAreaScreenEditText = (EditText)findViewById(R.id.textarea_edittext);
 		        break;    	
 			case TEXTFIELD_WITH_UNIT_SCREEN:
 		    	setContentView(R.layout.textfield_with_unit_screen);
 		        initBackNextButtons();
-
+		        
 		        TextView myTextFieldWithUnitScreenTextView = (TextView)findViewById(R.id.textfield_textview);
 		        myTextFieldWithUnitScreenTextView = (TextView) UsbongUtils.applyTagsInView(myTextFieldWithUnitScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
-/*
-		        if (UsbongUtils.USE_UNESCAPE) {
-		        	myTextFieldWithUnitScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
-		        }
-		        else {
-		        	myTextFieldWithUnitScreenTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
-		        }
-*/		        
-		        TextView myEditText = (TextView)findViewById(R.id.textfield_edittext);
+		        EditText myEditText = (EditText)findViewById(R.id.textfield_edittext);
 		        myEditText.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);
 
 		        TextView myUnitScreenTextView = (TextView)findViewById(R.id.textfieldunit_textview);
 		        myUnitScreenTextView.setText(textFieldUnit);		        		        
+		        break;    	
+			case TEXTFIELD_NUMERICAL_SCREEN:
+		    	setContentView(R.layout.textfield_screen);
+		        initBackNextButtons();
+
+		        TextView myTextFieldNumericalScreenTextView = (TextView)findViewById(R.id.textfield_textview);
+		        myTextFieldNumericalScreenTextView = (TextView) UsbongUtils.applyTagsInView(myTextFieldNumericalScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+		        EditText myTextFieldNumericalScreenEditText = (EditText)findViewById(R.id.textfield_edittext);
+		        myTextFieldNumericalScreenEditText.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);
 		        break;    	
 			case CLASSIFICATION_SCREEN:
 		    	setContentView(R.layout.classification_screen);
@@ -1330,10 +1366,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    	Spinner dateMonthSpinner = (Spinner) findViewById(R.id.date_month_spinner);
 		        monthAdapter = ArrayAdapter.createFromResource(
 		                this, R.array.months_array, android.R.layout.simple_spinner_item);
-		        monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+/*		        monthAdapter = ArrayAdapter.createFromResource(
+                this, R.array.months_array, R.layout.date_textview);
+*/                
+		    	monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		        dateMonthSpinner.setAdapter(monthAdapter);
 		        dateMonthSpinner.setSelection(month);
-		        System.out.println(">>>>>>>>>>>>>> month"+month);
+//		        System.out.println(">>>>>>>>>>>>>> month"+month);
 		        //-------------------------------------
 		        
 		        //day----------------------------------
@@ -1347,7 +1386,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        dayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		        dateDaySpinner.setAdapter(dayAdapter);		
 		        dateDaySpinner.setSelection(day);
-		        System.out.println(">>>>>>>>>>>>>> day"+day);
+//		        System.out.println(">>>>>>>>>>>>>> day"+day);
 		        //-------------------------------------
 
 		        //year---------------------------------
@@ -1710,8 +1749,16 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 							initParser();								        					        	
 				        }
 				        else { //if no radio button was checked				        	
-			    				showPleaseAnswerAlert();
-			    				return;
+				        		if (!isAnOptionalNode) {
+			    					showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
+			    					wasNextButtonPressed=false;
+			    					return;
+				        		}
+				        		else {
+						    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+									usbongAnswerContainer.addElement("A;");															
+									initParser();				
+				        		}
 				        }
 		    		}	
 		    		else if (currScreen==SEND_TO_WEBSERVER_SCREEN) {
@@ -1742,8 +1789,16 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 							usbongAnswerContainer.addElement("N;");															
 				        }
 				        else { //if no radio button was checked				        	
-			    				showPleaseAnswerAlert();
-			    				return;
+			        		if (!isAnOptionalNode) {
+				        		showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
+		    					wasNextButtonPressed=false;
+		    					return;
+			        		}
+			        		else {
+					    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+								usbongAnswerContainer.addElement("A;");															
+								initParser();				
+			        		}
 				        }
 				        /*
 						currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
@@ -1793,8 +1848,16 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 							usbongAnswerContainer.addElement("N;");															
 				        }
 				        else { //if no radio button was checked				        	
-			    				showPleaseAnswerAlert();
-			    				return;
+			        		if (!isAnOptionalNode) {
+			        			showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
+		    					wasNextButtonPressed=false;
+		    					return;
+			        		}
+			        		else {
+					    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+								usbongAnswerContainer.addElement("A;");															
+								initParser();				
+			        		}
 				        }
 /*				        
 						currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
@@ -1835,8 +1898,16 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 		    			if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
 			    			if (myRadioGroup.getCheckedRadioButtonId()==-1) { //no radio button checked
-			    				showPleaseAnswerAlert();
-			    				return;
+				        		if (!isAnOptionalNode) {
+				    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
+			    					wasNextButtonPressed=false;
+				    				return;
+				        		}
+				        		else {
+						    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+									usbongAnswerContainer.addElement("A;");															
+									initParser();				
+				        		}
 			    			}
 			    			else {
 				    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
@@ -1862,7 +1933,16 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    			}		    			
 //		    			if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
 			    			if (myRadioGroup.getCheckedRadioButtonId()==-1) { //no radio button checked
-			    				showPleaseAnswerAlert();
+				        		if (!isAnOptionalNode) {
+				    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
+			    					wasNextButtonPressed=false;
+			    					return;
+				        		}
+				        		else {
+						    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+									usbongAnswerContainer.addElement("A;");															
+									initParser();				
+				        		}
 			    			}
 			    			else {
 				    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
@@ -1876,16 +1956,25 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 */		    			
 		    		}
 		    		else if ((currScreen==TEXTFIELD_SCREEN) 
-		    				|| (currScreen==TEXTFIELD_WITH_UNIT_SCREEN)) {
+		    				|| (currScreen==TEXTFIELD_WITH_UNIT_SCREEN)
+		    				|| (currScreen==TEXTFIELD_NUMERICAL_SCREEN)) {
 		    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
-				        TextView myTextFieldScreenEditText = (TextView)findViewById(R.id.textfield_edittext);
+				        EditText myTextFieldScreenEditText = (EditText)findViewById(R.id.textfield_edittext);
 
 				        if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
 					        //if it's blank
 			    			if (myTextFieldScreenEditText.getText().toString().trim().equals("")) {
-			    				showPleaseAnswerAlert();
-	
-							}
+				        		if (!isAnOptionalNode) {
+				    				showRequiredFieldAlert(PLEASE_ANSWER_FIELD_ALERT_TYPE);
+			    					wasNextButtonPressed=false;
+			    					return;
+				        		}
+				        		else {
+						    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+									usbongAnswerContainer.addElement("A;");															
+									initParser();				
+				        		}
+			    			}
 							else {
 								usbongAnswerContainer.addElement(myTextFieldScreenEditText.getText()+";");							
 								initParser();
@@ -1893,6 +1982,34 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        }
 				        else {
 							usbongAnswerContainer.addElement(myTextFieldScreenEditText.getText()+";");							
+							initParser();				        	
+				        }
+		    		}
+		    		else if ((currScreen==TEXTAREA_SCREEN)) {
+		    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
+				        EditText myTextAreaScreenEditText = (EditText)findViewById(R.id.textarea_edittext);
+
+				        if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
+					        //if it's blank
+			    			if (myTextAreaScreenEditText.getText().toString().trim().equals("")) {
+				        		if (!isAnOptionalNode) {
+				    				showRequiredFieldAlert(PLEASE_ANSWER_FIELD_ALERT_TYPE);
+			    					wasNextButtonPressed=false;
+			    					return;
+				        		}
+				        		else {
+						    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+									usbongAnswerContainer.addElement("A;");															
+									initParser();				
+				        		}
+			    			}
+							else {
+								usbongAnswerContainer.addElement(myTextAreaScreenEditText.getText()+";");							
+								initParser();
+							}
+				        }
+				        else {
+							usbongAnswerContainer.addElement(myTextAreaScreenEditText.getText()+";");							
 							initParser();				        	
 				        }
 		    		}
@@ -1928,11 +2045,11 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    			}
 		    			initParser();				        	
 		    		}
-		    		else { //TODO: do this for now
-						currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+		    		else { //TODO: do this for now		    		
+		    			currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
 						usbongAnswerContainer.addElement("A;");															
 						initParser();				
-		    		}
+		    		}		    		
 		    	}
 			}
     	});
@@ -2159,19 +2276,19 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	    	String myPromptNegativeButtonText="";
 	    	
 	    	if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
-	    		myPromptTitle = ((String) getResources().getText(R.string.alertFilipino));
+	    		myPromptTitle = ((String) getResources().getText(R.string.alertStringValueFilipino));
 	    		myPromptMessage = ((String) getResources().getText(R.string.areYouSureYouWantToReturnToMainMenuFilipino));
 	    		myPromptPositiveButtonText=(String) getResources().getText(R.string.yesStringValueFilipino);
 	    		myPromptNegativeButtonText=(String) getResources().getText(R.string.noStringValueFilipino);  
 	    	}
 	    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
-	    		myPromptTitle = ((String) getResources().getText(R.string.alertJapanese));				    						    		
+	    		myPromptTitle = ((String) getResources().getText(R.string.alertStringValueJapanese));				    						    		
 	    		myPromptMessage = ((String) getResources().getText(R.string.areYouSureYouWantToReturnToMainMenuJapanese));
 	    		myPromptPositiveButtonText=(String) getResources().getText(R.string.yesStringValueJapanese);
 	    		myPromptNegativeButtonText=(String) getResources().getText(R.string.noStringValueJapanese);  
 	    	}
 	    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
-	    		myPromptTitle = ((String) getResources().getText(R.string.alertEnglish));				    						    		        	    		
+	    		myPromptTitle = ((String) getResources().getText(R.string.alertStringValueEnglish));				    						    		        	    		
 	    		myPromptMessage = ((String) getResources().getText(R.string.areYouSureYouWantToReturnToMainMenuEnglish));
 	    		myPromptPositiveButtonText=(String) getResources().getText(R.string.yesStringValueEnglish);
 	    		myPromptNegativeButtonText=(String) getResources().getText(R.string.noStringValueEnglish);  
@@ -2244,18 +2361,53 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
         }
 	}
 	
-	public void showPleaseAnswerAlert() {
-		String pleaseChooseAnAnswerString = (String) getResources().getText(R.string.pleaseChooseAnAnswerStringValue);
-    	String alertString = (String) getResources().getText(R.string.alertStringValue);
+	public void showRequiredFieldAlert(int type) {
+		String requiredFieldAlertString="";
+		String alertString = "";
+		
+		switch(type) {
+			case PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE:
+		        if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
+		        	requiredFieldAlertString = (String) getResources().getText(R.string.pleaseChooseAnAnswerStringValueFilipino);
+		        }
+		        else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
+		        	requiredFieldAlertString = (String) getResources().getText(R.string.pleaseChooseAnAnswerStringValueJapanese);
+		        }
+		        else {
+		        	requiredFieldAlertString = (String) getResources().getText(R.string.pleaseChooseAnAnswerStringValue);		        	
+		        }
+		        break;
+			case PLEASE_ANSWER_FIELD_ALERT_TYPE:
+		        if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
+		        	requiredFieldAlertString = (String) getResources().getText(R.string.pleaseAnswerFieldStringValueFilipino);
+		        }
+		        else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
+		        	requiredFieldAlertString = (String) getResources().getText(R.string.pleaseAnswerFieldStringValueJapanese);
+		        }
+		        else {
+		        	requiredFieldAlertString = (String) getResources().getText(R.string.pleaseAnswerFieldStringValue);		        	
+		        }
+				break;
+		}
+		requiredFieldAlertString = "{big}"+requiredFieldAlertString+"{/big}";
 
-    	if (UsbongUtils.USE_UNESCAPE) {
-    		pleaseChooseAnAnswerString = StringEscapeUtils.unescapeJava(pleaseChooseAnAnswerString);
-    		alertString = StringEscapeUtils.unescapeJava(alertString);
-    	}
+        if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
+    		alertString = (String) getResources().getText(R.string.alertStringValueFilipino);
+        }
+        else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
+    		alertString = (String) getResources().getText(R.string.alertStringValueJapanese);
+        }
+        else {
+    		alertString = (String) getResources().getText(R.string.alertStringValueEnglish);
+        }
     	
-    	new AlertDialog.Builder(UsbongDecisionTreeEngineActivity.this).setTitle(alertString)
-		.setMessage(pleaseChooseAnAnswerString)
-		.setPositiveButton("OK", new DialogInterface.OnClickListener() {					
+    	TextView requiredFieldAlertStringTextView = (TextView) UsbongUtils.applyTagsInView(new TextView(UsbongDecisionTreeEngineActivity.getInstance()), UsbongUtils.IS_TEXTVIEW, requiredFieldAlertString);
+    	TextView alertStringTextView = (TextView) UsbongUtils.applyTagsInView(new TextView(UsbongDecisionTreeEngineActivity.getInstance()), UsbongUtils.IS_TEXTVIEW, alertString);
+    	
+    	new AlertDialog.Builder(UsbongDecisionTreeEngineActivity.this).setTitle(alertStringTextView.getText().toString())
+//		.setMessage(requiredFieldAlertStringTextView.toString())
+		.setView(requiredFieldAlertStringTextView)
+    	.setPositiveButton("OK", new DialogInterface.OnClickListener() {					
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 			}

@@ -78,7 +78,6 @@ public class UsbongUtils {
 	public static final int LANGUAGE_FILIPINO=1;
 	public static final int LANGUAGE_JAPANESE=2;
 	
-	
 	private static String destinationServerURL;
 	
 	public static final String debug_username="usbong";
@@ -98,6 +97,11 @@ public class UsbongUtils {
 	public static String usbongSetLanguage=usbongDefaultLanguage; //default is English
 		
 	public static final boolean USE_UNESCAPE=true; //allows the use of \n (new line) in the decision tree
+	
+	//added by Mike, Feb. 11, 2013
+	public static void setDebugMode(boolean b) {
+		IS_IN_DEBUG_MODE=b;
+	}
 	
 	//Reference: Andrei Buneyeu's answer in http://stackoverflow.com/questions/1819142/how-should-i-validate-an-e-mail-address-on-android;
 	//last accessed: 21 Aug. 2012
@@ -318,7 +322,6 @@ public class UsbongUtils {
 		}
 		return myPreviousStringToken;
     }
-
     
     //This methods gets the name of the image resource
     //example: <task-node name="textImageDisplay~frame_13~Happy Mike">
@@ -326,18 +329,41 @@ public class UsbongUtils {
     //"frame_13" is the name of the image resource, currently located in res/drawable
     //it should always come after the first ~
     public static String getResName(String currUsbongNode) {
-
 		StringTokenizer st = new StringTokenizer(currUsbongNode, "~");
 		String myStringToken = st.nextToken();
 		myStringToken = st.nextToken(); 
 		return myStringToken;
     }
 
+    //This methods checks all the tokens for the "optional" keyword
+    //from the start of the string up to the second to the last token 
+    //with '~' as delimeter
+    //(why? because the last token is usually reserved for the text to display) 
+    //example: <task-node name="textDisplay~1~optional~Name">
+    public static boolean isAnOptionalNode(String currUsbongNode) {
+		StringTokenizer st = new StringTokenizer(currUsbongNode, "~");
+		int totalTokens = st.countTokens();
+		int counter = 0;		
+		String myStringToken = "";
+		
+		while (counter<totalTokens) { //up to second to the last only
+			myStringToken = st.nextToken(); 
+			counter++;
+			
+			if (myStringToken.equals("optional")) {
+				return true;
+			}
+		}
+		return false;
+    }
+
+    
     //This methods gets the name of the next node
-    //example: <task-node name="textDisplay~this is item one~I choose to go to sleep.">
-    //becomes "textDisplay~this is item one"
-    //"textDisplay~this is item one" is the name of the next node
-    //if the first item in the Radio Button list is ticked
+    //example: <task-node name="textDisplay~You get a full rest.~I choose to go to sleep.">
+    //becomes "textDisplay~You get a full rest."
+    //"textDisplay~You get a full rest." is the name of the next node
+    //if the item in the Radio Button list 
+    //with the text "I choose to go to sleep" is ticked
     public static String getLinkFromRadioButton(String itemString) {
 
     	StringBuffer sb = new StringBuffer("");
