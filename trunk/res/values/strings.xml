@@ -8,7 +8,11 @@
 	<string name="pleaseChooseAnAnswerStringValue">Please choose an answer.</string>
 	<string name="pleaseChooseAnAnswerStringValueJapanese">答えを選んでください。</string>
 	<string name="pleaseChooseAnAnswerStringValueFilipino">Mangyaring pumili ng isang sagot.</string>
-	
+
+	<string name="pleaseAnswerFieldStringValue">Please input an answer.</string>
+	<string name="pleaseAnswerFieldStringValueJapanese">答えを入力してください。.</string>
+	<string name="pleaseAnswerFieldStringValueFilipino">Mangyaring maglagay ng sagot.</string>
+			
 	<string name="pressTheMenuButtonToSaveStringValue">Please press the Menu button on your device to open the Save option.</string>
 
 	<string name="signup"><u>Sign Up</u></string>
@@ -16,9 +20,9 @@
 	
 	<string name="pleaseMakeSureThatXMLTreeExistsString">Please make sure that an XML tree exists in your SD Card\'s \'/usbong/usbong_trees/\' directory!</string>
 
-	<string name="alertEnglish">Alert!</string>
-	<string name="alertFilipino">Alert!</string>
-	<string name="alertJapanese">ご注意下さい！</string>	
+	<string name="alertStringValueEnglish">Alert!</string>
+	<string name="alertStringValueFilipino">Alerto!</string>
+	<string name="alertStringValueJapanese">ご注意下さい！</string>	
 	
 	<string name="areYouSureYouWantToReturnToMainMenuEnglish">Are you sure you want to return to Main Menu?</string>
 	<string name="areYouSureYouWantToReturnToMainMenuFilipino">Sigurado ka bang nais mong bumalik sa Main Menu?</string>
@@ -34,7 +38,6 @@
 	
 	<string name="noStringValue">No [いいえ] [不要]</string>
 	<string name="yesStringValue">Yes [はい] [要]</string>  
-	<string name="alertStringValue">Alert! 注意！</string>  
 
     <string name="UsbongEndStateTextViewFILIPINO">Narating mo na ang dulo.</string>        
     <string name="UsbongEndStateTextViewENGLISH">You\'ve now reached the end.</string>        

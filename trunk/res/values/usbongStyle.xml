@@ -241,6 +241,16 @@
         <item name="android:textSize">30px</item>
     </style>	       
     
+    <style name="UsbongTextAreaEditText">
+		<item name="android:layout_width">fill_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">#000000</item>
+        <item name="android:textSize">30px</item> 
+        <item name="android:lines">5</item>
+        <item name="android:gravity">top|left</item>
+		<item name="android:scrollHorizontally">false</item>        
+    </style>	       
+        
     <style name="UsbongDefaultBackNextButtonLayout">
 		<item name="android:layout_width">fill_parent</item>
 		<item name="android:layout_height">wrap_content</item>
