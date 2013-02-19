@@ -812,19 +812,19 @@ public class UsbongUtils {
         	{ 		
         	}
 */
-				if (getDestinationServerURL()==null) {
+//				if (getDestinationServerURL()==null) {
 					setDestinationServerURLFromConfigFile();
-				}
+//				}
 				
 				HttpClient client = new DefaultHttpClient();
 		    	    	  
     	  //added by Mike, 10 Dec. 2011
 //    	  HttpPost httppost = new HttpPost("http://192.168.1.105/"); 
 //		  destinationServerURL="192.168.1.104";
-		  
+
 		  if (!getDestinationServerURL().startsWith("http://") || !getDestinationServerURL().startsWith("https://")) {
 			  setDestinationServerURL("http://"+getDestinationServerURL());
-		  }			  
+		  }
 		  if (!getDestinationServerURL().endsWith("/")) {
 			  setDestinationServerURL(destinationServerURL+"/");			  
 		  }
