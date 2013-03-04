@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="usbong.android"
-      android:versionCode="17"
-      android:versionName="Feb. 19, 2013"
+      android:versionCode="18"
+      android:versionName="March 4, 2013"
       android:installLocation="preferExternal"      
 >
 	<supports-screens
