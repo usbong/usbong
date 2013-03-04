@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.Vector;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -346,7 +347,7 @@ public class UsbongUtils {
 		int counter = 0;		
 		String myStringToken = "";
 		
-		while (counter<totalTokens) { //up to second to the last only
+		while (counter<totalTokens-1) { //up to second to the last only
 			myStringToken = st.nextToken(); 
 			counter++;
 			
@@ -357,7 +358,6 @@ public class UsbongUtils {
 		return false;
     }
 
-    
     //This methods gets the name of the next node
     //example: <task-node name="textDisplay~You get a full rest.~I choose to go to sleep.">
     //becomes "textDisplay~You get a full rest."
@@ -367,11 +367,21 @@ public class UsbongUtils {
     public static String getLinkFromRadioButton(String itemString) {
 
     	StringBuffer sb = new StringBuffer("");
-    	
 		StringTokenizer st = new StringTokenizer(itemString, "~");
-		sb = sb.append(st.nextToken()+"~");				
-		sb = sb.append(st.nextToken()); 
-		return sb.toString();
+    
+    	int totalTokens = st.countTokens();
+		int counter = 0;		
+		String myStringToken = "";
+		
+		while (counter<totalTokens-2) { //up to third to the last only			
+			sb = sb.append(st.nextToken()+"~");				
+			counter++;
+		}
+	  	sb = sb.append(st.nextToken()); 
+		
+	  	
+	  	Log.d(">>>>>>>>>>>>>>>> getLinkFromRadioButton", sb.toString());
+	  	return sb.toString();
     }
 
     
@@ -1245,5 +1255,14 @@ public class UsbongUtils {
 		}
 		
 		return origString; //default; just return the original string
+	}
+	
+	public static void addElementToContainer(Vector<String> usbongAnswerContainer, String s, int usbongAnswerContainerCounter) {
+		try {
+			usbongAnswerContainer.setElementAt(s, usbongAnswerContainerCounter);
+		}
+		catch (Exception e) {
+			usbongAnswerContainer.addElement(s);																							
+		}
 	}
 }
