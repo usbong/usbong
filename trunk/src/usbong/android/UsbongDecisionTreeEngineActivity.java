@@ -198,8 +198,11 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	private static String myQRCodeContent;
     private static boolean hasReturnedFromAnotherActivity; //camera, paint, email, etc
 	private static boolean wasNextButtonPressed;
+	private static boolean hasUpdatedDecisionTrackerContainer;
 	
 	private static boolean isAnOptionalNode;
+	private static String currentAnswer;
+	private static int usbongAnswerContainerCounter;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -233,7 +236,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     	decisionTrackerContainer = new Vector<String>();
 
     	usedBackButton=false;
-    	    	    	
+    	currentAnswer="";    	    	
+    	
     	try{    		
     		UsbongUtils.createUsbongFileStructure();
     		//create the usbong_demo_tree and store it in sdcard/usbong/usbong_trees
@@ -252,7 +256,10 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		
 		myQRCodeContent="";
 	    hasReturnedFromAnotherActivity=false; //camera, paint, email, etc
-		
+
+	    //added by Mike, March 4, 2013
+	    usbongAnswerContainerCounter=0;
+	    
     	initTreeLoader();
     }
     
@@ -688,8 +695,30 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	public void initParser() {
 		hasReachedEndOfAllDecisionTrees=false;
 		
+//			decisionTrackerContainer.addElement(usbongAnswerContainer.lastElement());
+		
 		if (wasNextButtonPressed) {
-			decisionTrackerContainer.addElement(usbongAnswerContainer.lastElement());
+			if (!hasUpdatedDecisionTrackerContainer) {
+				decisionTrackerContainer.addElement(usbongAnswerContainer.elementAt(usbongAnswerContainerCounter-1));
+				hasUpdatedDecisionTrackerContainer=true;
+			}
+			
+//			System.out.println(">>>>>>>>>> wasNextButtonPressed");
+//			System.out.println(">>>>>>>>>> usbongAnswerContainerCounter: "+usbongAnswerContainerCounter);
+
+			for (int i=0; i<usbongAnswerContainer.size(); i++) {
+				System.out.println(i+": "+usbongAnswerContainer.elementAt(i));
+			}			
+			
+			if ((!usbongAnswerContainer.isEmpty()) && (usbongAnswerContainerCounter < usbongAnswerContainer.size())) {
+				currentAnswer = usbongAnswerContainer.elementAt(usbongAnswerContainerCounter);
+//				System.out.println(">>>> loob currentAnswer: "+currentAnswer);
+			}
+			else {
+				currentAnswer="";
+			}
+
+			
 			wasNextButtonPressed=false;
 		}
 
@@ -1062,7 +1091,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		catch(Exception e) {
 			e.printStackTrace();
 		}
-		
+/*		
 		if ((!usedBackButton) && (!hasReturnedFromAnotherActivity)){
 			usbongNodeContainer.addElement(currUsbongNode);
 			usbongNodeContainerCounter++;
@@ -1071,6 +1100,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			usedBackButton=false;
 			hasReturnedFromAnotherActivity=false;
 		}
+*/		
 		initUsbongScreen();
 	}
 
@@ -1082,6 +1112,36 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
         //added by Mike, Feb. 13, 2013
         isAnOptionalNode = UsbongUtils.isAnOptionalNode(currUsbongNode);
 
+        String myStringToken="";
+//		if (usedBackButton) {
+        
+//        System.out.println(">>>>>> currentAnswer: "+currentAnswer);
+        
+    		StringTokenizer st = new StringTokenizer(currentAnswer, ",");
+    		if ((st != null) && (st.hasMoreTokens())) {
+	    		myStringToken = st.nextToken();
+	    		currentAnswer = currentAnswer.replace(myStringToken+",", "");
+    		}	    		
+	    		
+    		StringTokenizer st_two = new StringTokenizer(currentAnswer, ";");
+	    		
+	    	if (st_two!=null) {
+    			if (currentAnswer.length()>1) {
+    				myStringToken = st_two.nextToken(); //get next element (i.e. 1 in "Y,1;")	    			
+    			}
+    			else {
+    				myStringToken="";
+    			}	    			
+    		}
+/*
+	    		while (st.hasMoreTokens()) { //get last element (i.e. 1 in "Y,1;")
+	    			myStringToken = st.nextToken(); 
+	    		}
+*/	    		
+//	    		myStringToken = myStringToken.replace(";", "");
+
+//		}
+
 		switch(currScreen) {
 	    	case MULTIPLE_RADIO_BUTTONS_SCREEN:
 		    	setContentView(R.layout.multiple_radio_buttons_screen);
@@ -1089,16 +1149,34 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        TextView myMultipleRadioButtonsScreenTextView = (TextView)findViewById(R.id.radio_buttons_textview);
 		        myMultipleRadioButtonsScreenTextView = (TextView) UsbongUtils.applyTagsInView(myMultipleRadioButtonsScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
 
+/*		       
+	    		if (usedBackButton) {
+		    		StringTokenizer st = new StringTokenizer(currentAnswerAfterGoingBack, ",");
+		    		if (st != null) {
+			    		myStringToken = st.nextToken();
+			    		while (st.hasMoreTokens()) { //get last element (i.e. 1 in "Y,1;")
+			    			myStringToken = st.nextToken(); 
+			    		}
+			    		myStringToken = myStringToken.replace(";", "");
+		    		}
+	    		}
+*/	    		
 		        RadioGroup radioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);
 		        int totalRadioButtonsInContainer = radioButtonsContainer.size();
 		        for (int i=0; i<totalRadioButtonsInContainer; i++) {
 		            View radioButtonView = new RadioButton(getBaseContext());
 		            RadioButton radioButton = (RadioButton) UsbongUtils.applyTagsInView(radioButtonView, UsbongUtils.IS_RADIOBUTTON, radioButtonsContainer.elementAt(i).toString());
-		            radioButton.setChecked(false);
 		            radioButton.setTextSize(20);
 		            radioButton.setId(i);
 		            radioButton.setTextColor(Color.parseColor("#4a452a"));			        
 
+		            if ((!myStringToken.equals("")) && (i == Integer.parseInt(myStringToken))) {
+		            	radioButton.setChecked(true);
+		            }
+		            else {
+			            radioButton.setChecked(false);
+		            }
+		            
 		            radioGroup.addView(radioButton);
 		        }		     		        
 				break;
@@ -1108,7 +1186,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        initBackNextButtons();
 		        TextView myLinkScreenTextView = (TextView)findViewById(R.id.radio_buttons_textview);
 		        myLinkScreenTextView = (TextView) UsbongUtils.applyTagsInView(myLinkScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
-
+		        
 		        RadioGroup myLinkScreenRadioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);
 		        int myLinkScreenTotalRadioButtonsInContainer = radioButtonsContainer.size();
 		        for (int i=0; i<myLinkScreenTotalRadioButtonsInContainer; i++) {
@@ -1117,11 +1195,18 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 					Log.d(">>>>>radioButton",radioButton.getText().toString());
 
-		            radioButton.setChecked(false);
+//		            radioButton.setChecked(false);
 		            radioButton.setTextSize(20);
 		            radioButton.setId(i);
 		            radioButton.setTextColor(Color.parseColor("#4a452a"));			        
 
+		            if ((!myStringToken.equals("")) && (i == Integer.parseInt(myStringToken))) {
+		            	radioButton.setChecked(true);
+		            }
+		            else {
+			            radioButton.setChecked(false);
+		            }
+		            
 		            myLinkScreenRadioGroup.addView(radioButton);
 		        }		     		        
 				break;
@@ -1130,24 +1215,45 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        initBackNextButtons();
 		        TextView myMultipleCheckBoxesScreenTextView = (TextView)findViewById(R.id.checkboxes_textview);
 		        myMultipleCheckBoxesScreenTextView = (TextView) UsbongUtils.applyTagsInView(myMultipleCheckBoxesScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
-/*
-		        if (UsbongUtils.USE_UNESCAPE) {
-		        	myMultipleCheckBoxesScreenTextView = (TextView) UsbongUtils.applyTagsInView(myMultipleCheckBoxesScreenTextView, UsbongUtils.IS_TEXTVIEW, StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
-//		        	myMultipleCheckBoxesScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
-		        }
-		        else {
-		        	myMultipleCheckBoxesScreenTextView = (TextView) UsbongUtils.applyTagsInView(myMultipleCheckBoxesScreenTextView, UsbongUtils.IS_TEXTVIEW, UsbongUtils.trimUsbongNodeName(currUsbongNode));
-//		        	myMultipleCheckBoxesScreenTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
-		        }
-*/		        
+
 		        LinearLayout myMultipleCheckboxesLinearLayout = (LinearLayout)findViewById(R.id.multiple_checkboxes_linearlayout);
 		        int totalCheckBoxesInContainer = checkBoxesContainer.size();
+		        		        
+	    		StringTokenizer myMultipleCheckboxStringTokenizer = new StringTokenizer(myStringToken, ",");
+	    		Vector<String> myCheckedAnswers = new Vector<String>();	    		
+//	    		int counter=0;	    		
+	    		
+	    		while (myMultipleCheckboxStringTokenizer.countTokens()>0) {
+	    			String myMultipleCheckboxStringToken = myMultipleCheckboxStringTokenizer.nextToken();
+	    			if (myMultipleCheckboxStringToken != null) {
+		    			myCheckedAnswers.add(myMultipleCheckboxStringToken);	    				
+	    			}
+	    			else {
+	    				break;
+	    			}
+//	    			counter++;
+	    		}
+	    		
 		        for (int i=0; i<totalCheckBoxesInContainer; i++) {
 		            CheckBox checkBox = new CheckBox(getBaseContext());
 //		            checkBox.setText(StringEscapeUtils.unescapeJava(checkBoxesContainer.elementAt(i).toString()));
 		            checkBox = (CheckBox) UsbongUtils.applyTagsInView(checkBox, UsbongUtils.IS_CHECKBOX, StringEscapeUtils.unescapeJava(checkBoxesContainer.elementAt(i).toString()));
 			            
-		            checkBox.setChecked(false);
+//		            checkBox.setChecked(false);
+/*
+		            if ((!myStringToken.equals("")) && (i == Integer.parseInt(myStringToken))) {
+		            	checkBox.setChecked(true);
+		            }
+		            else {
+		            	checkBox.setChecked(false);
+		            }
+*/
+		            for (int k=0; k<myCheckedAnswers.size(); k++) {
+		            	if (i==Integer.parseInt(myCheckedAnswers.elementAt(k))) {
+		            		checkBox.setChecked(true);
+		            	}
+		            }
+		            
 		            checkBox.setTextSize(20);
 			        checkBox.setTextColor(Color.parseColor("#4a452a"));			        
 		            myMultipleCheckboxesLinearLayout.addView(checkBox);
@@ -1273,6 +1379,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        myTextFieldScreenTextView = (TextView) UsbongUtils.applyTagsInView(myTextFieldScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
 
 		        EditText myTextFieldScreenEditText = (EditText)findViewById(R.id.textfield_edittext);
+		        myTextFieldScreenEditText.setText(myStringToken);
+		        
 		        break;    	
 			case TEXTAREA_SCREEN:
 		    	setContentView(R.layout.textarea_screen);
@@ -1282,6 +1390,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        myTextAreaScreenTextView = (TextView) UsbongUtils.applyTagsInView(myTextAreaScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
 
 		        EditText myTextAreaScreenEditText = (EditText)findViewById(R.id.textarea_edittext);
+		        myTextAreaScreenEditText.setText(myStringToken);
 		        break;    	
 			case TEXTFIELD_WITH_UNIT_SCREEN:
 		    	setContentView(R.layout.textfield_with_unit_screen);
@@ -1291,7 +1400,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        myTextFieldWithUnitScreenTextView = (TextView) UsbongUtils.applyTagsInView(myTextFieldWithUnitScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
 		        EditText myEditText = (EditText)findViewById(R.id.textfield_edittext);
 		        myEditText.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);
-
+		        myEditText.setText(myStringToken);
+		        
 		        TextView myUnitScreenTextView = (TextView)findViewById(R.id.textfieldunit_textview);
 		        myUnitScreenTextView.setText(textFieldUnit);		        		        
 		        break;    	
@@ -1303,20 +1413,14 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        myTextFieldNumericalScreenTextView = (TextView) UsbongUtils.applyTagsInView(myTextFieldNumericalScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
 		        EditText myTextFieldNumericalScreenEditText = (EditText)findViewById(R.id.textfield_edittext);
 		        myTextFieldNumericalScreenEditText.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);
+		        myTextFieldNumericalScreenEditText.setText(myStringToken);		        
 		        break;    	
 			case CLASSIFICATION_SCREEN:
 		    	setContentView(R.layout.classification_screen);
 		        initBackNextButtons();
 		        TextView myClassificationScreenTextView = (TextView)findViewById(R.id.classification_textview);
 		        myClassificationScreenTextView = (TextView) UsbongUtils.applyTagsInView(myClassificationScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
-/*
-		        if (UsbongUtils.USE_UNESCAPE) {
-		        	myClassificationScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
-		        }
-		        else {
-		        	myClassificationScreenTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
-		        }
-*/		        
+
 		        LinearLayout myClassificationLinearLayout = (LinearLayout)findViewById(R.id.classification_linearlayout);
 		        int totalClassificationsInContainer = classificationContainer.size();
 		        for (int i=0; i<totalClassificationsInContainer; i++) {
@@ -1358,7 +1462,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        Configuration userConfig = new Configuration();
 		        Settings.System.getConfiguration( getContentResolver(), userConfig );
 		        Calendar date = Calendar.getInstance( userConfig.locale);
-
+		        
 		        //Reference: http://www.androidpeople.com/android-spinner-default-value;
 		        //last accessed: 21 Aug. 2012		        
 		        //month-------------------------------
@@ -1373,6 +1477,18 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        dateMonthSpinner.setAdapter(monthAdapter);
 		        dateMonthSpinner.setSelection(month);
 //		        System.out.println(">>>>>>>>>>>>>> month"+month);
+//		        Log.d(">>>>>>myStringToken",myStringToken);
+	        	
+		        for (int i=0; i<monthAdapter.getCount(); i++) {
+//		        	Log.d(">>>>>>monthAdapter",monthAdapter.getItem(i).toString());
+		        	
+		        	if (myStringToken.contains(monthAdapter.getItem(i).toString())) {
+		        		dateMonthSpinner.setSelection(i);
+		        		
+		        		//added by Mike, March 4, 2013
+		        		myStringToken = myStringToken.replace(monthAdapter.getItem(i).toString(), "");
+		        	}
+		        }		        		        
 		        //-------------------------------------
 		        
 		        //day----------------------------------
@@ -1387,13 +1503,36 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        dateDaySpinner.setAdapter(dayAdapter);		
 		        dateDaySpinner.setSelection(day);
 //		        System.out.println(">>>>>>>>>>>>>> day"+day);
-		        //-------------------------------------
 
+//		        Log.d(">>>>>myStringToken",myStringToken);
+//		        System.out.println(">>>>>>>> myStringToken"+myStringToken);
+		        StringTokenizer myDateStringTokenizer = new StringTokenizer(myStringToken, ",");
+		        String myDayStringToken="";
+				if (!myStringToken.equals("")) {
+					myDayStringToken = myDateStringTokenizer.nextToken();	
+				}
+
+				for (int i=0; i<dayAdapter.getCount(); i++) {		        	
+		        	if (myDayStringToken.contains(dayAdapter.getItem(i).toString())) {
+		        		dateDaySpinner.setSelection(i);
+		        		
+		        		myStringToken = myStringToken.replace(dayAdapter.getItem(i).toString()+",", "");
+//		        		System.out.println(">>>>>>>>>>>myStringToken: "+myStringToken);
+		        	}
+		        }
+		        //-------------------------------------				
+				
 		        //year---------------------------------
 				int year = date.get(Calendar.YEAR);
 		        EditText myDateYearEditText = (EditText)findViewById(R.id.date_edittext);
-		        myDateYearEditText.setText(""+year);		        
 		        myDateYearEditText.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);		        
+		        //added by Mike, March 4, 2013
+		        if (myStringToken.equals("")) {
+		        	myDateYearEditText.setText(""+year);		        
+		        }
+		        else {
+		        	myDateYearEditText.setText(myStringToken);
+		        }		        
 		        //-------------------------------------		        
 		        break;    	
 		        
@@ -1576,6 +1715,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        RadioButton myNoRadioButton = (RadioButton)findViewById(R.id.no_radiobutton);		        
 		        myNoRadioButton.setText(noStringValue);
 		        myNoRadioButton.setTextSize(20);		        
+		        
+		        if (myStringToken.equals("N")) {
+		        	myNoRadioButton.setChecked(true);
+		        }
+		        else if ((myStringToken.equals("Y"))){
+		        	myYesRadioButton.setChecked(true);		        	
+		        }
 		        break;    	
 			case SEND_TO_CLOUD_BASED_SERVICE_SCREEN:
 		    	setContentView(R.layout.yes_no_decision_screen);
@@ -1591,6 +1737,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        RadioButton mySendToCloudBasedServiceScreenNoRadioButton = (RadioButton)findViewById(R.id.no_radiobutton);		        
 		        mySendToCloudBasedServiceScreenNoRadioButton.setText(noStringValue);
 		        mySendToCloudBasedServiceScreenNoRadioButton.setTextSize(20);		        
+
+		        if (myStringToken.equals("N")) {
+		        	mySendToCloudBasedServiceScreenNoRadioButton.setChecked(true);
+		        }
+		        else if ((myStringToken.equals("Y"))){
+		        	mySendToCloudBasedServiceScreenYesRadioButton.setChecked(true);		        	
+		        }		        
 		        break;    	
 			case SEND_TO_WEBSERVER_SCREEN:
 		    	setContentView(R.layout.send_to_webserver_screen);
@@ -1609,6 +1762,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        RadioButton mySendToWebserverNoRadioButton = (RadioButton)findViewById(R.id.no_radiobutton);		        
 		        mySendToWebserverNoRadioButton.setText(noStringValue);
 		        mySendToWebserverNoRadioButton.setTextSize(20);		        
+
+		        if (myStringToken.equals("N")) {
+		        	mySendToWebserverNoRadioButton.setChecked(true);
+		        }
+		        else if ((myStringToken.equals("Y"))){
+		        	mySendToWebserverYesRadioButton.setChecked(true);		        	
+		        }		        
 		        break;    	
 			case END_STATE_SCREEN:
 		    	setContentView(R.layout.end_state_screen);
@@ -1630,6 +1790,15 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
         if (!UsbongUtils.setBackgroundImage(myLayout, myTree, "bg")) {
     		myLayout.setBackgroundResource(R.drawable.bg);//default bg
         }
+        
+		if ((!usedBackButton) && (!hasReturnedFromAnotherActivity)){
+			usbongNodeContainer.addElement(currUsbongNode);
+			usbongNodeContainerCounter++;
+		}
+		else {
+			usedBackButton=false;
+			hasReturnedFromAnotherActivity=false;
+		}
 	}
    
     public void initBackNextButtons()
@@ -1653,7 +1822,17 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				decisionTrackerContainer.addElement("B;");
 				
 				if (!usbongAnswerContainer.isEmpty()) {
-					usbongAnswerContainer.removeElementAt(usbongAnswerContainer.size()-1);
+/*					
+					currentAnswer = usbongAnswerContainer.lastElement();
+					usbongAnswerContainer.removeElementAt(usbongAnswerContainer.size()-1);					
+*/
+					usbongAnswerContainerCounter--;
+					
+					if (usbongAnswerContainerCounter<0) {
+						usbongAnswerContainerCounter=0;
+					}
+					
+					currentAnswer = usbongAnswerContainer.elementAt(usbongAnswerContainerCounter);
 				}
 
 				if (!usbongNodeContainer.isEmpty()) {
@@ -1682,6 +1861,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			@Override
 			public void onClick(View v) {
 				wasNextButtonPressed=true;
+				hasUpdatedDecisionTrackerContainer=false;
 				
 				if (mTts.isSpeaking()) {
 					mTts.stop();
@@ -1719,8 +1899,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 //		    		System.out.println(">>>>>>>>>>>>> outputStringBuffer: " + outputStringBuffer.toString());
 		    		UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv", outputStringBuffer.toString());
 
-					wasNextButtonPressed=false; //no need to make this true, because this is the last node
-		    		
+//					wasNextButtonPressed=false; //no need to make this true, because this is the last node
+					hasUpdatedDecisionTrackerContainer=true;
+					
 		    		/*
 		    		//send to server
 		    		UsbongUtils.performFileUpload(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv");
@@ -1740,24 +1921,34 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 				        if (myYesRadioButton.isChecked()) {
 							currUsbongNode = nextUsbongNodeIfYes;
-							usbongAnswerContainer.addElement("Y;");															
+							
+							UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y;", usbongAnswerContainerCounter);
+							usbongAnswerContainerCounter++;
+
 							initParser();								        	
 				        }
 				        else if (myNoRadioButton.isChecked()) {
 							currUsbongNode = nextUsbongNodeIfNo; 
-							usbongAnswerContainer.addElement("N;");															
+//							usbongAnswerContainer.addElement("N;");															
+							UsbongUtils.addElementToContainer(usbongAnswerContainer, "N;", usbongAnswerContainerCounter);
+							usbongAnswerContainerCounter++;
+							
 							initParser();								        					        	
 				        }
 				        else { //if no radio button was checked				        	
 				        		if (!isAnOptionalNode) {
 			    					showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
 			    					wasNextButtonPressed=false;
+			    					hasUpdatedDecisionTrackerContainer=true;
 			    					return;
 				        		}
 				        		else {
 						    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-									usbongAnswerContainer.addElement("A;");															
-									initParser();				
+//									usbongAnswerContainer.addElement("A;");															
+									UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
+									usbongAnswerContainerCounter++;
+						    		
+						    		initParser();				
 				        		}
 				        }
 		    		}	
@@ -1767,12 +1958,19 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 				        if (myYesRadioButton.isChecked()) {
 							currUsbongNode = nextUsbongNodeIfYes; 
-							usbongAnswerContainer.addElement("Y;");															
+//							usbongAnswerContainer.addElement("Y;");			
+							UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y;", usbongAnswerContainerCounter);
+							usbongAnswerContainerCounter++;
+							
 							decisionTrackerContainer.addElement(usbongAnswerContainer.lastElement());
-							wasNextButtonPressed=false; //no need to make this true, because "Y;" has already been added to decisionTrackerContainer
-
+//							wasNextButtonPressed=false; //no need to make this true, because "Y;" has already been added to decisionTrackerContainer
+							hasUpdatedDecisionTrackerContainer=true;
+							
+				    		//edited by Mike, March 4, 2013
 				    		//"save" the output into the SDCard as "output.txt"
-				    		int usbongAnswerContainerSize = usbongAnswerContainer.size();
+//				    		int usbongAnswerContainerSize = usbongAnswerContainer.size();
+				    		int usbongAnswerContainerSize = usbongAnswerContainerCounter;
+				    					    		
 				    		StringBuffer outputStringBuffer = new StringBuffer();
 				    		for(int i=0; i<usbongAnswerContainerSize;i++) {
 				    			outputStringBuffer.append(usbongAnswerContainer.elementAt(i));
@@ -1786,17 +1984,23 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        }
 				        else if (myNoRadioButton.isChecked()) {
 							currUsbongNode = nextUsbongNodeIfNo; 
-							usbongAnswerContainer.addElement("N;");															
+//							usbongAnswerContainer.addElement("N;");															
+							UsbongUtils.addElementToContainer(usbongAnswerContainer, "N;", usbongAnswerContainerCounter);
+							usbongAnswerContainerCounter++;
 				        }
 				        else { //if no radio button was checked				        	
 			        		if (!isAnOptionalNode) {
 				        		showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
 		    					wasNextButtonPressed=false;
+		    					hasUpdatedDecisionTrackerContainer=true;
 		    					return;
 			        		}
 			        		else {
 					    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-								usbongAnswerContainer.addElement("A;");															
+//								usbongAnswerContainer.addElement("A;");															
+					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
+								usbongAnswerContainerCounter++;
+
 								initParser();				
 			        		}
 				        }
@@ -1812,9 +2016,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 				        if (myYesRadioButton.isChecked()) {
 							currUsbongNode = nextUsbongNodeIfYes; 
-							usbongAnswerContainer.addElement("Y;");															
+//							usbongAnswerContainer.addElement("Y;");															
+				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y;", usbongAnswerContainerCounter);
+							usbongAnswerContainerCounter++;
+
 							decisionTrackerContainer.addElement(usbongAnswerContainer.lastElement());
-							wasNextButtonPressed=false; //no need to make this true, because "Y;" has already been added to decisionTrackerContainer
+//							wasNextButtonPressed=false; //no need to make this true, because "Y;" has already been added to decisionTrackerContainer
+							hasUpdatedDecisionTrackerContainer=true;
 							
 							StringBuffer sb = new StringBuffer();
 							for (int i=0; i<decisionTrackerContainer.size();i++) {
@@ -1822,8 +2030,11 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 							}
 							Log.d(">>>>>>>>>>>>>decisionTrackerContainer", sb.toString());								
 							
+				    		//edited by Mike, March 4, 2013
 				    		//"save" the output into the SDCard as "output.txt"
-				    		int usbongAnswerContainerSize = usbongAnswerContainer.size();
+//				    		int usbongAnswerContainerSize = usbongAnswerContainer.size();
+				    		int usbongAnswerContainerSize = usbongAnswerContainerCounter;
+
 				    		StringBuffer outputStringBuffer = new StringBuffer();
 				    		for(int i=0; i<usbongAnswerContainerSize; i++) {
 				    			outputStringBuffer.append(usbongAnswerContainer.elementAt(i));
@@ -1845,17 +2056,24 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        }
 				        else if (myNoRadioButton.isChecked()) {
 							currUsbongNode = nextUsbongNodeIfNo; 
-							usbongAnswerContainer.addElement("N;");															
+//							usbongAnswerContainer.addElement("N;");															
+				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N;", usbongAnswerContainerCounter);
+							usbongAnswerContainerCounter++;
 				        }
 				        else { //if no radio button was checked				        	
 			        		if (!isAnOptionalNode) {
 			        			showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
 		    					wasNextButtonPressed=false;
+		    					hasUpdatedDecisionTrackerContainer=true;
+		    					
 		    					return;
 			        		}
 			        		else {
 					    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-								usbongAnswerContainer.addElement("A;");															
+//								usbongAnswerContainer.addElement("A;");															
+					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
+								usbongAnswerContainerCounter++;
+
 								initParser();				
 			        		}
 				        }
@@ -1887,10 +2105,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        else {
 							currUsbongNode = nextUsbongNodeIfNo; 				        					        	
 							sb.delete(0,sb.length());
-							sb.append("N;");
+							sb.append("N,;"); //make sure to add the comma
 				        }				        
-		    			usbongAnswerContainer.addElement(sb.toString());
-				        initParser();
+//		    			usbongAnswerContainer.addElement(sb.toString());
+			    		UsbongUtils.addElementToContainer(usbongAnswerContainer, sb.toString(), usbongAnswerContainerCounter);
+						usbongAnswerContainerCounter++;
+
+		    			initParser();
 		    		}		    		
 		    		else if (currScreen==MULTIPLE_RADIO_BUTTONS_SCREEN) {
 						currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
@@ -1901,22 +2122,32 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        		if (!isAnOptionalNode) {
 				    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
 			    					wasNextButtonPressed=false;
-				    				return;
+			    					hasUpdatedDecisionTrackerContainer=true;
+			    					return;
 				        		}
 				        		else {
 						    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-									usbongAnswerContainer.addElement("A;");															
-									initParser();				
+//									usbongAnswerContainer.addElement("A;");															
+						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
+									usbongAnswerContainerCounter++;
+
+						    		initParser();				
 				        		}
 			    			}
 			    			else {
-				    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
-						        initParser();
+//				    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
+					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
+								usbongAnswerContainerCounter++;
+
+				    			initParser();
 			    			}
 		    			}
 		    			else {
-			    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
-					        initParser();		    				
+//			    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
+				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
+							usbongAnswerContainerCounter++;
+			    			
+			    			initParser();		    				
 		    			}
 		    		}
 		    		else if (currScreen==LINK_SCREEN) {		    			
@@ -1936,17 +2167,25 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        		if (!isAnOptionalNode) {
 				    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
 			    					wasNextButtonPressed=false;
+			    					hasUpdatedDecisionTrackerContainer=true;
+			    					
 			    					return;
 				        		}
 				        		else {
 						    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-									usbongAnswerContainer.addElement("A;");															
+//									usbongAnswerContainer.addElement("A;");															
+						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
+									usbongAnswerContainerCounter++;
+									
 									initParser();				
 				        		}
 			    			}
 			    			else {
-				    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
-						        initParser();
+//				    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
+					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
+								usbongAnswerContainerCounter++;
+
+				    			initParser();
 			    			}
 /*		    			}
 		    			else {
@@ -1967,22 +2206,32 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        		if (!isAnOptionalNode) {
 				    				showRequiredFieldAlert(PLEASE_ANSWER_FIELD_ALERT_TYPE);
 			    					wasNextButtonPressed=false;
+			    					hasUpdatedDecisionTrackerContainer=true;
 			    					return;
 				        		}
 				        		else {
 						    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-									usbongAnswerContainer.addElement("A;");															
-									initParser();				
+//									usbongAnswerContainer.addElement("A;");															
+						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
+									usbongAnswerContainerCounter++;
+						    		
+						    		initParser();				
 				        		}
 			    			}
 							else {
-								usbongAnswerContainer.addElement(myTextFieldScreenEditText.getText()+";");							
+//								usbongAnswerContainer.addElement("A,"+myTextFieldScreenEditText.getText()+";");							
+					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myTextFieldScreenEditText.getText()+";", usbongAnswerContainerCounter);
+								usbongAnswerContainerCounter++;
+								
 								initParser();
 							}
 				        }
 				        else {
-							usbongAnswerContainer.addElement(myTextFieldScreenEditText.getText()+";");							
-							initParser();				        	
+//							usbongAnswerContainer.addElement("A,"+myTextFieldScreenEditText.getText()+";");							
+				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myTextFieldScreenEditText.getText()+";", usbongAnswerContainerCounter);
+							usbongAnswerContainerCounter++;
+
+				        	initParser();				        	
 				        }
 		    		}
 		    		else if ((currScreen==TEXTAREA_SCREEN)) {
@@ -1995,21 +2244,31 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        		if (!isAnOptionalNode) {
 				    				showRequiredFieldAlert(PLEASE_ANSWER_FIELD_ALERT_TYPE);
 			    					wasNextButtonPressed=false;
+			    					hasUpdatedDecisionTrackerContainer=true;
 			    					return;
 				        		}
 				        		else {
 						    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-									usbongAnswerContainer.addElement("A;");															
+//									usbongAnswerContainer.addElement("A;");															
+						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
+									usbongAnswerContainerCounter++;
+									
 									initParser();				
 				        		}
 			    			}
 							else {
-								usbongAnswerContainer.addElement(myTextAreaScreenEditText.getText()+";");							
+//								usbongAnswerContainer.addElement("A,"+myTextAreaScreenEditText.getText()+";");							
+					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myTextAreaScreenEditText.getText()+";", usbongAnswerContainerCounter);
+								usbongAnswerContainerCounter++;
+								
 								initParser();
 							}
 				        }
 				        else {
-							usbongAnswerContainer.addElement(myTextAreaScreenEditText.getText()+";");							
+//							usbongAnswerContainer.addElement("A,"+myTextAreaScreenEditText.getText()+";");							
+				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myTextAreaScreenEditText.getText()+";", usbongAnswerContainerCounter);
+							usbongAnswerContainerCounter++;
+							
 							initParser();				        	
 				        }
 		    		}
@@ -2018,8 +2277,11 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 						TextView myLongitudeTextView = (TextView)findViewById(R.id.longitude_textview);
 			            TextView myLatitudeTextView = (TextView)findViewById(R.id.latitude_textview);
 
-						usbongAnswerContainer.addElement(myLongitudeTextView.getText()+","+myLatitudeTextView.getText()+";");							
-						initParser();				        	
+//						usbongAnswerContainer.addElement(myLongitudeTextView.getText()+","+myLatitudeTextView.getText()+";");							
+			    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myLongitudeTextView.getText()+","+myLatitudeTextView.getText()+";", usbongAnswerContainerCounter);
+						usbongAnswerContainerCounter++;
+
+			            initParser();				        	
 
 		    		}
 		    		else if (currScreen==DATE_SCREEN) {
@@ -2027,27 +2289,39 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				    	Spinner dateMonthSpinner = (Spinner) findViewById(R.id.date_month_spinner);
 				        Spinner dateDaySpinner = (Spinner) findViewById(R.id.date_day_spinner);
 				        EditText myDateYearEditText = (EditText)findViewById(R.id.date_edittext);
-		    			usbongAnswerContainer.addElement(monthAdapter.getItem(dateMonthSpinner.getSelectedItemPosition()).toString() +
+/*		    			usbongAnswerContainer.addElement("A,"+monthAdapter.getItem(dateMonthSpinner.getSelectedItemPosition()).toString() +
 								 						 dayAdapter.getItem(dateDaySpinner.getSelectedItemPosition()).toString() + "," +
 								 						 myDateYearEditText.getText().toString()+";");		    					
-				        
-		    			System.out.println(">>>>>>>>>>>>>Date screen: "+usbongAnswerContainer.lastElement());
+*/
+			    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+monthAdapter.getItem(dateMonthSpinner.getSelectedItemPosition()).toString() +
+								 						 dayAdapter.getItem(dateDaySpinner.getSelectedItemPosition()).toString() + "," +
+								 						 myDateYearEditText.getText().toString()+";", usbongAnswerContainerCounter);
+						usbongAnswerContainerCounter++;
+
+//		    			System.out.println(">>>>>>>>>>>>>Date screen: "+usbongAnswerContainer.lastElement());
 		    			initParser();				        	
 		    		}		    		
 		    		else if (currScreen==QR_CODE_READER_SCREEN) {
 		    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
 
 		    			if (!myQRCodeContent.equals("")) {
-		    				usbongAnswerContainer.addElement("Y,"+myQRCodeContent+";");							
+//		    				usbongAnswerContainer.addElement("Y,"+myQRCodeContent+";");							
+				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y,"+myQRCodeContent+";", usbongAnswerContainerCounter);
+							usbongAnswerContainerCounter++;
 		    			}
 		    			else {
-		    				usbongAnswerContainer.addElement("N;");									    				
+//		    				usbongAnswerContainer.addElement("N;");									    				
+				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N;", usbongAnswerContainerCounter);
+							usbongAnswerContainerCounter++;
 		    			}
 		    			initParser();				        	
 		    		}
 		    		else { //TODO: do this for now		    		
 		    			currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-						usbongAnswerContainer.addElement("A;");															
+//						usbongAnswerContainer.addElement("A;");															
+			    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
+						usbongAnswerContainerCounter++;
+
 						initParser();				
 		    		}		    		
 		    	}
