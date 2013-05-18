@@ -1,5 +1,5 @@
 --Usbong (beta)--
-ver: March 4, 2013
+ver: May 4, 2013
 
 Usbong helps you create your own mobile applications to make your life and the lives of the people that matter to you more meaningful, more peaceful-- HAPPIER. =)
 
@@ -12,10 +12,10 @@ Context -> Tree -> Mobile + Web System
 Right now, we are developing the Usbong platform with the Ateneo Innovation Center (AIC), along with government, academe, and industry partners, and we would love to work with people from different parts of the world too.
 
 Usbong Social Systems, Inc.
---Founder & Executive Director--
+--Founder--
 Michael Syson, MSCS
 
---UsbongCommunityBuilder--
+--UsbongEvangelist--
 Diane Gonzales
 
 --UsbongAccounts--
@@ -88,4 +88,4 @@ Website: https://sites.google.com/site/theusbongproject
 Mailing list: usbong-users@googlegroups.com
 Email: usbong.com@gmail.com
 
-Copyright 2011-2012.
+Copyright 2011-2013.
