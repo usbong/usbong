@@ -1238,12 +1238,12 @@ public class UsbongUtils {
 			      }
 				  
 				  if (parser.getName().equals("string")) {					  
-//					  Log.d(">>>>>parser.getAttributeValue(null, 'name'): ",parser.getAttributeValue(null, "name"));
-//					  Log.d(">>>>>origString: ",origString);
+					  Log.d(">>>>>parser.getAttributeValue(null, 'name'): ",parser.getAttributeValue(null, "name"));
+					  Log.d(">>>>>origString: ",origString);
 
 					  if (parser.getAttributeValue(null, "name").equals(origString)) {
 						  if (parser.next() == XmlPullParser.TEXT) {
-//							  Log.d(">>>>>parser.getText();: ",parser.getText());
+							  Log.d(">>>>>parser.getText();: ",parser.getText());
 							  return parser.getText();
 						  }
 					  }
