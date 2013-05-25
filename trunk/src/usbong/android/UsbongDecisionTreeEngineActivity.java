@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Michael Syson
+ * Copyright 2012-2013 Michael Syson
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -51,8 +51,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
 import android.text.InputType;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -114,7 +114,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	public static final int QR_CODE_READER_SCREEN=20;
 	public static final int CLICKABLE_IMAGE_DISPLAY_SCREEN=21;
 	public static final int TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN=22;
-	public static final int END_STATE_SCREEN=23;		
+	public static final int DCAT_SUMMARY_SCREEN=23;			
+	public static final int END_STATE_SCREEN=24;		
 	
 	private static int currScreen=TEXTFIELD_SCREEN;
 	
@@ -203,7 +204,10 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	private static boolean isAnOptionalNode;
 	private static String currentAnswer;
 	private static int usbongAnswerContainerCounter;
-    
+	
+    private int padding_in_dp = 5;  // 5 dps
+    private int padding_in_px;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);        
@@ -259,6 +263,12 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 	    //added by Mike, March 4, 2013
 	    usbongAnswerContainerCounter=0;
+	    
+        //reference: Labeeb P's answer from stackoverflow;
+        //http://stackoverflow.com/questions/4275797/view-setpadding-accepts-only-in-px-is-there-anyway-to-setpadding-in-dp;
+        //last accessed: 23 May 2013
+        final float scale = getResources().getDisplayMetrics().density;
+        padding_in_px = (int) (padding_in_dp * scale + 0.5f);
 	    
     	initTreeLoader();
     }
@@ -417,6 +427,10 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			case(R.id.speak):
 //				Log.d(">>>>currScreen",currScreen+"");
 				switch(currScreen) {
+					//edit later, Mike, May 23, 2013
+					case DCAT_SUMMARY_SCREEN:
+						break;
+						
 			    	case LINK_SCREEN:
 			    	case MULTIPLE_RADIO_BUTTONS_SCREEN:
 				        sb.append(((TextView) UsbongUtils.applyTagsInView(new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
@@ -952,6 +966,11 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 								  parser.nextTag(); //go to the next tag
 								  parseYesNoAnswers(parser);
 								}
+								else if (myStringToken.equals("dcatSummary")) { 								
+								  currScreen=DCAT_SUMMARY_SCREEN;
+								  parser.nextTag(); //go to the next tag
+								  parseYesNoAnswers(parser);
+								}									
 								else if (myStringToken.equals("qrCodeReader")) { 								
 									//<task-node name="qrCodeReader~Scan Patient's QR Code ID?">
 									//  <transition to="textField~Family Name:" name="Any"></transition>
@@ -1419,12 +1438,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    	setContentView(R.layout.classification_screen);
 		        initBackNextButtons();
 		        TextView myClassificationScreenTextView = (TextView)findViewById(R.id.classification_textview);
-		        myClassificationScreenTextView = (TextView) UsbongUtils.applyTagsInView(myClassificationScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
-
+		        myClassificationScreenTextView = (TextView) UsbongUtils.applyTagsInView(myClassificationScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);	            
+		        
 		        LinearLayout myClassificationLinearLayout = (LinearLayout)findViewById(R.id.classification_linearlayout);
 		        int totalClassificationsInContainer = classificationContainer.size();
 		        for (int i=0; i<totalClassificationsInContainer; i++) {
 		            TextView myTextView = new TextView(getBaseContext());
+		            //consider removing this code below; not needed; Mike, May 23, 2013
 		            myTextView = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
 
 		        	int bulletCount = i+1;
@@ -1434,12 +1454,199 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			        else {
 			        	myTextView.setText(bulletCount+") "+UsbongUtils.trimUsbongNodeName(classificationContainer.elementAt(i).toString()));		        	
 			        }
-	            	//add 5 so that the text does not touch the left border
-		            myTextView.setPadding(5, 0, 0, 0);
+		            
+		            //add 5 so that the text does not touch the left border
+		            myTextView.setPadding(padding_in_px, 0, 0, 0);
 			        myTextView.setTextSize(24);
 //			        myTextView.setTextColor(Color.WHITE);
 			        myTextView.setTextColor(Color.parseColor("#4a452a"));			        
 			        myClassificationLinearLayout.addView(myTextView);
+		        }		     		        
+		        break;    	
+		    //fix this
+			case DCAT_SUMMARY_SCREEN:
+		    	setContentView(R.layout.dcat_summary_screen);
+		        initBackNextButtons();
+		        TextView myDCATSummaryScreenTextView = (TextView)findViewById(R.id.dcat_summary_textview);
+		        myDCATSummaryScreenTextView = (TextView) UsbongUtils.applyTagsInView(myDCATSummaryScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+
+		        //usbongNodeContainer
+		        //usbongAnswerContainer
+		        
+		        String weightsString = "1.9;2.1;2.6;1.8;2.4;1.8;.7;1.0;1.6;2.6;6.9;5.7;3.3;2.2;3.3;3.3;2;1.7;1.9;3.9;1.3;2.5;.8";
+				StringTokenizer myWeightsStringTokenizer = new StringTokenizer(weightsString, ";");
+				String myWeightString = myWeightsStringTokenizer.nextToken();
+				/*
+				while (st.hasMoreTokens()) {
+					myStringToken = st.nextToken(); 
+				}
+*/
+				double myWeightedScoreInt=0;
+				double myNegotiatedWeightedScoreInt=0;
+				
+				double[][] dcatSum = new double[8][4];
+				
+				final int sumWeightedRatingIndex=0;
+				final int sumWeightedScoreIndex=1;
+				final int sumNegotiatedRatingIndex=2;
+				final int sumNegotiatedScoreIndex=3;
+				
+				int currStandard=0;//standard 1
+//				boolean hasReachedNegotiated=false;
+				boolean hasReachedStandardTotal=false;
+		        		
+		        LinearLayout myDCATSummaryLinearLayout = (LinearLayout)findViewById(R.id.dcat_summary_linearlayout);
+		        int totalElementsInDCATSummaryBasedOnUsbongNodeContainer = usbongNodeContainer.size();
+		        
+		        for (int i=0; i<totalElementsInDCATSummaryBasedOnUsbongNodeContainer; i++) {		        	
+		        	TextView myTextView = new TextView(getBaseContext());	            	
+		            myTextView.setPadding(padding_in_px, 0, 0, 0); //add 5 so that the text does not touch the left border
+			        myTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,24);
+			        myTextView.setTextColor(Color.parseColor("#4a452a"));			        
+
+			        //the only way to check if the element is already the last item in the standard
+			        //is if the next element in the node container has "STANDARD", but not the first standard
+	        		if ((i+1>=totalElementsInDCATSummaryBasedOnUsbongNodeContainer) || 
+	        		   (i+1<totalElementsInDCATSummaryBasedOnUsbongNodeContainer) &&
+	        				((usbongNodeContainer.elementAt(i+1).toString().contains("STANDARD")))&&
+	        				(!(usbongNodeContainer.elementAt(i+1).toString().contains("STANDARD ONE")))
+	        		   )
+	        		{	
+//	        			Log.d(">>>>>>>>inside","1");
+	        			
+	        			int tempCurrStandard=currStandard+1; //do a +1 since currStandard begins at 0
+
+			            TextView myIssuesTextView = new TextView(getBaseContext());			            
+	        			
+		        		String s = usbongAnswerContainer.elementAt(i).toString().replace(";", "");
+		        		s = s.replace("A,", "");
+		        		if (!s.equals("")) {
+		        			myIssuesTextView  = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: "+s+"{br}");
+		        		}
+		        		else {
+		        			myIssuesTextView  = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: none{br}");
+		        		}
+
+			            myIssuesTextView.setPadding(padding_in_px, 0, 0, 0); //add 5 so that the text does not touch the left border
+			            myIssuesTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,24);
+			            myIssuesTextView.setTextColor(Color.parseColor("#4a452a"));			        
+			            myDCATSummaryLinearLayout.addView(myIssuesTextView);
+
+		        		//get the next weight
+		        		myWeightString = myWeightsStringTokenizer.nextToken();
+
+		        		/*
+	        			TextView myTotalTextView = new TextView(getBaseContext());	            	
+			            myTotalTextView.setPadding(padding_in_px, 0, 0, 0); //add 5 so that the text does not touch the left border
+			            myTotalTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,24);
+			            myTotalTextView.setTextColor(Color.parseColor("#4a452a"));			        
+			            */
+			            myTextView = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, 
+				        		"//--------------------"+
+		        				" STANDARD "+tempCurrStandard+" (TOTAL){br}"+ 
+		        				"Total (Rating): "+String.format("%.2f",dcatSum[currStandard][sumWeightedRatingIndex]) +"{br}"+
+				        		"Total (Weighted Score): "+String.format("%.2f",dcatSum[currStandard][sumWeightedScoreIndex])+"{br}"+
+		        				"Total (Negotiated Rating): "+String.format("%.2f",dcatSum[currStandard][sumNegotiatedRatingIndex])+"{br}"+
+				        		"Total (Negotiated WS): "+String.format("%.2f",dcatSum[currStandard][sumNegotiatedScoreIndex])+"{br}"+
+				        		"//--------------------"
+		        				);		
+			            hasReachedStandardTotal=true;
+		        		currStandard++;
+//		        		myDCATSummaryLinearLayout.addView(myTextView);
+		        		
+//		        		myDCATSummaryLinearLayout.addView(myTotalTextView);
+		        		
+//	        			Log.d(">>>>>>>>inside","2");
+	        			
+//	        			Log.d(">>>>>> i",""+i);
+//	    		        Log.d(">>>>totalElementsInDCATSummaryBasedOnUsbongNodeContainer",""+totalElementsInDCATSummaryBasedOnUsbongNodeContainer);
+/*
+		        		//if this is not yet the last standard
+		        		if (i+1<totalElementsInDCATSummaryBasedOnUsbongNodeContainer) {
+		        		  i++;
+		        		  myTextView = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, usbongNodeContainer.elementAt(i).toString()+"{br}");
+		        			Log.d(">>>>>>>>inside","2.1");
+		        		}
+		        		else {
+		        			Log.d(">>>>>>>>inside","2.2");
+		        			break;
+		        		}
+*/		        		
+	        		}
+	        		if (hasReachedStandardTotal) {
+	        			//do nothing
+//	        			hasReachedStandardTotal=false;
+		        	}		        	
+	        		else if (usbongNodeContainer.elementAt(i).toString().contains("ISSUES")){
+		        		String s = usbongAnswerContainer.elementAt(i).toString().replace(";", "");
+		        		s = s.replace("A,", "");
+		        		if (!s.equals("")) {
+			        		myTextView = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: "+s+"{br}");
+		        		}
+		        		else {
+			        		myTextView = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: none{br}");
+		        		}
+		        		
+		        		//get the next weight
+		        		myWeightString = myWeightsStringTokenizer.nextToken();
+		        	}
+		        	else if (usbongNodeContainer.elementAt(i).toString().contains("Weighted")){
+			            TextView myWeightedTextView = new TextView(getBaseContext());
+			            myWeightedTextView = (TextView) UsbongUtils.applyTagsInView(myWeightedTextView, UsbongUtils.IS_TEXTVIEW, usbongNodeContainer.elementAt(i).toString().replace("{br}(Weighted Score)",""));
+			            myWeightedTextView.setPadding(padding_in_px, 0, 0, 0); //add 5 so that the text does not touch the left border
+			            myWeightedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,24);
+			            myWeightedTextView.setTextColor(Color.parseColor("#4a452a"));			        
+			            
+			            myDCATSummaryLinearLayout.addView(myWeightedTextView);
+
+		        		int weightedAnswer = Integer.parseInt(usbongAnswerContainer.elementAt(i).toString().replace(";", ""));
+		        		if (weightedAnswer<=0) {
+		        			weightedAnswer=0;
+		        		}
+
+		        		//the weight is in double
+		        		myWeightedScoreInt = weightedAnswer * Double.parseDouble(myWeightString);
+		        		if (myWeightedScoreInt<=0) {
+		        			myWeightedScoreInt=0;
+		        			myTextView.setBackgroundColor(Color.YELLOW);
+		        		}
+		        		
+		        		dcatSum[currStandard][sumWeightedRatingIndex]+=weightedAnswer;
+		        		dcatSum[currStandard][sumWeightedScoreIndex]+=myWeightedScoreInt;		        		
+		        		
+		        		myTextView = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, 
+		        				"Weighted: " +myWeightedScoreInt);
+		        	}
+		        	else if (usbongNodeContainer.elementAt(i).toString().contains("Negotiated")){
+		        		int negotiatedAnswer = Integer.parseInt(usbongAnswerContainer.elementAt(i).toString().replace(";", ""));
+		        		if (negotiatedAnswer<=0) {
+		        			negotiatedAnswer=0;
+		        		}
+		        		
+		        		//the weight is in double
+		        		myNegotiatedWeightedScoreInt =  negotiatedAnswer * Double.parseDouble(myWeightString);
+		        		if (myNegotiatedWeightedScoreInt<=0) {
+		        			myNegotiatedWeightedScoreInt=0;
+		        			myTextView.setBackgroundColor(Color.YELLOW);
+		        		}
+
+		        		dcatSum[currStandard][sumNegotiatedRatingIndex]+=negotiatedAnswer;
+		        		dcatSum[currStandard][sumNegotiatedScoreIndex]+=myNegotiatedWeightedScoreInt;		        		
+
+		        		myTextView = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, 
+		        				"Negotiated: " + myNegotiatedWeightedScoreInt);		        				        				        		
+//		        		hasReachedNegotiated=true;
+		        	}
+		        	else {
+			            myTextView = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, usbongNodeContainer.elementAt(i).toString()+"{br}");
+		        	}
+
+//	        		if (!hasReachedStandardTotal) {
+	        			myDCATSummaryLinearLayout.addView(myTextView);
+//	        		}
+//	        		else {
+//	        			hasReachedStandardTotal=false;
+//	        		}
 		        }		     		        
 		        break;    	
 			case DATE_SCREEN:
