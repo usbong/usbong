@@ -1,11 +1,11 @@
 --Usbong (beta)--
-ver: May 4, 2013
+ver: May 25, 2013
 
-Usbong helps you create your own mobile applications to make your life and the lives of the people that matter to you more meaningful, more peaceful-- HAPPIER. =)
+Usbong helps you create your own web-mobile systems to digitize and streamline processes, and make your life and the lives of the people that matter to you, more meaningful, more peaceful-- HAPPIER. =)
 
 "Usbong" in Filipino is both a noun and a verb. As a noun, it can mean "a bud, a sprout, a shoot". As a verb, it means "to sprout, to grow, to develop". In Bisaya, it means "to burgeon, to grow, to expand, and to flourish."
 
-For us (and hopefully for you too), "Usbong" also means an open-source platform that would allow people to create their own web-mobile systems by putting together components (like text inputs, checkboxes, radiobuttons, the camera, voice recorder, stop watches) and forming a tree using a Graphical User Interface (GUI) or a spreadsheet. 
+For us (and hopefully for you too), "Usbong" also means an open-source platform that allows people to create their own web-mobile systems by putting together components (like text inputs, checkboxes, radiobuttons, the camera, voice recorder) and forming a "tree" using a Graphical User Interface (GUI) or Google Drive Spreadsheet. 
 
 Context -> Tree -> Mobile + Web System
 
@@ -18,18 +18,14 @@ Michael Syson, MSCS
 --UsbongEvangelist--
 Diane Gonzales
 
---UsbongAccounts--
-Jomel Araniego
+--Usbong4CHAMPSVisualNovels--
+Ma. Regina Estuar, Ph.D.
+Christine Amarra, MSCS
+Jeffery Jongko, MSCS
+Lev Leetian, MSCS Student
 
---Usbong4EventsResponse--
-Jomel Araniego
-Jabo Barrozo
-
---Usbong4PrenatalCare--
-Benjz Sevilla
-Karina Casing
-Sean de Dios
-Niko Lok
+--Usbong4DCAT (Tuberculosis)--
+Dennis Batangan, M.D., MS
 
 --Usbong4SPED--
 Ronjo Solis, MSECE Student
@@ -38,21 +34,15 @@ Ronjo Solis, MSECE Student
 Kenneth Llanto, MSCS
 
 --Usbong4Telerehab--
-Erick Villegas, MSECE
 JP Talusan, MSECE Student
 Denica Oarde, MSECE Student
-Charles Tiu
 
 --Usbong4PediatricCare--
-Ma. Regina Estuar, Ph.D.
 Roger dela Cruz, MSCS Student
-Jeffrey Jongko, MSCS
 
 --Usbong4TheBlind--
+Czarina Saloma-Akpedonu, Ph.D.
 Paul Cabacungan, MSECE
-TJ Sevilla
-Dickson Lua
-Matthew Cua, MSES Student
 
 --Usbong4Positive
 Psychology--
@@ -61,13 +51,12 @@ Cristina Tangonan, Ph.D. Student
 --Usbong4Aquaculture--
 Nathaniel Libatique, Ph.D.
 Cesar Pineda
-Chrisandro Favila, MSECE Student
-Dominic Solpico
-Vincent Licitri
+Matthew Cua, MSES Student
+Dominic Solpico, MSECE Student
 
 Advisors:
 Gregory Tangonan, Ph.D. (Ateneo Innovation Center AND COMSTE)
-Alvin Marcelo, M.D. (National Telehealth Center)
+Alvin Marcelo, M.D. (PhilHealth)
 Mark Ruiz (Social Entrepreneurship)
 
 Partners:

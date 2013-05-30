@@ -1469,11 +1469,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        initBackNextButtons();
 		        TextView myDCATSummaryScreenTextView = (TextView)findViewById(R.id.dcat_summary_textview);
 		        myDCATSummaryScreenTextView = (TextView) UsbongUtils.applyTagsInView(myDCATSummaryScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
-
-		        //usbongNodeContainer
-		        //usbongAnswerContainer
 		        
-		        String weightsString = "1.9;2.1;2.6;1.8;2.4;1.8;.7;1.0;1.6;2.6;6.9;5.7;3.3;2.2;3.3;3.3;2;1.7;1.9;3.9;1.3;2.5;.8";
+		        String weightsString = "1.9;2.1;2.6;1.8;2.4;1.8;.7;1.0;1.6;2.6;6.9;5.7;3.3;2.2;3.3;3.3;2;2;1.7;1.9;3.9;1.3;2.5;.8";
 				StringTokenizer myWeightsStringTokenizer = new StringTokenizer(weightsString, ";");
 				String myWeightString = myWeightsStringTokenizer.nextToken();
 				/*
@@ -1499,6 +1496,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        int totalElementsInDCATSummaryBasedOnUsbongNodeContainer = usbongNodeContainer.size();
 		        
 		        for (int i=0; i<totalElementsInDCATSummaryBasedOnUsbongNodeContainer; i++) {		        	
+
 		        	TextView myTextView = new TextView(getBaseContext());	            	
 		            myTextView.setPadding(padding_in_px, 0, 0, 0); //add 5 so that the text does not touch the left border
 			        myTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,24);
@@ -1512,8 +1510,6 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	        				(!(usbongNodeContainer.elementAt(i+1).toString().contains("STANDARD ONE")))
 	        		   )
 	        		{	
-//	        			Log.d(">>>>>>>>inside","1");
-	        			
 	        			int tempCurrStandard=currStandard+1; //do a +1 since currStandard begins at 0
 
 			            TextView myIssuesTextView = new TextView(getBaseContext());			            
@@ -1521,10 +1517,10 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        		String s = usbongAnswerContainer.elementAt(i).toString().replace(";", "");
 		        		s = s.replace("A,", "");
 		        		if (!s.equals("")) {
-		        			myIssuesTextView  = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: "+s+"{br}");
+		        			myIssuesTextView  = (TextView) UsbongUtils.applyTagsInView(myIssuesTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: "+s+"{br}");
 		        		}
 		        		else {
-		        			myIssuesTextView  = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: none{br}");
+		        			myIssuesTextView  = (TextView) UsbongUtils.applyTagsInView(myIssuesTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: none{br}");
 		        		}
 
 			            myIssuesTextView.setPadding(padding_in_px, 0, 0, 0); //add 5 so that the text does not touch the left border
@@ -1532,15 +1528,11 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			            myIssuesTextView.setTextColor(Color.parseColor("#4a452a"));			        
 			            myDCATSummaryLinearLayout.addView(myIssuesTextView);
 
-		        		//get the next weight
-		        		myWeightString = myWeightsStringTokenizer.nextToken();
+		        		if (myWeightsStringTokenizer.hasMoreElements()) {
+			        		//get the next weight
+		        			myWeightString = myWeightsStringTokenizer.nextToken();
+		        		}
 
-		        		/*
-	        			TextView myTotalTextView = new TextView(getBaseContext());	            	
-			            myTotalTextView.setPadding(padding_in_px, 0, 0, 0); //add 5 so that the text does not touch the left border
-			            myTotalTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,24);
-			            myTotalTextView.setTextColor(Color.parseColor("#4a452a"));			        
-			            */
 			            myTextView = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, 
 				        		"//--------------------"+
 		        				" STANDARD "+tempCurrStandard+" (TOTAL){br}"+ 
@@ -1552,30 +1544,10 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        				);		
 			            hasReachedStandardTotal=true;
 		        		currStandard++;
-//		        		myDCATSummaryLinearLayout.addView(myTextView);
-		        		
-//		        		myDCATSummaryLinearLayout.addView(myTotalTextView);
-		        		
-//	        			Log.d(">>>>>>>>inside","2");
-	        			
-//	        			Log.d(">>>>>> i",""+i);
-//	    		        Log.d(">>>>totalElementsInDCATSummaryBasedOnUsbongNodeContainer",""+totalElementsInDCATSummaryBasedOnUsbongNodeContainer);
-/*
-		        		//if this is not yet the last standard
-		        		if (i+1<totalElementsInDCATSummaryBasedOnUsbongNodeContainer) {
-		        		  i++;
-		        		  myTextView = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, usbongNodeContainer.elementAt(i).toString()+"{br}");
-		        			Log.d(">>>>>>>>inside","2.1");
-		        		}
-		        		else {
-		        			Log.d(">>>>>>>>inside","2.2");
-		        			break;
-		        		}
-*/		        		
 	        		}
+
 	        		if (hasReachedStandardTotal) {
-	        			//do nothing
-//	        			hasReachedStandardTotal=false;
+	        			hasReachedStandardTotal=false;
 		        	}		        	
 	        		else if (usbongNodeContainer.elementAt(i).toString().contains("ISSUES")){
 		        		String s = usbongAnswerContainer.elementAt(i).toString().replace(";", "");
@@ -1587,8 +1559,10 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			        		myTextView = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: none{br}");
 		        		}
 		        		
-		        		//get the next weight
-		        		myWeightString = myWeightsStringTokenizer.nextToken();
+		        		if (myWeightsStringTokenizer.hasMoreElements()) {
+			        		//get the next weight
+		        			myWeightString = myWeightsStringTokenizer.nextToken();
+		        		}
 		        	}
 		        	else if (usbongNodeContainer.elementAt(i).toString().contains("Weighted")){
 			            TextView myWeightedTextView = new TextView(getBaseContext());

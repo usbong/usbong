@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	style="@style/UsbongDefaultParentLayout"
+	android:id="@+id/parent_layout_id"       
+	>
+	<ScrollView android:isScrollContainer="true"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_weight="0.6">		 	
+		<LinearLayout
+			android:id="@+id/dcat_summary_linearlayout"
+			style="@style/UsbongMultipleCheckBoxesMainLayout"> 
+			<TextView android:id="@+id/dcat_summary_textview"
+				style="@style/UsbongDefaultTextView"
+			    android:text="This is the default."/>		
+		</LinearLayout>			    
+	</ScrollView>	
+	<LinearLayout
+	style="@style/UsbongDefaultBackNextButtonLayout">
+
+		<Button
+		    android:id="@+id/back_button"
+		    style="@style/UsbongDefaultBackNextButton"
+		    android:text="Back" />
+
+		<Button
+		    android:id="@+id/next_button"
+		    style="@style/UsbongDefaultBackNextButton"
+		    android:text="Next" />
+	    
+	</LinearLayout>
+</LinearLayout>
