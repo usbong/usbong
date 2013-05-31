@@ -684,18 +684,73 @@ public class UsbongUtils {
 	//Reference: http://answers.oreilly.com/topic/217-how-to-match-whole-words-with-a-regular-expression/; last accessed 27 Sept 2011
 	//Also, take note that in Android, you must add an extra escape character (e.g. \b becomes \\b)
     public static String convertFilipinoToSpanishAccentFriendlyText(String text) {    	
-//		text = text.toLowerCase(); //has problems when text input has symbols ?
+    	text = text.replaceAll("h", "j");
+    	text = text.replaceAll("H", "J");
+    	
+		//added by Mike, May 30, 2013
+    	//if the last character ends with "ng" change it to "g"
+        String myStringToken="";
+        StringBuffer sb= new StringBuffer("");
+                
+        String punctuation="";
+        
+    	StringTokenizer st = new StringTokenizer(text, " ");
+		while ((st != null) && (st.hasMoreTokens())) {
+    		myStringToken = st.nextToken();
 
-    	text = text.replace('h', 'j');
-    	text = text.replace('H', 'J');
+        	if (myStringToken.endsWith(".")) {
+        		myStringToken = myStringToken.substring(0, myStringToken.length()-1);
+        		punctuation=".";
+        	}
+        	else if (myStringToken.endsWith(",")) {
+        		myStringToken = myStringToken.substring(0, myStringToken.length()-1);
+        		punctuation=",";
+        	}
+        	else if (myStringToken.endsWith("?")) {
+        		myStringToken = myStringToken.substring(0, myStringToken.length()-1);
+        		punctuation="?";
+        	}
+        	else if (myStringToken.endsWith("!")) {
+        		myStringToken = myStringToken.substring(0, myStringToken.length()-1);
+        		punctuation="!";
+        	}
+        	
+        	if (myStringToken.equals("ng")){
+        		sb.append("nang");
+        	}
+        	else if (myStringToken.equals("Ng")){
+        		sb.append("Nang");
+        	}
+        	else if (myStringToken.contains("gj")){
+        		myStringToken = myStringToken.replaceAll("gj", "gh");
+        		sb.append(myStringToken);
+        	}
+        	else if (myStringToken.contains("ng-")){
+        		myStringToken = myStringToken.replaceAll("ng-", "n-");
+        		sb.append(myStringToken);
+        	}
+        	else if (myStringToken.endsWith("ng")){
+    			myStringToken = myStringToken.substring(0, myStringToken.length()-1);
+        		sb.append(myStringToken);
+    		}
+    		else if (myStringToken.endsWith("NG")){
+    			myStringToken = myStringToken.substring(0, myStringToken.length()-1);
+        		sb.append(myStringToken);
+    		}    	
+    		else {
+    			sb.append(myStringToken);
+    		}
+        	sb.append(punctuation+" ");
+		}
+    	text = sb.toString();
+    				    	
+//		text = text.toLowerCase(); //has problems when text input has symbols ?
+    	text = text.replaceAll("\\bANG\\b", "ang");
 
     	text = text.replaceAll("\\bmga\\b", "manga");
     	text = text.replaceAll("\\bMga\\b", "Manga");
-    	
-		text = text.replaceAll("\\bng\\b", "nang");
-		text = text.replaceAll("\\bNg\\b", "Nang");
 
-		text = text.replaceAll("gi", "ghi");		
+    	text = text.replaceAll("gi", "ghi");		
 		text = text.replaceAll("Gi", "Ghi");		
 
 		return text;
