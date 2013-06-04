@@ -74,6 +74,7 @@ public class UsbongUtils {
 	public static String USBONG_TREES_FILE_PATH = BASE_FILE_PATH + "usbong_trees/";
 	//	public static String BASE_FILE_PATH = "/sdcard/usbong/";
 	private static String timeStamp;
+	private static String dateTimeStamp;
     	
 	public static final int LANGUAGE_ENGLISH=0; 
 	public static final int LANGUAGE_FILIPINO=1;
@@ -130,7 +131,7 @@ public class UsbongUtils {
 		destinationServerURL = s;
 	}	
 	
-    public static void generateTimeStamp() {
+    public static void generateDateTimeStamp() {
 		Calendar date = Calendar.getInstance();
 		int day = date.get(Calendar.DATE);
 		int month = date.get(Calendar.MONTH) +1; //why +1? Because month starts at 0 (i.e. Jan).
@@ -140,13 +141,31 @@ public class UsbongUtils {
 		int sec = date.get(Calendar.SECOND);
 		int millisec = date.get(Calendar.MILLISECOND);
 		
-		timeStamp = "" + day +"-"+ month +"-"+ year +"-"+ hour +"hr"+ min +"min"+ sec + "sec";//millisec;
+		dateTimeStamp = "" + day +"-"+ month +"-"+ year +"-"+ hour +"hr"+ min +"min"+ sec + "sec";//millisec;
     }
 
+    public static String getDateTimeStamp() {
+		return dateTimeStamp;
+    }
+
+    public static void generateTimeStamp() {
+		Calendar date = Calendar.getInstance();
+		int hour = date.get(Calendar.HOUR_OF_DAY);
+		int min = date.get(Calendar.MINUTE);
+		int sec = date.get(Calendar.SECOND);
+		
+		timeStamp =  hour +"hr "+ min +"min "+ sec + "sec";
+    }
+/*
     public static String getTimeStamp() {
 		return timeStamp;
     }
-
+*/
+    public static String getCurrTimeStamp() {
+    	generateTimeStamp();
+		return timeStamp;
+    }
+        
 	public static void createUsbongFileStructure() throws IOException {
 		//code below doesn't seem to work
 //		String baseFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "usbong/";
@@ -163,7 +182,7 @@ public class UsbongUtils {
 	
 	public static void createNewOutputFolderStructure() throws IOException {
 //		String baseFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "usbong/";
-		File directory = new File(BASE_FILE_PATH + UsbongUtils.getTimeStamp()+"/");
+		File directory = new File(BASE_FILE_PATH + UsbongUtils.getDateTimeStamp()+"/");
 		System.out.println(">>>> Directory: " + directory.getAbsolutePath());
 		
 		if (!directory.exists() && !directory.mkdirs()) 

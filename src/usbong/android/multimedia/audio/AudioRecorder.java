@@ -81,7 +81,7 @@ public class AudioRecorder {
 	    recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
 	    recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
-	    File file = new File(UsbongUtils.BASE_FILE_PATH + UsbongUtils.getTimeStamp()+"/"+myRecordAudioFileName+".3gp");
+	    File file = new File(UsbongUtils.BASE_FILE_PATH + UsbongUtils.getDateTimeStamp()+"/"+myRecordAudioFileName+".3gp");
        	path =file.getPath();
 
 	    // check if memory card is being used

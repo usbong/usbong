@@ -91,7 +91,7 @@ public class PaintActivity extends Activity
 						//----------------------------
 						Bitmap myImage = myCanvas.getMyBitmap();
 
-				        File sdImageMainDirectory = new File("/sdcard/usbong" + "/" +UsbongUtils.getTimeStamp() +"/");
+				        File sdImageMainDirectory = new File("/sdcard/usbong" + "/" +UsbongUtils.getDateTimeStamp() +"/");
 /*				        File sdImageMainDirectory = new File("/sdcard/abakada/" +timeStamp  +"/");
 */
 				        sdImageMainDirectory.mkdirs();
@@ -122,7 +122,7 @@ public class PaintActivity extends Activity
 						bos.flush();
 						bos.close();
 
-						File imageFile = new File("/sdcard/usbong/" +UsbongUtils.getTimeStamp() +"/" + myPaintName+".jpg");
+						File imageFile = new File("/sdcard/usbong/" +UsbongUtils.getDateTimeStamp() +"/" + myPaintName+".jpg");
 /*
 						File imageFile = new File("/sdcard/abakada/" + timeStamp+ "/"+ currentWord + "1.jpg");
 */			    
