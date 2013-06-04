@@ -323,7 +323,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	public boolean StoreByteImage(CameraPreview mContext2, byte[] imageData,
 			int quality, String expName) {
 
-	        File sdImageMainDirectory = new File("/sdcard/usbong" + "/" +UsbongUtils.getTimeStamp() +"/");
+	        File sdImageMainDirectory = new File("/sdcard/usbong" + "/" +UsbongUtils.getDateTimeStamp() +"/");
 			// stackoverflow.com/questions/2130932/how-to-create-directory-automatically-on-sd-card
 	        if (!sdImageMainDirectory.exists() && !sdImageMainDirectory.mkdirs()) 
 	    	{
@@ -352,7 +352,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 				bos.flush();
 				bos.close();
 
-				File imageFile = new File("/sdcard/usbong/" +UsbongUtils.getTimeStamp() +"/" + myPictureName+".jpg");
+				File imageFile = new File("/sdcard/usbong/" +UsbongUtils.getDateTimeStamp() +"/" + myPictureName+".jpg");
 			    
 				if(imageFile.exists())
 				{

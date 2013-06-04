@@ -105,17 +105,20 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	public static final int TEXT_IMAGE_DISPLAY_SCREEN=11;
 	public static final int CLASSIFICATION_SCREEN=12;		
 	public static final int DATE_SCREEN=13;	
-	public static final int GPS_LOCATION_SCREEN=14;		
-	public static final int VIDEO_FROM_FILE_SCREEN=15;	
-	public static final int LINK_SCREEN=16;			
-	public static final int SEND_TO_WEBSERVER_SCREEN=17;		
-	public static final int SEND_TO_CLOUD_BASED_SERVICE_SCREEN=18;	
-	public static final int PAINT_SCREEN=19;
-	public static final int QR_CODE_READER_SCREEN=20;
-	public static final int CLICKABLE_IMAGE_DISPLAY_SCREEN=21;
-	public static final int TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN=22;
-	public static final int DCAT_SUMMARY_SCREEN=23;			
-	public static final int END_STATE_SCREEN=24;		
+	public static final int TIMESTAMP_DISPLAY_SCREEN=14;		
+	public static final int GPS_LOCATION_SCREEN=15;		
+	public static final int VIDEO_FROM_FILE_SCREEN=16;	
+	public static final int LINK_SCREEN=17;			
+	public static final int SEND_TO_WEBSERVER_SCREEN=18;		
+	public static final int SEND_TO_CLOUD_BASED_SERVICE_SCREEN=19;	
+	public static final int PAINT_SCREEN=20;
+	public static final int QR_CODE_READER_SCREEN=21;
+	public static final int CLICKABLE_IMAGE_DISPLAY_SCREEN=22;
+	public static final int TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN=23;
+	public static final int DCAT_SUMMARY_SCREEN=24;			
+	public static final int MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN=25;	
+
+	public static final int END_STATE_SCREEN=26;		
 	
 	private static int currScreen=TEXTFIELD_SCREEN;
 	
@@ -175,7 +178,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 //	private String myTreeDirectory="usbong_trees/";
 	private String myTree="no tree selected.";//"input.xml";
-	private String myOutputDirectory=UsbongUtils.getTimeStamp()+"/"; //add the ".csv" after appending the timestampe //output.csv
+	private String myOutputDirectory=UsbongUtils.getDateTimeStamp()+"/"; //add the ".csv" after appending the timestampe //output.csv
 	
 	private static UsbongDecisionTreeEngineActivity instance;
     private static TextToSpeech mTts;
@@ -207,6 +210,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	
     private int padding_in_dp = 5;  // 5 dps
     private int padding_in_px;
+    
+    private String myMultipleRadioButtonsWithAnswerAnswer;
+    private String timestampString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -433,6 +439,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 						
 			    	case LINK_SCREEN:
 			    	case MULTIPLE_RADIO_BUTTONS_SCREEN:
+			    	case MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN:
 				        sb.append(((TextView) UsbongUtils.applyTagsInView(new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
 
 				        int totalRadioButtonsInContainer = radioButtonsContainer.size();
@@ -490,6 +497,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 					case TEXT_IMAGE_DISPLAY_SCREEN:
 					case GPS_LOCATION_SCREEN:
 					case QR_CODE_READER_SCREEN:
+					case TIMESTAMP_DISPLAY_SCREEN:						
 				        sb.append(((TextView) UsbongUtils.applyTagsInView(new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
 //				        Log.d(">>>>sb",sb.toString());
 				        break;
@@ -892,6 +900,28 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 									}
 									parseYesNoAnswers(parser);
 								}
+								if (myStringToken.equals("radioButtonsWithAnswer")) {
+									//<task-node name="radioButtonsWithAnswer~You see your teacher approaching you. What do you do?Answer=0">
+									//	<task name="Greet him."></task>
+									//	<task name="Run away."></task>
+									//	<task name="Ignore him."></task>
+									//	<transition to="textDisplay~Hello!" name="Yes"></transition>
+									//	<transition to="textDisplay~You feel sad that you didn't greet him." name="No"></transition>
+									//</task-node>
+									parser.nextTag(); //go to task tag
+									//radioButtons by definition requires only 1 ticked button in the group
+									currScreen=MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN;
+									
+									radioButtonsContainer.removeAllElements();
+									while(!parser.getName().equals("transition")) {
+										  radioButtonsContainer.addElement(parser.getAttributeValue(0).toString());
+										  
+										  //do two nextTag()'s, because <task> has a closing tag
+										  parser.nextTag();
+										  parser.nextTag();		
+									}
+									parseYesNoAnswers(parser);
+								}								
 								else if (myStringToken.equals("link")) {
 									//<task-node name="link~1~What will you do?">
 									//	<task name="textDisplay~You ate the fruit.~I will eat the fruit."></task>
@@ -1025,13 +1055,21 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 									
 									parseYesNoAnswers(parser);
 								}
-
 								else if (myStringToken.equals("date")) { //special?
 									//<task-node name="date~Birthday">
-									//  <transition to="Address" name="Any"></transition>
+									//  <transition to="textField~Address" name="Any"></transition>
 									//</task-node>
 									parser.nextTag(); //go to transition tag
 									currScreen=DATE_SCREEN;
+
+									parseYesNoAnswers(parser);
+								}
+								else if (myStringToken.equals("timestampDisplay")) { //special?
+									//<task-node name="timestampDisplay~Timecheck">
+									//  <transition to="textDisplay~Comments" name="Any"></transition>
+									//</task-node>
+									parser.nextTag(); //go to transition tag
+									currScreen=TIMESTAMP_DISPLAY_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
@@ -1208,6 +1246,52 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		            radioGroup.addView(radioButton);
 		        }		     		        
 				break;
+	    	case MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN:
+		    	setContentView(R.layout.multiple_radio_buttons_screen);
+		        initBackNextButtons();
+		       
+    			String myMultipleRadioButtonsWithAnswerStringToken = "";
+//    			Log.d(">>>>>>>>currUsbongNode", currUsbongNode);
+	    		String currUsbongNodeWithoutAnswer=currUsbongNode.replace("Answer=", "~");
+
+	    		StringTokenizer myMultipleRadioButtonsWithAnswerStringTokenizer = new StringTokenizer(currUsbongNodeWithoutAnswer, "~");
+	    		
+	    		if (myMultipleRadioButtonsWithAnswerStringTokenizer != null) {
+	    			myMultipleRadioButtonsWithAnswerStringToken = myMultipleRadioButtonsWithAnswerStringTokenizer.nextToken();
+	    			
+		    		while (myMultipleRadioButtonsWithAnswerStringTokenizer.hasMoreTokens()) { //get last element (i.e. 0 in "radioButtonsWithAnswer~You see your teacher approaching you. What do you do?Answer=0")
+		    			myMultipleRadioButtonsWithAnswerStringToken = myMultipleRadioButtonsWithAnswerStringTokenizer.nextToken(); 
+		    		}
+	    		}
+	    		myMultipleRadioButtonsWithAnswerAnswer=myMultipleRadioButtonsWithAnswerStringToken.toString();
+//    			Log.d(">>>>>>>>myMultipleRadioButtonsWithAnswerAnswer", myMultipleRadioButtonsWithAnswerAnswer);
+
+    			currUsbongNodeWithoutAnswer=currUsbongNodeWithoutAnswer.substring(0, currUsbongNodeWithoutAnswer.length()-myMultipleRadioButtonsWithAnswerAnswer.length()-1); //do a -1 for the last tilde    			
+//    			Log.d(">>>>>>>>currUsbongNodeWithoutAnswer", currUsbongNodeWithoutAnswer);
+    			
+		        TextView myMultipleRadioButtonsWithAnswerScreenTextView = (TextView)findViewById(R.id.radio_buttons_textview);
+		        myMultipleRadioButtonsWithAnswerScreenTextView = (TextView) UsbongUtils.applyTagsInView(myMultipleRadioButtonsWithAnswerScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNodeWithoutAnswer);
+
+		        RadioGroup myMultipleRadioButtonsWithAnswerRadioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);
+		        int myMultipleRadioButtonsWithAnswerTotalRadioButtonsInContainer = radioButtonsContainer.size();
+		        for (int i=0; i<myMultipleRadioButtonsWithAnswerTotalRadioButtonsInContainer; i++) {
+		            View radioButtonView = new RadioButton(getBaseContext());
+		            RadioButton radioButton = (RadioButton) UsbongUtils.applyTagsInView(radioButtonView, UsbongUtils.IS_RADIOBUTTON, radioButtonsContainer.elementAt(i).toString());
+		            radioButton.setTextSize(20);
+		            radioButton.setId(i);
+		            radioButton.setTextColor(Color.parseColor("#4a452a"));			        
+
+		            if ((!myStringToken.equals("")) && (i == Integer.parseInt(myStringToken))) {
+		            	radioButton.setChecked(true);
+		            }
+		            else {
+			            radioButton.setChecked(false);
+		            }
+		            
+		            myMultipleRadioButtonsWithAnswerRadioGroup.addView(radioButton);
+		        }		     		        
+				break;
+
 	    	case LINK_SCREEN:
 	    		//use same contentView as multiple_radio_buttons_screen
 		    	setContentView(R.layout.multiple_radio_buttons_screen);
@@ -1504,6 +1588,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        LinearLayout myDCATSummaryLinearLayout = (LinearLayout)findViewById(R.id.dcat_summary_linearlayout);
 		        int totalElementsInDCATSummaryBasedOnUsbongNodeContainer = usbongNodeContainer.size();
 		        
+//		        for (int i=0; i<totalElementsInDCATSummaryBasedOnUsbongNodeContainer; i++) {		        	
 		        for (int i=0; i<totalElementsInDCATSummaryBasedOnUsbongNodeContainer; i++) {		        	
 
 		        	TextView myTextView = new TextView(getBaseContext());	            	
@@ -1522,21 +1607,25 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	        			int tempCurrStandard=currStandard+1; //do a +1 since currStandard begins at 0
 
 			            TextView myIssuesTextView = new TextView(getBaseContext());			            
+
+	        			//added by Mike, May 31, 2013
+	        			if (!usbongAnswerContainer.elementAt(i).toString().equals("dcat_end;")) {
+	
+			        		String s = usbongAnswerContainer.elementAt(i).toString().replace(";", "");
+			        		s = s.replace("A,", "");
+			        		if (!s.equals("")) {
+			        			myIssuesTextView  = (TextView) UsbongUtils.applyTagsInView(myIssuesTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: "+s+"{br}");
+			        		}
+			        		else {
+			        			myIssuesTextView  = (TextView) UsbongUtils.applyTagsInView(myIssuesTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: none{br}");
+			        		}
+
+				            myIssuesTextView.setPadding(padding_in_px, 0, 0, 0); //add 5 so that the text does not touch the left border
+				            myIssuesTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,24);
+				            myIssuesTextView.setTextColor(Color.parseColor("#4a452a"));			        
+				            myDCATSummaryLinearLayout.addView(myIssuesTextView);
+	        			}
 	        			
-		        		String s = usbongAnswerContainer.elementAt(i).toString().replace(";", "");
-		        		s = s.replace("A,", "");
-		        		if (!s.equals("")) {
-		        			myIssuesTextView  = (TextView) UsbongUtils.applyTagsInView(myIssuesTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: "+s+"{br}");
-		        		}
-		        		else {
-		        			myIssuesTextView  = (TextView) UsbongUtils.applyTagsInView(myIssuesTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: none{br}");
-		        		}
-
-			            myIssuesTextView.setPadding(padding_in_px, 0, 0, 0); //add 5 so that the text does not touch the left border
-			            myIssuesTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,24);
-			            myIssuesTextView.setTextColor(Color.parseColor("#4a452a"));			        
-			            myDCATSummaryLinearLayout.addView(myIssuesTextView);
-
 		        		if (myWeightsStringTokenizer.hasMoreElements()) {
 			        		//get the next weight
 		        			myWeightString = myWeightsStringTokenizer.nextToken();
@@ -1567,7 +1656,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        		else {
 			        		myTextView = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: none{br}");
 		        		}
-		        		
+	        			
 		        		if (myWeightsStringTokenizer.hasMoreElements()) {
 			        		//get the next weight
 		        			myWeightString = myWeightsStringTokenizer.nextToken();
@@ -1639,14 +1728,6 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        TextView myDateScreenTextView = (TextView)findViewById(R.id.date_textview);
 		        myDateScreenTextView = (TextView) UsbongUtils.applyTagsInView(myDateScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
 
-		        /*
-		        if (UsbongUtils.USE_UNESCAPE) {
-		        	myDateScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
-		        }
-		        else {
-		        	myDateScreenTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
-		        }
-*/
 		        //Reference: http://code.google.com/p/android/issues/detail?id=2037
 		        //last accessed: 21 Aug. 2012
 		        Configuration userConfig = new Configuration();
@@ -1732,15 +1813,15 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 		        TextView mySpecialScreenTextView = (TextView)findViewById(R.id.special_textview);
 		        mySpecialScreenTextView = (TextView) UsbongUtils.applyTagsInView(mySpecialScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
-/*
-		        if (UsbongUtils.USE_UNESCAPE) {
-		        	mySpecialScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
-		        }
-		        else {
-		        	mySpecialScreenTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
-		        }
-*/		        
 		        break;    	
+			case TIMESTAMP_DISPLAY_SCREEN:
+		    	setContentView(R.layout.timestamp_display_screen);
+		        initBackNextButtons();
+
+		        TextView myTimeDisplayScreenTextView = (TextView)findViewById(R.id.time_display_textview);
+		        timestampString = UsbongUtils.getCurrTimeStamp();
+		        myTimeDisplayScreenTextView = (TextView) UsbongUtils.applyTagsInView(myTimeDisplayScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode+"{br}"+timestampString);
+		        break;    			        
 			case IMAGE_DISPLAY_SCREEN:
 		    	setContentView(R.layout.image_display_screen);
 		        initBackNextButtons();
@@ -2085,9 +2166,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    		for(int i=0; i<usbongAnswerContainerSize;i++) {
 		    			outputStringBuffer.append(usbongAnswerContainer.elementAt(i));
 		    		}
-		    		myOutputDirectory=UsbongUtils.getTimeStamp()+"/";
+		    		myOutputDirectory=UsbongUtils.getDateTimeStamp()+"/";
 //		    		System.out.println(">>>>>>>>>>>>> outputStringBuffer: " + outputStringBuffer.toString());
-		    		UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv", outputStringBuffer.toString());
+		    		UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", outputStringBuffer.toString());
 
 //					wasNextButtonPressed=false; //no need to make this true, because this is the last node
 					hasUpdatedDecisionTrackerContainer=true;
@@ -2166,11 +2247,11 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				    			outputStringBuffer.append(usbongAnswerContainer.elementAt(i));
 				    		}
 
-				        	myOutputDirectory=UsbongUtils.getTimeStamp()+"/";
-				    		UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv", outputStringBuffer.toString());
+				        	myOutputDirectory=UsbongUtils.getDateTimeStamp()+"/";
+				    		UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", outputStringBuffer.toString());
 
 				    		//send to server
-				    		UsbongUtils.performFileUpload(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv");
+				    		UsbongUtils.performFileUpload(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv");
 				        }
 				        else if (myNoRadioButton.isChecked()) {
 							currUsbongNode = nextUsbongNodeIfNo; 
@@ -2230,11 +2311,11 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				    			outputStringBuffer.append(usbongAnswerContainer.elementAt(i));
 				    		}
 
-				        	myOutputDirectory=UsbongUtils.getTimeStamp()+"/";
-				    		UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv", outputStringBuffer.toString());
+				        	myOutputDirectory=UsbongUtils.getDateTimeStamp()+"/";
+				    		UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", outputStringBuffer.toString());
 
 				    		//send to email
-				    		Intent emailIntent = UsbongUtils.performEmailProcess(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv", attachmentFilePaths);
+				    		Intent emailIntent = UsbongUtils.performEmailProcess(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", attachmentFilePaths);
 				    		/*emailIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 */
 //				    		emailIntent.addFlags(RESULT_OK);
@@ -2339,6 +2420,53 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			    			
 			    			initParser();		    				
 		    			}
+		    		}
+		    		else if (currScreen==MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN) {
+						currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+		    			RadioGroup myRadioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);				        				        		    			
+
+/*		    			if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
+ */
+			    			if (myRadioGroup.getCheckedRadioButtonId()==-1) { //no radio button checked			    							    				
+				        		if (!UsbongUtils.IS_IN_DEBUG_MODE) {
+				        			if (!isAnOptionalNode) {
+					    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
+				    					wasNextButtonPressed=false;
+				    					hasUpdatedDecisionTrackerContainer=true;
+				    					return;
+				        			}
+				        		}
+//				        		else {
+			        			currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
+								usbongAnswerContainerCounter++;
+
+					    		initParser();				
+//				        		}
+			    			}
+			    			else {			    				
+			        			if (myMultipleRadioButtonsWithAnswerAnswer.equals(""+myRadioGroup.getCheckedRadioButtonId())) {
+	    							currUsbongNode = nextUsbongNodeIfYes; 	
+						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y,"+myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
+	    				        }
+	    				        else {
+	    							currUsbongNode = nextUsbongNodeIfNo; 				        					        	
+						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N,"+myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
+	    				        }				        
+
+								usbongAnswerContainerCounter++;
+				    			initParser();
+			    			}
+/*		    			}
+ */
+/*		    			else {
+//			    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
+				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
+							usbongAnswerContainerCounter++;
+			    			
+			    			initParser();		    				
+		    			}
+*/
 		    		}
 		    		else if (currScreen==LINK_SCREEN) {		    			
 		    			RadioGroup myRadioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);				        				        		    			
@@ -2491,6 +2619,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 //		    			System.out.println(">>>>>>>>>>>>>Date screen: "+usbongAnswerContainer.lastElement());
 		    			initParser();				        	
 		    		}		    		
+		    		else if (currScreen==TIMESTAMP_DISPLAY_SCREEN) {
+		    			currUsbongNode = nextUsbongNodeIfYes;
+			    		UsbongUtils.addElementToContainer(usbongAnswerContainer, timestampString+";", usbongAnswerContainerCounter);
+						usbongAnswerContainerCounter++;
+
+		    			initParser();				        	
+		    		}		    				    		
 		    		else if (currScreen==QR_CODE_READER_SCREEN) {
 		    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
 
@@ -2506,6 +2641,14 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    			}
 		    			initParser();				        	
 		    		}
+		    		else if ((currScreen==DCAT_SUMMARY_SCREEN)) {
+		    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
+
+		    			UsbongUtils.addElementToContainer(usbongAnswerContainer, "dcat_end;", usbongAnswerContainerCounter);
+						usbongAnswerContainerCounter++;
+						
+						initParser();		    		}
+
 		    		else { //TODO: do this for now		    		
 		    			currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
 //						usbongAnswerContainer.addElement("A;");															
@@ -2520,7 +2663,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     }
     
     public void initRecordAudioScreen() {    	    	
-        String timeStamp = UsbongUtils.getTimeStamp();
+        String timeStamp = UsbongUtils.getDateTimeStamp();
 //        final AudioRecorder recorder = new AudioRecorder("/usbong/" + timeStamp,currUsbongNode);
 //        currAudioRecorder = recorder;        
         
@@ -2599,7 +2742,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     	myPictureName=currUsbongNode; //make the name of the picture the name of the currUsbongNode
 
 //		String path = "/sdcard/usbong/"+ UsbongUtils.getTimeStamp() +"/"+ myPictureName +".jpg";
-		String path = UsbongUtils.BASE_FILE_PATH + UsbongUtils.getTimeStamp()+"/"+ myPictureName +".jpg";		
+		String path = UsbongUtils.BASE_FILE_PATH + UsbongUtils.getDateTimeStamp()+"/"+ myPictureName +".jpg";		
 		//only add path if it's not already in attachmentFilePaths
 		if (!attachmentFilePaths.contains(path)) {
 			attachmentFilePaths.add(path);
@@ -2639,7 +2782,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     	myPaintName=currUsbongNode; //make the name of the picture the name of the currUsbongNode
 
 //		String path = "/sdcard/usbong/"+ UsbongUtils.getTimeStamp() +"/"+ myPictureName +".jpg";
-		String path = UsbongUtils.BASE_FILE_PATH + UsbongUtils.getTimeStamp()+"/"+ myPaintName +".jpg";		
+		String path = UsbongUtils.BASE_FILE_PATH + UsbongUtils.getDateTimeStamp()+"/"+ myPaintName +".jpg";		
 
 		//only add path if it's not already in attachmentFilePaths
 		if (!attachmentFilePaths.contains(path)) {

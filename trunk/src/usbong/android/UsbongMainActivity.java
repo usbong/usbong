@@ -222,7 +222,7 @@ public class UsbongMainActivity extends Activity
     }
 */    
     public void reset() {
-    	UsbongUtils.generateTimeStamp(); //create a new timestamp for this "New Entry"
+    	UsbongUtils.generateDateTimeStamp(); //create a new timestamp for this "New Entry"
     }
 /*        
     public void decrementCurrScreen() {
