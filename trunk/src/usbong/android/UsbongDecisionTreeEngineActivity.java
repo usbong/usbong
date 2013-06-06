@@ -2477,7 +2477,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        			}
 				        		}
 //				        		else {
-			        			currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+			        			currUsbongNode = nextUsbongNodeIfYes; //choose Yes if "Any"
 					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
 								usbongAnswerContainerCounter++;
 
@@ -2583,7 +2583,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        }
 		    		}
 		    		else if (currScreen==TEXTFIELD_WITH_ANSWER_SCREEN) {
-		    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
+		    			currUsbongNode = nextUsbongNodeIfYes; 
 				        EditText myTextFieldScreenEditText = (EditText)findViewById(R.id.textfield_edittext);
 					        //if it's blank
 			    			if (myTextFieldScreenEditText.getText().toString().trim().equals("")) {
@@ -2595,7 +2595,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				    					return;
 				        			}
 				        		}
-					    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+					    		currUsbongNode = nextUsbongNodeIfYes; //choose Yes if "Any"
 					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myTextFieldScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
 								usbongAnswerContainerCounter++;
 					    		
