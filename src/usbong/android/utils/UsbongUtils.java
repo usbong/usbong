@@ -834,7 +834,8 @@ public class UsbongUtils {
 			//Reference: http://blog.iangclifton.com/2010/05/17/sending-html-email-with-android-intent/
 			//last acccessed: 17 Jan. 2012
 			emailIntent.setType("text/plain");
-			emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "usbong;"+timeStamp);
+			
+			emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "usbong;"+UsbongUtils.getDateTimeStamp());
 			emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, currLineString); //body
 //			emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"masarapmabuhay@gmail.com"});//"masarapmabuhay@gmail.com"); 	
 			
