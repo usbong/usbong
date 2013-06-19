@@ -118,8 +118,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	public static final int DCAT_SUMMARY_SCREEN=24;			
 	public static final int MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN=25;	
 	public static final int TEXTFIELD_WITH_ANSWER_SCREEN=26;	
+	public static final int TEXTAREA_WITH_ANSWER_SCREEN=27;	
 
-	public static final int END_STATE_SCREEN=27;		
+	public static final int END_STATE_SCREEN=28;		
 	
 	private static int currScreen=TEXTFIELD_SCREEN;
 	
@@ -216,6 +217,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     
     private String myMultipleRadioButtonsWithAnswerScreenAnswer;
     private String myTextFieldWithAnswerScreenAnswer;
+    private String myTextAreaWithAnswerScreenAnswer;
     private String timestampString;
 
     @Override
@@ -487,7 +489,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 					case TEXTFIELD_WITH_UNIT_SCREEN:
 					case TEXTFIELD_NUMERICAL_SCREEN:
 					case TEXTAREA_SCREEN:
-				        sb.append(((TextView) UsbongUtils.applyTagsInView(new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
+					case TEXTAREA_WITH_ANSWER_SCREEN:						
+						sb.append(((TextView) UsbongUtils.applyTagsInView(new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
 				        break;    	
 					case CLASSIFICATION_SCREEN:
 				        sb.append(((TextView) UsbongUtils.applyTagsInView(new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
@@ -1069,6 +1072,15 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 									
 									parseYesNoAnswers(parser);
 								}
+								else if (myStringToken.equals("textAreaWithAnswer")) { 
+									//<task-node name="textAreaWithAnswer~Who is the founder of Usbong (nickname)?Answer=Mike">
+									//  <transition to="Does the child have wheezing? (child must be calm)" name="Any"></transition>
+									//</task-node>
+									parser.nextTag(); //go to transition tag
+									currScreen=TEXTAREA_WITH_ANSWER_SCREEN;
+									
+									parseYesNoAnswers(parser);
+								}
 								else if (myStringToken.equals("date")) { //special?
 									//<task-node name="date~Birthday">
 									//  <transition to="textField~Address" name="Any"></transition>
@@ -1229,18 +1241,6 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        TextView myMultipleRadioButtonsScreenTextView = (TextView)findViewById(R.id.radio_buttons_textview);
 		        myMultipleRadioButtonsScreenTextView = (TextView) UsbongUtils.applyTagsInView(myMultipleRadioButtonsScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
 
-/*		       
-	    		if (usedBackButton) {
-		    		StringTokenizer st = new StringTokenizer(currentAnswerAfterGoingBack, ",");
-		    		if (st != null) {
-			    		myStringToken = st.nextToken();
-			    		while (st.hasMoreTokens()) { //get last element (i.e. 1 in "Y,1;")
-			    			myStringToken = st.nextToken(); 
-			    		}
-			    		myStringToken = myStringToken.replace(";", "");
-		    		}
-	    		}
-*/	    		
 		        RadioGroup radioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);
 		        int totalRadioButtonsInContainer = radioButtonsContainer.size();
 		        for (int i=0; i<totalRadioButtonsInContainer; i++) {
@@ -1250,7 +1250,16 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		            radioButton.setId(i);
 		            radioButton.setTextColor(Color.parseColor("#4a452a"));			        
 
-		            if ((!myStringToken.equals("")) && (i == Integer.parseInt(myStringToken))) {
+		            int myStringTokenInt;
+		            try {
+		            	myStringTokenInt = Integer.parseInt(myStringToken);
+		            }		            
+		            catch (NumberFormatException e) {//if myStringToken is not an int;
+		            	myStringTokenInt=-1;
+	            	}
+
+		            
+		            if ((!myStringToken.equals("")) && (i == myStringTokenInt)) {
 		            	radioButton.setChecked(true);
 		            }
 		            else {
@@ -1365,18 +1374,14 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 //		            checkBox.setText(StringEscapeUtils.unescapeJava(checkBoxesContainer.elementAt(i).toString()));
 		            checkBox = (CheckBox) UsbongUtils.applyTagsInView(checkBox, UsbongUtils.IS_CHECKBOX, StringEscapeUtils.unescapeJava(checkBoxesContainer.elementAt(i).toString()));
 			            
-//		            checkBox.setChecked(false);
-/*
-		            if ((!myStringToken.equals("")) && (i == Integer.parseInt(myStringToken))) {
-		            	checkBox.setChecked(true);
-		            }
-		            else {
-		            	checkBox.setChecked(false);
-		            }
-*/
 		            for (int k=0; k<myCheckedAnswers.size(); k++) {
-		            	if (i==Integer.parseInt(myCheckedAnswers.elementAt(k))) {
-		            		checkBox.setChecked(true);
+		            	try {
+			            	if (i==Integer.parseInt(myCheckedAnswers.elementAt(k))) {
+			            		checkBox.setChecked(true);
+			            	}
+		            	}
+		            	catch (NumberFormatException e) {//if myCheckedAnswers.elementAt(k) is not an int;
+		            		continue;
 		            	}
 		            }
 		            
@@ -1412,15 +1417,6 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    		stopButton.setText((String) getResources().getText(R.string.UsbongStopTextViewENGLISH));				    		
 		    		playButton.setText((String) getResources().getText(R.string.UsbongPlayTextViewENGLISH));				    		
 		    	}
-
-		        /*
-		        if (UsbongUtils.USE_UNESCAPE) {
-		        	myAudioRecorderTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
-		        }
-		        else {
-		        	myAudioRecorderTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
-		        }
-*/		        
 		        break;
 	        case PHOTO_CAPTURE_SCREEN:
 		    	setContentView(R.layout.photo_capture_screen);
@@ -1544,6 +1540,32 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        EditText myTextAreaScreenEditText = (EditText)findViewById(R.id.textarea_edittext);
 		        myTextAreaScreenEditText.setText(myStringToken);
 		        break;    	
+			case TEXTAREA_WITH_ANSWER_SCREEN:
+		    	setContentView(R.layout.textarea_screen);
+		        initBackNextButtons();
+		        
+    			String myTextAreaWithAnswerScreenStringToken = "";
+//    			Log.d(">>>>>>>>currUsbongNode", currUsbongNode);
+	    		currUsbongNodeWithoutAnswer=currUsbongNode.replace("Answer=", "~");
+
+	    		StringTokenizer myTextAreaWithAnswerScreenStringTokenizer = new StringTokenizer(currUsbongNodeWithoutAnswer, "~");
+	    		
+	    		if (myTextAreaWithAnswerScreenStringTokenizer != null) {
+	    			myTextAreaWithAnswerScreenStringToken = myTextAreaWithAnswerScreenStringTokenizer.nextToken();
+	    			
+		    		while (myTextAreaWithAnswerScreenStringTokenizer.hasMoreTokens()) { //get last element (i.e. Mike in "textFieldWithAnswer~Who is the founder of Usbong (nickname)?Answer=Mike")
+		    			myTextAreaWithAnswerScreenStringToken = myTextAreaWithAnswerScreenStringTokenizer.nextToken(); 
+		    		}
+	    		}
+	    		myTextAreaWithAnswerScreenAnswer=myTextAreaWithAnswerScreenStringToken.toString();
+    			currUsbongNodeWithoutAnswer=currUsbongNodeWithoutAnswer.substring(0, currUsbongNodeWithoutAnswer.length()-myTextAreaWithAnswerScreenAnswer.length()-1); //do a -1 for the last tilde    			
+		        
+		        TextView myTextAreaWithAnswerScreenTextView = (TextView)findViewById(R.id.textarea_textview);
+		        myTextAreaWithAnswerScreenTextView = (TextView) UsbongUtils.applyTagsInView(myTextAreaWithAnswerScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNodeWithoutAnswer);
+
+		        EditText myTextAreaScreenWithAnswerEditText = (EditText)findViewById(R.id.textarea_edittext);
+		        myTextAreaScreenWithAnswerEditText.setText(myStringToken);		        
+		        break;    				
 			case TEXTFIELD_WITH_UNIT_SCREEN:
 		    	setContentView(R.layout.textfield_with_unit_screen);
 		        initBackNextButtons();
@@ -2423,27 +2445,28 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 						usbongAnswerContainerCounter++;
 
 		    			initParser();
-		    		}		    		
+		    		}	
 		    		else if (currScreen==MULTIPLE_RADIO_BUTTONS_SCREEN) {
 						currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
 		    			RadioGroup myRadioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);				        				        		    			
 
-		    			if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
+//		    			if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
 			    			if (myRadioGroup.getCheckedRadioButtonId()==-1) { //no radio button checked
-				        		if (!isAnOptionalNode) {
-				    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
-			    					wasNextButtonPressed=false;
-			    					hasUpdatedDecisionTrackerContainer=true;
-			    					return;
+				        		if (!UsbongUtils.IS_IN_DEBUG_MODE) {
+				    				if (!isAnOptionalNode) {
+					    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
+				    					wasNextButtonPressed=false;
+				    					hasUpdatedDecisionTrackerContainer=true;
+				    					return;
+					        		}
 				        		}
-				        		else {
-						    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-//									usbongAnswerContainer.addElement("A;");															
-						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
-									usbongAnswerContainerCounter++;
+//				        		else {
+					    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
+								usbongAnswerContainerCounter++;
 
-						    		initParser();				
-				        		}
+					    		initParser();				
+//				        		}
 			    			}
 			    			else {
 //				    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
@@ -2452,7 +2475,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 				    			initParser();
 			    			}
-		    			}
+//		    			}
+/*		    			
 		    			else {
 //			    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
 				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
@@ -2460,6 +2484,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			    			
 			    			initParser();		    				
 		    			}
+*/		    			
 		    		}
 		    		else if (currScreen==MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN) {
 						currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
@@ -2510,23 +2535,23 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			    			currUsbongNode = UsbongUtils.getLinkFromRadioButton(nextUsbongNodeIfYes); //nextUsbongNodeIfNo will also do, since this is "Any"
 			    			//of course, showPleaseAnswerAlert() will be called			    			  
 		    			}		    			
-//		    			if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
 			    			if (myRadioGroup.getCheckedRadioButtonId()==-1) { //no radio button checked
-				        		if (!isAnOptionalNode) {
-				    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
-			    					wasNextButtonPressed=false;
-			    					hasUpdatedDecisionTrackerContainer=true;
-			    					
-			    					return;
-				        		}
-				        		else {
+//				    			if (!UsbongUtils.IS_IN_DEBUG_MODE) {
+				    				if (!isAnOptionalNode) {
+					    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
+				    					wasNextButtonPressed=false;
+				    					hasUpdatedDecisionTrackerContainer=true;
+				    					
+				    					return;
+					        		}
+//				    			}
+//				        		else {
 						    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-//									usbongAnswerContainer.addElement("A;");															
 						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
 									usbongAnswerContainerCounter++;
 									
 									initParser();				
-				        		}
+//				        		}
 			    			}
 			    			else {
 //				    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
@@ -2548,23 +2573,25 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
 				        EditText myTextFieldScreenEditText = (EditText)findViewById(R.id.textfield_edittext);
 
-				        if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
+//				        if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
 					        //if it's blank
 			    			if (myTextFieldScreenEditText.getText().toString().trim().equals("")) {
-				        		if (!isAnOptionalNode) {
-				    				showRequiredFieldAlert(PLEASE_ANSWER_FIELD_ALERT_TYPE);
-			    					wasNextButtonPressed=false;
-			    					hasUpdatedDecisionTrackerContainer=true;
-			    					return;
-				        		}
-				        		else {
+						        if (!UsbongUtils.IS_IN_DEBUG_MODE) {
+				    				if (!isAnOptionalNode) {
+					    				showRequiredFieldAlert(PLEASE_ANSWER_FIELD_ALERT_TYPE);
+				    					wasNextButtonPressed=false;
+				    					hasUpdatedDecisionTrackerContainer=true;
+				    					return;
+					        		}
+						        }
+//				        		else {
 						    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
 //									usbongAnswerContainer.addElement("A;");															
-						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
+						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,;", usbongAnswerContainerCounter);
 									usbongAnswerContainerCounter++;
 						    		
 						    		initParser();				
-				        		}
+//				        		}
 			    			}
 							else {
 //								usbongAnswerContainer.addElement("A,"+myTextFieldScreenEditText.getText()+";");							
@@ -2573,6 +2600,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 								
 								initParser();
 							}
+/*			    			
 				        }
 				        else {
 //							usbongAnswerContainer.addElement("A,"+myTextFieldScreenEditText.getText()+";");							
@@ -2581,6 +2609,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 				        	initParser();				        	
 				        }
+*/				        
 		    		}
 		    		else if (currScreen==TEXTFIELD_WITH_ANSWER_SCREEN) {
 		    			currUsbongNode = nextUsbongNodeIfYes; 
@@ -2619,23 +2648,24 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
 				        EditText myTextAreaScreenEditText = (EditText)findViewById(R.id.textarea_edittext);
 
-				        if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
+//				        if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
 					        //if it's blank
 			    			if (myTextAreaScreenEditText.getText().toString().trim().equals("")) {
-				        		if (!isAnOptionalNode) {
-				    				showRequiredFieldAlert(PLEASE_ANSWER_FIELD_ALERT_TYPE);
-			    					wasNextButtonPressed=false;
-			    					hasUpdatedDecisionTrackerContainer=true;
-			    					return;
-				        		}
-				        		else {
+						        if (!UsbongUtils.IS_IN_DEBUG_MODE) {							        	
+					        		if (!isAnOptionalNode) {
+					    				showRequiredFieldAlert(PLEASE_ANSWER_FIELD_ALERT_TYPE);
+				    					wasNextButtonPressed=false;
+				    					hasUpdatedDecisionTrackerContainer=true;
+				    					return;
+					        		}
+						        }
+//				        		else {
 						    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-//									usbongAnswerContainer.addElement("A;");															
-						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
+						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,;", usbongAnswerContainerCounter);
 									usbongAnswerContainerCounter++;
 									
 									initParser();				
-				        		}
+//				        		}
 			    			}
 							else {
 //								usbongAnswerContainer.addElement("A,"+myTextAreaScreenEditText.getText()+";");							
@@ -2644,14 +2674,47 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 								
 								initParser();
 							}
-				        }
+				        /*}
 				        else {
 //							usbongAnswerContainer.addElement("A,"+myTextAreaScreenEditText.getText()+";");							
 				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myTextAreaScreenEditText.getText()+";", usbongAnswerContainerCounter);
 							usbongAnswerContainerCounter++;
 							
 							initParser();				        	
-				        }
+				        }*/
+		    		}
+		    		else if (currScreen==TEXTAREA_WITH_ANSWER_SCREEN) {
+		    			currUsbongNode = nextUsbongNodeIfYes; 
+				        EditText myTextAreaScreenEditText = (EditText)findViewById(R.id.textarea_edittext);
+					        //if it's blank
+			    			if (myTextAreaScreenEditText.getText().toString().trim().equals("")) {
+				        		if (!UsbongUtils.IS_IN_DEBUG_MODE) {
+				        			if (!isAnOptionalNode) {
+					    				showRequiredFieldAlert(PLEASE_ANSWER_FIELD_ALERT_TYPE);
+				    					wasNextButtonPressed=false;
+				    					hasUpdatedDecisionTrackerContainer=true;
+				    					return;
+				        			}
+				        		}
+					    		currUsbongNode = nextUsbongNodeIfYes; //choose Yes if "Any"
+					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myTextAreaScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
+								usbongAnswerContainerCounter++;
+					    		
+					    		initParser();				
+			    			}
+							else {
+			        			if (myTextAreaWithAnswerScreenAnswer.equals(myTextAreaScreenEditText.getText().toString().trim())) {
+									currUsbongNode = nextUsbongNodeIfYes; 	
+						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y,"+myTextAreaScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
+						        }
+						        else {
+									currUsbongNode = nextUsbongNodeIfNo; 				        					        	
+						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N,"+myTextAreaScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
+						        }				        
+
+								usbongAnswerContainerCounter++;
+				    			initParser();
+							}
 		    		}
 		    		else if (currScreen==GPS_LOCATION_SCREEN) {
 		    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
