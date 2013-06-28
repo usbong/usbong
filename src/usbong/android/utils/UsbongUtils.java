@@ -123,6 +123,25 @@ public class UsbongUtils {
         return EMAIL_ADDRESS_PATTERN.matcher(email).matches();
 	}
 	
+	public static boolean checkIfInDebugMode() {
+	    try {	    	
+			InputStreamReader reader = UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + "usbong.config");	
+			BufferedReader br = new BufferedReader(reader);    		
+	    	String currLineString;        	
+	    	while((currLineString=br.readLine())!=null)
+	    	{ 	
+				if (currLineString.equals("IS_IN_DEBUG_MODE=ON")) {
+					return true;
+				}
+	    	}	        				
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+
+	    return false;
+	}
+	
 	public static String getDestinationServerURL() {
 		return destinationServerURL;
 	}
@@ -838,6 +857,12 @@ public class UsbongUtils {
 			emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "usbong;"+UsbongUtils.getDateTimeStamp());
 			emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, currLineString); //body
 //			emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"masarapmabuhay@gmail.com"});//"masarapmabuhay@gmail.com"); 	
+			
+			
+			//only add path if it's not already in filePathsLists (i.e. attachmentFilePaths)
+			if (!filePathsList.contains(filepath)) {
+				filePathsList.add(filepath);
+			}
 			
 			//Reference: http://stackoverflow.com/questions/2264622/android-multiple-email-attachments-using-intent
 			//last accessed: 14 March 2012
