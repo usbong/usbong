@@ -282,6 +282,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
         final float scale = getResources().getDisplayMetrics().density;
         padding_in_px = (int) (padding_in_dp * scale + 0.5f);
 	    
+        //added by Mike, June 25, 2013
+        UsbongUtils.setDebugMode(UsbongUtils.checkIfInDebugMode());
+        
     	initTreeLoader();
     }
     
@@ -1037,7 +1040,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 								}
 								else if (myStringToken.equals("textFieldWithAnswer")) { 
 									//<task-node name="textFieldWithAnswer~Who is the founder of Usbong (nickname)?Answer=Mike">
-									//  <transition to="Does the child have wheezing? (child must be calm)" name="Any"></transition>
+									//  <transition to="textDisplay~Correct!" name="Yes"></transition>
+									//  <transition to="textDisplay~Incorrect!" name="No"></transition>		
 									//</task-node>
 									parser.nextTag(); //go to transition tag
 									currScreen=TEXTFIELD_WITH_ANSWER_SCREEN;
@@ -1074,7 +1078,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 								}
 								else if (myStringToken.equals("textAreaWithAnswer")) { 
 									//<task-node name="textAreaWithAnswer~Who is the founder of Usbong (nickname)?Answer=Mike">
-									//  <transition to="Does the child have wheezing? (child must be calm)" name="Any"></transition>
+									//  <transition to="textDisplay~Correct!" name="Yes"></transition>
+									//  <transition to="textDisplay~Incorrect!" name="No"></transition>		
 									//</task-node>
 									parser.nextTag(); //go to transition tag
 									currScreen=TEXTAREA_WITH_ANSWER_SCREEN;
