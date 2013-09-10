@@ -834,14 +834,14 @@ public class UsbongUtils {
     	usbongSetLanguage = s;
     }
     
-    public static Intent performEmailProcess(String filepath, List<String> filePathsList) {
-//		final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-    	final Intent emailIntent;
+    public static Intent performSendToCloudBasedServiceProcess(String filepath, List<String> filePathsList) {
+//		final Intent sendToCloudBasedServiceIntent = new Intent(android.content.Intent.ACTION_SEND);
+    	final Intent sendToCloudBasedServiceIntent;
     	if (filePathsList!=null) {
-    		emailIntent = new Intent(android.content.Intent.ACTION_SEND_MULTIPLE);
+    		sendToCloudBasedServiceIntent = new Intent(android.content.Intent.ACTION_SEND_MULTIPLE);
     	}
     	else {
-    		emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+    		sendToCloudBasedServiceIntent = new Intent(android.content.Intent.ACTION_SEND);
     	}
     	try {
 			InputStreamReader reader = UsbongUtils.getFileFromSDCardAsReader(filepath);
@@ -852,11 +852,11 @@ public class UsbongUtils {
 			
 			//Reference: http://blog.iangclifton.com/2010/05/17/sending-html-email-with-android-intent/
 			//last acccessed: 17 Jan. 2012
-			emailIntent.setType("text/plain");
+			sendToCloudBasedServiceIntent.setType("text/plain");
 			
-			emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "usbong;"+UsbongUtils.getDateTimeStamp());
-			emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, currLineString); //body
-//			emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"masarapmabuhay@gmail.com"});//"masarapmabuhay@gmail.com"); 	
+			sendToCloudBasedServiceIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "usbong;"+UsbongUtils.getDateTimeStamp());
+			sendToCloudBasedServiceIntent.putExtra(android.content.Intent.EXTRA_TEXT, currLineString); //body
+//			sendToCloudBasedServiceIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"masarapmabuhay@gmail.com"});//"masarapmabuhay@gmail.com"); 	
 			
 			
 			//only add path if it's not already in filePathsLists (i.e. attachmentFilePaths)
@@ -878,13 +878,13 @@ public class UsbongUtils {
 			        System.out.println(">>>>>>>>>>>>>>>>>> u: "+u);
 		        }
 		    }
-		    emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+		    sendToCloudBasedServiceIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
 		    
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		return emailIntent;
+		return sendToCloudBasedServiceIntent;
     }
     
     public static void setDestinationServerURLFromConfigFile() {
@@ -989,9 +989,9 @@ public class UsbongUtils {
         	path = UsbongUtils.USBONG_TREES_FILE_PATH+myTree+".utree/res/"+resFileName;
     	}
     	
-    	File videoFile = new File(path);
-
-    	if (videoFile.exists()) {    		
+    	File videoFile = new File(path);    	
+    	
+    	if (videoFile.exists()) {    	
     		return path;		    		
     	}
     	return "null";
