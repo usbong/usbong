@@ -74,6 +74,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.MediaController;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -108,19 +109,20 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	public static final int TIMESTAMP_DISPLAY_SCREEN=14;		
 	public static final int GPS_LOCATION_SCREEN=15;		
 	public static final int VIDEO_FROM_FILE_SCREEN=16;	
-	public static final int LINK_SCREEN=17;			
-	public static final int SEND_TO_WEBSERVER_SCREEN=18;		
-	public static final int SEND_TO_CLOUD_BASED_SERVICE_SCREEN=19;	
-	public static final int PAINT_SCREEN=20;
-	public static final int QR_CODE_READER_SCREEN=21;
-	public static final int CLICKABLE_IMAGE_DISPLAY_SCREEN=22;
-	public static final int TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN=23;
-	public static final int DCAT_SUMMARY_SCREEN=24;			
-	public static final int MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN=25;	
-	public static final int TEXTFIELD_WITH_ANSWER_SCREEN=26;	
-	public static final int TEXTAREA_WITH_ANSWER_SCREEN=27;	
+	public static final int VIDEO_FROM_FILE_WITH_TEXT_SCREEN=17;	
+	public static final int LINK_SCREEN=18;			
+	public static final int SEND_TO_WEBSERVER_SCREEN=19;		
+	public static final int SEND_TO_CLOUD_BASED_SERVICE_SCREEN=20;	
+	public static final int PAINT_SCREEN=21;
+	public static final int QR_CODE_READER_SCREEN=22;
+	public static final int CLICKABLE_IMAGE_DISPLAY_SCREEN=23;
+	public static final int TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN=24;
+	public static final int DCAT_SUMMARY_SCREEN=25;			
+	public static final int MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN=26;	
+	public static final int TEXTFIELD_WITH_ANSWER_SCREEN=27;	
+	public static final int TEXTAREA_WITH_ANSWER_SCREEN=28;	
 
-	public static final int END_STATE_SCREEN=28;		
+	public static final int END_STATE_SCREEN=29;		
 	
 	private static int currScreen=TEXTFIELD_SCREEN;
 	
@@ -219,6 +221,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     private String myTextFieldWithAnswerScreenAnswer;
     private String myTextAreaWithAnswerScreenAnswer;
     private String timestampString;
+    
+    private StringBuffer myDcatSummaryStringBuffer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -509,7 +513,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 					case GPS_LOCATION_SCREEN:
 					case QR_CODE_READER_SCREEN:
 					case TIMESTAMP_DISPLAY_SCREEN:						
-				        sb.append(((TextView) UsbongUtils.applyTagsInView(new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
+					case VIDEO_FROM_FILE_WITH_TEXT_SCREEN:							
+						sb.append(((TextView) UsbongUtils.applyTagsInView(new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
 //				        Log.d(">>>>sb",sb.toString());
 				        break;
 					case CLICKABLE_IMAGE_DISPLAY_SCREEN:				       
@@ -1143,6 +1148,12 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 									parseYesNoAnswers(parser);
 								}
+								else if (myStringToken.equals("videoFromFileWithText")) { 
+									parser.nextTag(); //go to transition tag
+									currScreen=VIDEO_FROM_FILE_WITH_TEXT_SCREEN;
+
+									parseYesNoAnswers(parser);
+								}
 								else if (myStringToken.equals("gps")) { //special?
 									//<task-node name="gps~My Location">
 									//  <transition to="Does the child have wheezing? (child must be calm)" name="Any"></transition>
@@ -1630,6 +1641,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        TextView myDCATSummaryScreenTextView = (TextView)findViewById(R.id.dcat_summary_textview);
 		        myDCATSummaryScreenTextView = (TextView) UsbongUtils.applyTagsInView(myDCATSummaryScreenTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
 		        
+		        myDcatSummaryStringBuffer= new StringBuffer();
+		        
 		        String weightsString = "1.9;2.1;2.6;1.8;2.4;1.8;.7;1.0;1.6;2.6;6.9;5.7;3.3;2.2;3.3;3.3;2;2;1.7;1.9;3.9;1.3;2.5;.8";
 				StringTokenizer myWeightsStringTokenizer = new StringTokenizer(weightsString, ";");
 				String myWeightString = myWeightsStringTokenizer.nextToken();
@@ -1676,7 +1689,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			            TextView myIssuesTextView = new TextView(getBaseContext());			            
 
 	        			//added by Mike, May 31, 2013
-	        			if (!usbongAnswerContainer.elementAt(i).toString().equals("dcat_end;")) {
+	        			if (!usbongAnswerContainer.elementAt(i).toString().contains("dcat_end,")) {
 	
 			        		String s = usbongAnswerContainer.elementAt(i).toString().replace(";", "");
 			        		s = s.replace("A,", "");
@@ -1691,6 +1704,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				            myIssuesTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,24);
 				            myIssuesTextView.setTextColor(Color.parseColor("#4a452a"));			        
 				            myDCATSummaryLinearLayout.addView(myIssuesTextView);
+		        			myDcatSummaryStringBuffer.append(myIssuesTextView.getText().toString()+"\n");
 	        			}
 	        			
 		        		if (myWeightsStringTokenizer.hasMoreElements()) {
@@ -1737,9 +1751,17 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			            myWeightedTextView.setTextColor(Color.parseColor("#4a452a"));			        
 			            
 			            myDCATSummaryLinearLayout.addView(myWeightedTextView);
+	        			myDcatSummaryStringBuffer.append(myWeightedTextView.getText().toString()+"\n");
 
-		        		int weightedAnswer = Integer.parseInt(usbongAnswerContainer.elementAt(i).toString().replace(";", ""));
-		        		if (weightedAnswer<=0) {
+			            int weightedAnswer;
+			            //added by Mike, July 8, 2013
+			            try {
+			            	weightedAnswer = Integer.parseInt(usbongAnswerContainer.elementAt(i).toString().replace(";", ""));
+			            }
+			            catch (Exception e) { //if there's no answer selected
+			            	weightedAnswer=0;
+			            }
+			            if (weightedAnswer<=0) {
 		        			weightedAnswer=0;
 		        		}
 
@@ -1757,7 +1779,14 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        				"Weighted: " +myWeightedScoreInt);
 		        	}
 		        	else if (usbongNodeContainer.elementAt(i).toString().contains("Negotiated")){
-		        		int negotiatedAnswer = Integer.parseInt(usbongAnswerContainer.elementAt(i).toString().replace(";", ""));
+			            //added by Mike, July 8, 2013
+		        		int negotiatedAnswer;
+		        		try {
+			        		negotiatedAnswer = Integer.parseInt(usbongAnswerContainer.elementAt(i).toString().replace(";", ""));
+			            }
+			            catch (Exception e) { //if there's no answer selected
+			            	negotiatedAnswer=0;
+			            }
 		        		if (negotiatedAnswer<=0) {
 		        			negotiatedAnswer=0;
 		        		}
@@ -1782,6 +1811,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 //	        		if (!hasReachedStandardTotal) {
 	        			myDCATSummaryLinearLayout.addView(myTextView);
+	        			myDcatSummaryStringBuffer.append(myTextView.getText().toString()+"\n");
+	        			Log.d(">>>>>myTextView.getText().toString()",myTextView.getText().toString());
 //	        		}
 //	        		else {
 //	        			hasReachedStandardTotal=false;
@@ -1983,7 +2014,21 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 		        myVideoFromFileScreenVideoView.setMeasuredDimension(width, height);
 */		        
+		        //added by Mike, Sept. 9, 2013
+		        myVideoFromFileScreenVideoView.setMediaController(new MediaController(this));		        
 		        myVideoFromFileScreenVideoView.start();  		        
+		        break;    	
+			case VIDEO_FROM_FILE_WITH_TEXT_SCREEN:
+		    	setContentView(R.layout.video_from_file_with_text_screen);
+		        initBackNextButtons();
+		        TextView myVideoFromFileWithTextTextView = (TextView)findViewById(R.id.video_from_file_with_text_textview);
+		        myVideoFromFileWithTextTextView = (TextView) UsbongUtils.applyTagsInView(myVideoFromFileWithTextTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
+		        		        
+		        VideoView myVideoFromFileWithTextScreenVideoView = (VideoView)findViewById(R.id.video_from_file_with_text_videoview);		       
+		        myVideoFromFileWithTextScreenVideoView.setVideoPath(UsbongUtils.getPathOfVideoFile(myTree, UsbongUtils.getResName(currUsbongNode)));
+		        
+		        myVideoFromFileWithTextScreenVideoView.setMediaController(new MediaController(this));		        
+		        myVideoFromFileWithTextScreenVideoView.start();  		        
 		        break;    	
 			case TEXT_IMAGE_DISPLAY_SCREEN:
 		    	setContentView(R.layout.text_image_display_screen);
@@ -2381,8 +2426,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				        	myOutputDirectory=UsbongUtils.getDateTimeStamp()+"/";
 				    		UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", outputStringBuffer.toString());
 
-				    		//send to email
-				    		Intent emailIntent = UsbongUtils.performEmailProcess(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", attachmentFilePaths);
+				    		//send to cloud-based service
+				    		Intent sendToCloudBasedServiceIntent = UsbongUtils.performSendToCloudBasedServiceProcess(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", attachmentFilePaths);
 				    		/*emailIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 */
 //				    		emailIntent.addFlags(RESULT_OK);
@@ -2390,7 +2435,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				    		//answer from Llango J, stackoverflow
 				    		//Reference: http://stackoverflow.com/questions/7479883/problem-with-sending-email-goes-back-to-previous-activity;
 				    		//last accessed: 22 Oct. 2012
-				    		startActivity(Intent.createChooser(emailIntent, "Email:"));
+				    		startActivity(Intent.createChooser(sendToCloudBasedServiceIntent, "Send to Cloud-based Service:"));
 				        }
 				        else if (myNoRadioButton.isChecked()) {
 							currUsbongNode = nextUsbongNodeIfNo; 
@@ -2774,9 +2819,18 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    		}
 		    		else if ((currScreen==DCAT_SUMMARY_SCREEN)) {
 		    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
+/*
+				        LinearLayout myDCATSummaryLinearLayout = (LinearLayout)findViewById(R.id.dcat_summary_linearlayout);
+				        int total = myDCATSummaryLinearLayout.getChildCount();
 
-		    			UsbongUtils.addElementToContainer(usbongAnswerContainer, "dcat_end;", usbongAnswerContainerCounter);
-						usbongAnswerContainerCounter++;
+						StringBuffer dcatSummary= new StringBuffer();
+				        for (int i=0; i<total; i++) {
+				        	dcatSummary.append(((TextView) myDCATSummaryLinearLayout.getChildAt(i)).getText().toString());
+				        }
+*/				        
+//		    			UsbongUtils.addElementToContainer(usbongAnswerContainer, "dcat_end;", usbongAnswerContainerCounter);
+		    			UsbongUtils.addElementToContainer(usbongAnswerContainer, "dcat_end,"+myDcatSummaryStringBuffer.toString()+";", usbongAnswerContainerCounter);
+				        usbongAnswerContainerCounter++;
 						
 						initParser();		    		}
 

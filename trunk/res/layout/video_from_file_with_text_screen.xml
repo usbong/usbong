@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	style="@style/UsbongSpecialParentLayout"
+	android:id="@+id/parent_layout_id"       
+	>
+    <VideoView android:id="@+id/video_from_file_with_text_videoview"
+		    style="@style/UsbongDefaultImageView"	    	
+	/>	
+    <ScrollView style="@style/UsbongDefaultScrollView"
+	>		 	
+		<TextView android:id="@+id/video_from_file_with_text_textview"
+		    style="@style/UsbongDefaultTextView"	    	
+		    android:text="@string/default_textview" 
+		/>	    
+	</ScrollView>	    	        
+	<LinearLayout
+		style="@style/UsbongDefaultBackNextButtonLayout">	
+	    <Button android:id="@+id/back_button"
+		    style="@style/UsbongDefaultBackNextButton"
+		    android:text="Back"/>
+		    
+	   	<Button android:id="@+id/next_button"
+		    style="@style/UsbongDefaultBackNextButton"
+		    android:text="Next"/>	    
+	</LinearLayout>
+</LinearLayout>
