@@ -98,8 +98,8 @@ public class UsbongUtils {
 	public static String usbongDefaultLanguage="English"; //default is English
 	public static String usbongSetLanguage=usbongDefaultLanguage; //default is English
 		
-	public static final boolean USE_UNESCAPE=true; //allows the use of \n (new line) in the decision tree
-	
+	public static final boolean USE_UNESCAPE=true; //allows the use of \n (new line) in the decision tree	
+
 	//added by Mike, Feb. 11, 2013
 	public static void setDebugMode(boolean b) {
 		IS_IN_DEBUG_MODE=b;
@@ -158,7 +158,7 @@ public class UsbongUtils {
 		int hour = date.get(Calendar.HOUR_OF_DAY);
 		int min = date.get(Calendar.MINUTE);
 		int sec = date.get(Calendar.SECOND);
-		int millisec = date.get(Calendar.MILLISECOND);
+//		int millisec = date.get(Calendar.MILLISECOND);
 		
 		dateTimeStamp = "" + day +"-"+ month +"-"+ year +"-"+ hour +"hr"+ min +"min"+ sec + "sec";//millisec;
     }
@@ -214,7 +214,7 @@ public class UsbongUtils {
 		//READ A FILE
 		//Reference: Jeffrey Jongko, Aug. 31, 2010
     	try {
-    		byte[] b = new byte[100];    		
+//    		byte[] b = new byte[100];    		
     		AssetManager myAssetManager = a.getAssets();
     		InputStream is = myAssetManager.open(filename);
 
@@ -295,7 +295,7 @@ public class UsbongUtils {
         }       
 
     }
-    
+/*    
     //from rohith (stackoverflow); 
     //Reference: http://stackoverflow.com/questions/4447477/android-how-to-copy-files-in-assets-to-sdcard;
     //last accessed: 2 Sept 2012
@@ -324,7 +324,7 @@ public class UsbongUtils {
             }       
         }
     }
-    
+*/    
     //from rohith (stackoverflow); 
     //Reference: http://stackoverflow.com/questions/4447477/android-how-to-copy-files-in-assets-to-sdcard;
     //last accessed: 2 Sept 2012
@@ -409,7 +409,7 @@ public class UsbongUtils {
     
     	int totalTokens = st.countTokens();
 		int counter = 0;		
-		String myStringToken = "";
+//		String myStringToken = "";
 		
 		while (counter<totalTokens-2) { //up to third to the last only			
 			sb = sb.append(st.nextToken()+"~");				

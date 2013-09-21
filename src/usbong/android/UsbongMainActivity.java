@@ -14,11 +14,6 @@
  */
 package usbong.android;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.util.Date;
-
 import usbong.android.utils.UsbongUtils;
 
 import android.app.Activity;
@@ -26,41 +21,26 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.TextView;
 
 /*
  * This is Usbong's Main Menu activity. 
  */
 public class UsbongMainActivity extends Activity 
-{
-	
-	private static final int MAIN_MENU_SCREEN=0;
-	private static final int GAME_GROUP_A_TITLE_SCREEN=4;
-
-	private static final int GAME_GROUP_B_TITLE_SCREEN=7;
-	private static final int GAME_GROUP_B_MAIN_SCREEN=8; //MAIN should go before WORD
-
-	private static int currScreen=MAIN_MENU_SCREEN;
-	
+{	
 	private Button newEntryButton;
 	private Button instructionsButton;
 	private Button aboutButton;
 	private Button settingsButton;
 	private Button exitButton;
-	
-	private Button backButton;
-	private Button nextButton;	
-		
+			
 	private static UsbongMainActivity instance;
 				
 	public static String timeStamp;
 	
-	private static String teamName="";
-	private static Date startTime;	
+//	private static Date startTime;	
 	
 	protected UsbongDecisionTreeEngineActivity myUsbongDecisionTreeEngineActivity;
 	protected SettingsActivity mySettingsActivity;
@@ -72,7 +52,7 @@ public class UsbongMainActivity extends Activity
 //    	if (instance==null) { //comment this out, since the app seems to retain the instance even after we do a finish to GameActivity to close the app...
 	        setContentView(R.layout.main);	        
 	        instance = this;
-	    	startTime = new Date();
+//	    	startTime = new Date();
 	    	
 	        reset();
 	        initMainMenuScreen();
@@ -91,8 +71,6 @@ public class UsbongMainActivity extends Activity
     
     public void initMainMenuScreen()
     {
-    	currScreen=MAIN_MENU_SCREEN;
-    	
     	newEntryButton = (Button)findViewById(R.id.newEntry_button);
     	instructionsButton = (Button)findViewById(R.id.instructions_button);
     	aboutButton = (Button)findViewById(R.id.about_button);
@@ -170,129 +148,11 @@ public class UsbongMainActivity extends Activity
 			}
     	});
     }
-/*  
-    public String getTeamName() {
-    	return teamName;
-    }
-*/    
-/*    
-    public void initBackNextButtons()
-    {
-    	initBackButton();
-    	initNextButton();
-    }
-
-    public void initBackPlayButtons()
-    {
-    	initBackButton();
-    }
-*/    
-/*
-    public void initBackButton()
-    {
-    	backButton = (Button)findViewById(R.id.back_button);
-    	backButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				decrementCurrScreen();
-			}
-    	});    
-    }
-
-    public void initNextButton()
-    {
-    	nextButton = (Button)findViewById(R.id.next_button);
-
-    	nextButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				
-				boolean dontIncrement = false;
-				if (!dontIncrement)
-				{
-					incrementCurrScreen();
-				}
-			}
-    	});
-    }
-*/        
-/*    
-    public Date getStartTime() {
-    	return startTime;
-    }
-*/    
+  
     public void reset() {
     	UsbongUtils.generateDateTimeStamp(); //create a new timestamp for this "New Entry"
     }
-/*        
-    public void decrementCurrScreen() {
-    	currScreen--;
-    	manageScreens();
-    }
-
-    public void incrementCurrScreen() {
-    	currScreen++;
-    	manageScreens();
-    }
-*/
-/*    
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-        	switch(currScreen) {
-    			case GAME_GROUP_A_TITLE_SCREEN:
-        		case GAME_GROUP_B_TITLE_SCREEN:
-    				new AlertDialog.Builder(UsbongMainActivity.this).setTitle("Quitting application...")
-    				.setMessage("Are you sure you want to quit application?")
-    				.setNegativeButton("No", new DialogInterface.OnClickListener() {
-    					@Override
-    					public void onClick(DialogInterface dialog, int which) {
-    					}
-    				})
-    				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {					
-    					@Override
-    					public void onClick(DialogInterface dialog, int which) {
-    						finish();
-    						Intent mainMenu = new Intent(UsbongMainActivity.this, UsbongMainActivity.getInstance().getClass());
-    						mainMenu.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
-    						startActivity(mainMenu);
-    					}
-    				}).show();
-        			break;
-        		default:
-                	decrementCurrScreen();
-                	break;
-        	}
-        	return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-*/    
-/*    
-    public void manageScreens() {
-    	System.out.println("CURR SCREEN: "+currScreen);
-    	if (currScreen<0) {
-    		currScreen=MAIN_MENU_SCREEN;
-    	}
-
-    	if (currScreen>GAME_GROUP_B_MAIN_SCREEN) {
-    		currScreen=GAME_GROUP_B_MAIN_SCREEN;
-    	}
-
-    	switch(currScreen) {
-			case MAIN_MENU_SCREEN:
-		    	setContentView(R.layout.main);
-		    	initMainMenuScreen();
-		    	reset();
-		        break;    	
-
-//			case GAME_SETTINGS_TEAM_NAME_SCREEN:
-//    	    	setContentView(R.layout.game_settings_team_name);
-//    	        initBackNextButtons();
-//    			break;
-    	}
-    }
-*/    
+/*
     private void showStatusDialog(String status)
 	{
 		AlertDialog.Builder prompt = new AlertDialog.Builder(UsbongMainActivity.this);
@@ -306,4 +166,5 @@ public class UsbongMainActivity extends Activity
 		});
 		prompt.show();
 	}
+*/	
 }

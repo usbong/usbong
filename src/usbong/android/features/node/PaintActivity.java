@@ -10,14 +10,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Bitmap.CompressFormat;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.Window;
-import android.widget.EditText;
 import usbong.android.R;
 import usbong.android.multimedia.graphics.MyCanvas;
 import usbong.android.utils.UsbongUtils;
@@ -91,8 +89,11 @@ public class PaintActivity extends Activity
 						//----------------------------
 						Bitmap myImage = myCanvas.getMyBitmap();
 
-				        File sdImageMainDirectory = new File("/sdcard/usbong" + "/" +UsbongUtils.getDateTimeStamp() +"/");
-/*				        File sdImageMainDirectory = new File("/sdcard/abakada/" +timeStamp  +"/");
+//				        File sdImageMainDirectory = new File("/sdcard/usbong" + "/" +UsbongUtils.getDateTimeStamp() +"/");
+				        File sdImageMainDirectory = new File(UsbongUtils.BASE_FILE_PATH + "/" +UsbongUtils.getDateTimeStamp() +"/");
+/*
+						
+						/*				        File sdImageMainDirectory = new File("/sdcard/abakada/" +timeStamp  +"/");
 */
 				        sdImageMainDirectory.mkdirs();
 				        
@@ -122,8 +123,9 @@ public class PaintActivity extends Activity
 						bos.flush();
 						bos.close();
 
-						File imageFile = new File("/sdcard/usbong/" +UsbongUtils.getDateTimeStamp() +"/" + myPaintName+".jpg");
-/*
+//						File imageFile = new File("/sdcard/usbong/" +UsbongUtils.getDateTimeStamp() +"/" + myPaintName+".jpg");
+						File imageFile = new File(UsbongUtils.BASE_FILE_PATH +UsbongUtils.getDateTimeStamp() +"/" + myPaintName+".jpg");
+						/*
 						File imageFile = new File("/sdcard/abakada/" + timeStamp+ "/"+ currentWord + "1.jpg");
 */			    
 						if(imageFile.exists())

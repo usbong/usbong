@@ -15,7 +15,6 @@
 package usbong.android.multimedia.audio;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
 import usbong.android.utils.UsbongUtils;
@@ -75,7 +74,7 @@ public class AudioRecorder {
 	   */
 	  public void start() throws IOException {
 		recorder  = new MediaRecorder();
-	    String state = android.os.Environment.getExternalStorageState();
+//	    String state = android.os.Environment.getExternalStorageState();
 		
 	    recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
 	    recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
