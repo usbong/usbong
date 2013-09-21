@@ -18,13 +18,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
@@ -32,7 +30,7 @@ import usbong.android.features.node.PaintActivity;
 import usbong.android.features.node.QRCodeReaderActivity;
 import usbong.android.multimedia.audio.AudioRecorder;
 import usbong.android.utils.FedorMyLocation;
-import usbong.android.utils.FedorMyLocation.LocationResult;
+import usbong.android.utils.UsbongScreenProcessor;
 import usbong.android.utils.UsbongUtils;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -40,19 +38,11 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.location.Location;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
-import android.text.InputType;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -70,17 +60,14 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.MediaController;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 public class UsbongDecisionTreeEngineActivity extends Activity implements TextToSpeech.OnInitListener{
 //	private static final boolean UsbongUtils.USE_UNESCAPE=true; //allows the use of \n (new line) in the decision tree
@@ -88,43 +75,43 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 //	private static boolean USE_ENG_ONLY=true; //uses English only	
 //	private static boolean UsbongUtils.IS_IN_DEBUG_MODE=false;
 
-	private static final String myPackageName="usbong.android";
+	public final String myPackageName="usbong.android";
 	
-	private int currLanguageBeingUsed;
+	public int currLanguageBeingUsed;
 	
-	public static final int YES_NO_DECISION_SCREEN=0;	
-	public static final int MULTIPLE_RADIO_BUTTONS_SCREEN=1;	
-	public static final int MULTIPLE_CHECKBOXES_SCREEN=2;	
-	public static final int AUDIO_RECORD_SCREEN=3;
-	public static final int PHOTO_CAPTURE_SCREEN=4;	
-	public static final int TEXTFIELD_SCREEN=5;	
-	public static final int TEXTFIELD_WITH_UNIT_SCREEN=6;	
-	public static final int TEXTFIELD_NUMERICAL_SCREEN=7;
-	public static final int TEXTAREA_SCREEN=8;
-	public static final int TEXT_DISPLAY_SCREEN=9;	
-	public static final int IMAGE_DISPLAY_SCREEN=10;
-	public static final int TEXT_IMAGE_DISPLAY_SCREEN=11;
-	public static final int CLASSIFICATION_SCREEN=12;		
-	public static final int DATE_SCREEN=13;	
-	public static final int TIMESTAMP_DISPLAY_SCREEN=14;		
-	public static final int GPS_LOCATION_SCREEN=15;		
-	public static final int VIDEO_FROM_FILE_SCREEN=16;	
-	public static final int VIDEO_FROM_FILE_WITH_TEXT_SCREEN=17;	
-	public static final int LINK_SCREEN=18;			
-	public static final int SEND_TO_WEBSERVER_SCREEN=19;		
-	public static final int SEND_TO_CLOUD_BASED_SERVICE_SCREEN=20;	
-	public static final int PAINT_SCREEN=21;
-	public static final int QR_CODE_READER_SCREEN=22;
-	public static final int CLICKABLE_IMAGE_DISPLAY_SCREEN=23;
-	public static final int TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN=24;
-	public static final int DCAT_SUMMARY_SCREEN=25;			
-	public static final int MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN=26;	
-	public static final int TEXTFIELD_WITH_ANSWER_SCREEN=27;	
-	public static final int TEXTAREA_WITH_ANSWER_SCREEN=28;	
+	public final int YES_NO_DECISION_SCREEN=0;	
+	public final int MULTIPLE_RADIO_BUTTONS_SCREEN=1;	
+	public final int MULTIPLE_CHECKBOXES_SCREEN=2;	
+	public final int AUDIO_RECORD_SCREEN=3;
+	public final int PHOTO_CAPTURE_SCREEN=4;	
+	public final int TEXTFIELD_SCREEN=5;	
+	public final int TEXTFIELD_WITH_UNIT_SCREEN=6;	
+	public final int TEXTFIELD_NUMERICAL_SCREEN=7;
+	public final int TEXTAREA_SCREEN=8;
+	public final int TEXT_DISPLAY_SCREEN=9;	
+	public final int IMAGE_DISPLAY_SCREEN=10;
+	public final int TEXT_IMAGE_DISPLAY_SCREEN=11;
+	public final int CLASSIFICATION_SCREEN=12;		
+	public final int DATE_SCREEN=13;	
+	public final int TIMESTAMP_DISPLAY_SCREEN=14;		
+	public final int GPS_LOCATION_SCREEN=15;		
+	public final int VIDEO_FROM_FILE_SCREEN=16;	
+	public final int VIDEO_FROM_FILE_WITH_TEXT_SCREEN=17;	
+	public final int LINK_SCREEN=18;			
+	public final int SEND_TO_WEBSERVER_SCREEN=19;		
+	public final int SEND_TO_CLOUD_BASED_SERVICE_SCREEN=20;	
+	public final int PAINT_SCREEN=21;
+	public final int QR_CODE_READER_SCREEN=22;
+	public final int CLICKABLE_IMAGE_DISPLAY_SCREEN=23;
+	public final int TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN=24;
+	public final int DCAT_SUMMARY_SCREEN=25;			
+	public final int MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN=26;	
+	public final int TEXTFIELD_WITH_ANSWER_SCREEN=27;	
+	public final int TEXTAREA_WITH_ANSWER_SCREEN=28;	
 
-	public static final int END_STATE_SCREEN=29;		
+	public final int END_STATE_SCREEN=29;		
 	
-	private static int currScreen=TEXTFIELD_SCREEN;
+	public int currScreen=TEXTFIELD_SCREEN;
 	
 	public static final int PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE=0;
 	public static final int PLEASE_ANSWER_FIELD_ALERT_TYPE=1;
@@ -149,80 +136,82 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	public static Intent paintIntent;
 	public static Intent qrCodeReaderIntent;
 	
-	private static String myPictureName="default"; //change this later in the code
-	private static String myPaintName="default"; //change this later in the code
-	private static String myQRCodeReaderName="default"; //change this later in the code
+	private String myPictureName="default"; //change this later in the code
+	private String myPaintName="default"; //change this later in the code
+	private String myQRCodeReaderName="default"; //change this later in the code
 
-	private boolean hasReachedEndOfAllDecisionTrees;
-	private boolean isFirstQuestionForDecisionTree;
+//	private boolean hasReachedEndOfAllDecisionTrees;
+//	private boolean isFirstQuestionForDecisionTree;
 
-	private boolean usedBackButton;
+	public boolean usedBackButton;
 	
-	private boolean performedCapturePhoto;
-	private boolean performedRunPaint;
-	private boolean performedGetQRCode;
+	public boolean performedCapturePhoto;
+	public boolean performedRunPaint;
+	public boolean performedGetQRCode;
 	
-	private String currUsbongNode="";
+	public String currUsbongNode="";
 	private String nextUsbongNodeIfYes;
 	private String nextUsbongNodeIfNo;
 
-	private String currUsbongNodeWithoutAnswer="";
+	public String currUsbongNodeWithoutAnswer="";
 	
-	private String textFieldUnit="";
+	public String textFieldUnit="";
 		
-	private int usbongNodeContainerCounter=-1;//because I do a ++, so that the first element would be at 0;
+	public int usbongNodeContainerCounter=-1;//because I do a ++, so that the first element would be at 0;
 	private int requiredTotalCheckedBoxes;
-	private Vector<String> usbongNodeContainer;
-	private Vector<String> classificationContainer;
-	private Vector<String> radioButtonsContainer;
-	private Vector<String> usbongAnswerContainer;
-	private Vector<String> checkBoxesContainer;
+	public Vector<String> usbongNodeContainer;
+	public Vector<String> classificationContainer;
+	public Vector<String> radioButtonsContainer;
+	public Vector<String> usbongAnswerContainer;
+	public Vector<String> checkBoxesContainer;
 	private Vector<String> decisionTrackerContainer; //added by Mike, Feb. 2, 2013
 
-	private String noStringValue;
-	private String yesStringValue;
+	public String noStringValue;
+	public String yesStringValue;
 
 //	private String myTreeDirectory="usbong_trees/";
-	private String myTree="no tree selected.";//"input.xml";
+	public String myTree="no tree selected.";//"input.xml";
 	private String myOutputDirectory=UsbongUtils.getDateTimeStamp()+"/"; //add the ".csv" after appending the timestampe //output.csv
 	
 	private static UsbongDecisionTreeEngineActivity instance;
     private static TextToSpeech mTts;
     private int MY_DATA_CHECK_CODE=0;
-	private static final int EMAIL_SENDING_SUCCESS=99;
+	private final int EMAIL_SENDING_SUCCESS=99;
 
 	public ListView treesListView;
 	
 	private CustomDataAdapter mCustomAdapter;
 	private ArrayList<String> listOfTreesArrayList;
 
-	private ArrayAdapter<CharSequence> monthAdapter;
-	private ArrayAdapter<CharSequence> dayAdapter;
+	public ArrayAdapter<CharSequence> monthAdapter;
+	public ArrayAdapter<CharSequence> dayAdapter;
 	
 	private List<String> attachmentFilePaths;
 	
-	private FedorMyLocation myLocation;
+	public FedorMyLocation myLocation;
 	
 	private boolean isInTreeLoader;
 	
 	private static String myQRCodeContent;
-    private static boolean hasReturnedFromAnotherActivity; //camera, paint, email, etc
+    public boolean hasReturnedFromAnotherActivity; //camera, paint, email, etc
 	private static boolean wasNextButtonPressed;
 	private static boolean hasUpdatedDecisionTrackerContainer;
 	
-	private static boolean isAnOptionalNode;
-	private static String currentAnswer;
-	private static int usbongAnswerContainerCounter;
+	public boolean isAnOptionalNode;
+	public String currAnswer;
+	public int usbongAnswerContainerCounter;
 	
     private int padding_in_dp = 5;  // 5 dps
-    private int padding_in_px;
+    public int padding_in_px;
     
-    private String myMultipleRadioButtonsWithAnswerScreenAnswer;
-    private String myTextFieldWithAnswerScreenAnswer;
-    private String myTextAreaWithAnswerScreenAnswer;
-    private String timestampString;
+    public String myMultipleRadioButtonsWithAnswerScreenAnswer;
+    public String myTextFieldWithAnswerScreenAnswer;
+    public String myTextAreaWithAnswerScreenAnswer;
+    public String timestampString;
     
-    private StringBuffer myDcatSummaryStringBuffer;
+    public StringBuffer myDcatSummaryStringBuffer;
+    
+    private UsbongScreenProcessor myUsbongScreenProcessor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -256,7 +245,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     	decisionTrackerContainer = new Vector<String>();
 
     	usedBackButton=false;
-    	currentAnswer="";    	    	
+    	currAnswer="";    	    	
     	
     	try{    		
     		UsbongUtils.createUsbongFileStructure();
@@ -289,6 +278,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
         //added by Mike, June 25, 2013
         UsbongUtils.setDebugMode(UsbongUtils.checkIfInDebugMode());
         
+        
+        myUsbongScreenProcessor = new UsbongScreenProcessor(UsbongDecisionTreeEngineActivity.getInstance());
+        
     	initTreeLoader();
     }
     
@@ -304,6 +296,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
         public void onNothingSelected(AdapterView parent) {
           // Do nothing.
         }
+        
     }
     
 	public void initTreeLoader()
@@ -644,7 +637,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
       getInstance().setIntent(i);
     }
     
-    public static void setCurrScreen(int cs) {
+    public void setCurrScreen(int cs) {
     	currScreen=cs;
     }
     
@@ -740,7 +733,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	//http://kxml.sourceforge.net/kxml2/ ;Last accessed on: June 2,2010    
     //http://developer.android.com/reference/org/xmlpull/v1/XmlPullParser.html; last accessed on: Aug. 23, 2011
 	public void initParser() {
-		hasReachedEndOfAllDecisionTrees=false;
+//		hasReachedEndOfAllDecisionTrees=false;
 		
 //			decisionTrackerContainer.addElement(usbongAnswerContainer.lastElement());
 		
@@ -758,11 +751,11 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			}			
 			
 			if ((!usbongAnswerContainer.isEmpty()) && (usbongAnswerContainerCounter < usbongAnswerContainer.size())) {
-				currentAnswer = usbongAnswerContainer.elementAt(usbongAnswerContainerCounter);
-//				System.out.println(">>>> loob currentAnswer: "+currentAnswer);
+				currAnswer = usbongAnswerContainer.elementAt(usbongAnswerContainerCounter);
+//				System.out.println(">>>> loob currAnswer: "+currAnswer);
 			}
 			else {
-				currentAnswer="";
+				currAnswer="";
 			}
 
 			
@@ -820,7 +813,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 					  parser.nextTag();
 					  currUsbongNode=parser.getAttributeValue(0).toString();
 					  
-					  isFirstQuestionForDecisionTree=true;
+//					  isFirstQuestionForDecisionTree=true;
 
 					  //added by Mike, Dec. 24, 2012
 					  //reset myQRCodeContent to blank
@@ -1213,7 +1206,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	}
 
 	public void initUsbongScreen() {		
-        //Reference: http://www.anddev.org/tinytut_-_get_resources_by_name__getidentifier_-t460.html; last accessed 14 Sept 2011
+		myUsbongScreenProcessor.init();
+/*
+		//Reference: http://www.anddev.org/tinytut_-_get_resources_by_name__getidentifier_-t460.html; last accessed 14 Sept 2011
         Resources myRes = getResources();
         Drawable myDrawableImage;
         
@@ -1223,29 +1218,29 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
         String myStringToken="";
 //		if (usedBackButton) {
         
-//        System.out.println(">>>>>> currentAnswer: "+currentAnswer);
+//        System.out.println(">>>>>> currAnswer: "+currAnswer);
         
-    		StringTokenizer st = new StringTokenizer(currentAnswer, ",");
+    		StringTokenizer st = new StringTokenizer(currAnswer, ",");
     		if ((st != null) && (st.hasMoreTokens())) {
 	    		myStringToken = st.nextToken();
-	    		currentAnswer = currentAnswer.replace(myStringToken+",", "");
+	    		currAnswer = currAnswer.replace(myStringToken+",", "");
     		}	    		
 	    		
-    		StringTokenizer st_two = new StringTokenizer(currentAnswer, ";");
+    		StringTokenizer st_two = new StringTokenizer(currAnswer, ";");
 	    		
 	    	if (st_two!=null) {
-    			if (currentAnswer.length()>1) {
+    			if (currAnswer.length()>1) {
     				myStringToken = st_two.nextToken(); //get next element (i.e. 1 in "Y,1;")	    			
     			}
     			else {
     				myStringToken="";
     			}	    			
     		}
-/*
-	    		while (st.hasMoreTokens()) { //get last element (i.e. 1 in "Y,1;")
-	    			myStringToken = st.nextToken(); 
-	    		}
-*/	    		
+//
+//	    		while (st.hasMoreTokens()) { //get last element (i.e. 1 in "Y,1;")
+//	    			myStringToken = st.nextToken(); 
+//	    		}
+//	    		
 //	    		myStringToken = myStringToken.replace(";", "");
 
 //		}
@@ -1454,14 +1449,6 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
 		    		photoCaptureButton.setText((String) getResources().getText(R.string.UsbongTakePhotoTextViewENGLISH));				    		
 		    	}
-		        /*
-		        if (UsbongUtils.USE_UNESCAPE) {
-		        	myPhotoCaptureScreenTextView.setText(StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(currUsbongNode)));
-		        }
-		        else {
-		        	myPhotoCaptureScreenTextView.setText(UsbongUtils.trimUsbongNodeName(currUsbongNode));		        	
-		        }		    	
-*/		        
 		    	break;		    	
 	        case PAINT_SCREEN:
 		    	setContentView(R.layout.paint_screen);
@@ -1646,11 +1633,11 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        String weightsString = "1.9;2.1;2.6;1.8;2.4;1.8;.7;1.0;1.6;2.6;6.9;5.7;3.3;2.2;3.3;3.3;2;2;1.7;1.9;3.9;1.3;2.5;.8";
 				StringTokenizer myWeightsStringTokenizer = new StringTokenizer(weightsString, ";");
 				String myWeightString = myWeightsStringTokenizer.nextToken();
-				/*
-				while (st.hasMoreTokens()) {
-					myStringToken = st.nextToken(); 
-				}
-*/
+//				
+//				while (st.hasMoreTokens()) {
+//					myStringToken = st.nextToken(); 
+//				}
+//
 				double myWeightedScoreInt=0;
 				double myNegotiatedWeightedScoreInt=0;
 				
@@ -1839,9 +1826,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    	Spinner dateMonthSpinner = (Spinner) findViewById(R.id.date_month_spinner);
 		        monthAdapter = ArrayAdapter.createFromResource(
 		                this, R.array.months_array, android.R.layout.simple_spinner_item);
-/*		        monthAdapter = ArrayAdapter.createFromResource(
-                this, R.array.months_array, R.layout.date_textview);
-*/                
+//		        monthAdapter = ArrayAdapter.createFromResource(
+//                this, R.array.months_array, R.layout.date_textview);
+                
 		    	monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		        dateMonthSpinner.setAdapter(monthAdapter);
 		        dateMonthSpinner.setSelection(month);
@@ -1925,7 +1912,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        initBackNextButtons();
 		        ImageView myImageDisplayScreenImageView = (ImageView)findViewById(R.id.special_imageview);		       
 		        
-//		        if (!UsbongUtils.setImageDisplay(myImageDisplayScreenImageView, /*UsbongUtils.USBONG_TREES_FILE_PATH + */myTree+".utree/res/" +UsbongUtils.getResName(currUsbongNode))) {
+//		        if (!UsbongUtils.setImageDisplay(myImageDisplayScreenImageView, myTree+".utree/res/" +UsbongUtils.getResName(currUsbongNode))) {
 		        if (!UsbongUtils.setImageDisplay(myImageDisplayScreenImageView, myTree, UsbongUtils.getResName(currUsbongNode))) {
 		        //Reference: http://www.anddev.org/tinytut_-_get_resources_by_name__getidentifier_-t460.html; last accessed 14 Sept 2011
 //			        Resources myRes = getResources();
@@ -2008,12 +1995,6 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        initBackNextButtons();
 		        VideoView myVideoFromFileScreenVideoView = (VideoView)findViewById(R.id.video_from_file_videoview);		       
 		        myVideoFromFileScreenVideoView.setVideoPath(UsbongUtils.getPathOfVideoFile(myTree, UsbongUtils.getResName(currUsbongNode)));
-/*
-		        int width = myVideoFromFileScreenVideoView.getDefaultSize(0, 240);
-		        int height = myVideoFromFileScreenVideoView.getDefaultSize(0, 320);
-
-		        myVideoFromFileScreenVideoView.setMeasuredDimension(width, height);
-*/		        
 		        //added by Mike, Sept. 9, 2013
 		        myVideoFromFileScreenVideoView.setMediaController(new MediaController(this));		        
 		        myVideoFromFileScreenVideoView.start();  		        
@@ -2038,7 +2019,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		        mytextImageDisplayTextView = (TextView) UsbongUtils.applyTagsInView(mytextImageDisplayTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode);
 		        ImageView myTextImageDisplayImageView = (ImageView)findViewById(R.id.image_display_imageview);		       
 		        
-//		        if (!UsbongUtils.setImageDisplay(myTextImageDisplayImageView, /*UsbongUtils.USBONG_TREES_FILE_PATH + */myTree+".utree/res/" +UsbongUtils.getResName(currUsbongNode))) {
+//		        if (!UsbongUtils.setImageDisplay(myTextImageDisplayImageView, myTree+".utree/res/" +UsbongUtils.getResName(currUsbongNode))) {
 		        if (!UsbongUtils.setImageDisplay(myTextImageDisplayImageView, myTree, UsbongUtils.getResName(currUsbongNode))) {
 		        //Reference: http://www.anddev.org/tinytut_-_get_resources_by_name__getidentifier_-t460.html; last accessed 14 Sept 2011
 //			        Resources myRes = getResources();
@@ -2182,6 +2163,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			usedBackButton=false;
 			hasReturnedFromAnotherActivity=false;
 		}
+*/		
 	}
    
     public void initBackNextButtons()
@@ -2206,7 +2188,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				
 				if (!usbongAnswerContainer.isEmpty()) {
 /*					
-					currentAnswer = usbongAnswerContainer.lastElement();
+					currAnswer = usbongAnswerContainer.lastElement();
 					usbongAnswerContainer.removeElementAt(usbongAnswerContainer.size()-1);					
 */
 					usbongAnswerContainerCounter--;
@@ -2215,7 +2197,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 						usbongAnswerContainerCounter=0;
 					}
 					
-					currentAnswer = usbongAnswerContainer.elementAt(usbongAnswerContainerCounter);
+					currAnswer = usbongAnswerContainer.elementAt(usbongAnswerContainerCounter);
 				}
 
 				if (!usbongNodeContainer.isEmpty()) {
@@ -2990,6 +2972,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
         else
         {        	
         }
+        
     	paintButton = (Button)findViewById(R.id.paint_button);
     	paintIntent = new Intent().setClass(this, PaintActivity.class);
 		paintIntent.putExtra("myPaintName",myPaintName);
@@ -3204,5 +3187,5 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			public void onClick(DialogInterface dialog, int which) {
 			}
 		}).show();
-	}
+	}	
 }

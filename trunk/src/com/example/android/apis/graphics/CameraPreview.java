@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 //@edited: Michael Syson
-//@last updated: July 21, 2011
+//@date created: July 21, 2011
+//@last updated: Sept. 21, 2013
 //@desc: made public the methods/class
 //@ref: Android\android-sdk\samples\android-8\ApiDemos\src\com\example\android\apis\graphics\CameraPreview.java
 
@@ -25,23 +26,19 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
 
-import usbong.android.UsbongDecisionTreeEngineActivity;
 import usbong.android.utils.UsbongUtils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
-import android.hardware.Camera.Size;
 //import android.hardware.Camera.CameraInfo; //android api 9
 import android.util.Log;
 import android.view.Display;
@@ -117,7 +114,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mCamera = null;
     }
 
-
+/*
     private Size getOptimalPreviewSize(List<Size> sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.05;
         double targetRatio = (double) w / h;
@@ -150,7 +147,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
         return optimalSize;
     }
-    
+*/    
     //Android SDK; last accessed: 3 Oct 2011
     public static void setCameraDisplayOrientation(Activity activity,
             int cameraId, android.hardware.Camera camera) {
@@ -194,8 +191,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // Now that the size is known, set up the camera parameters and begin
         // the preview.
         Camera.Parameters parameters = mCamera.getParameters();
-        List<Size> sizes = parameters.getSupportedPreviewSizes();
+/*		List<Size> sizes = parameters.getSupportedPreviewSizes();
         Size optimalSize = getOptimalPreviewSize(sizes, w, h);
+  */
         
 //        parameters.setPreviewSize(optimalSize.width, optimalSize.height);
         
@@ -297,8 +295,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 				    dialog.dismiss();				    
 
 				    StoreByteImage(mContext, _data, 50,
-							"ImageName");										
-					UsbongDecisionTreeEngineActivity.setCurrScreen(UsbongDecisionTreeEngineActivity.PHOTO_CAPTURE_SCREEN);				
+							"ImageName");		
+				    //removed by Mike, Sept. 21, 2013
+//					UsbongDecisionTreeEngineActivity.setCurrScreen(UsbongDecisionTreeEngineActivity.PHOTO_CAPTURE_SCREEN);				
 					((Activity) getContext()).finish();
 				  }
 				});
@@ -323,8 +322,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	public boolean StoreByteImage(CameraPreview mContext2, byte[] imageData,
 			int quality, String expName) {
 
-	        File sdImageMainDirectory = new File("/sdcard/usbong" + "/" +UsbongUtils.getDateTimeStamp() +"/");
-			// stackoverflow.com/questions/2130932/how-to-create-directory-automatically-on-sd-card
+//	        File sdImageMainDirectory = new File("/sdcard/usbong" + "/" +UsbongUtils.getDateTimeStamp() +"/");
+        	File sdImageMainDirectory = new File(UsbongUtils.BASE_FILE_PATH + "/" +UsbongUtils.getDateTimeStamp() +"/");
+    	
+		// stackoverflow.com/questions/2130932/how-to-create-directory-automatically-on-sd-card
 	        if (!sdImageMainDirectory.exists() && !sdImageMainDirectory.mkdirs()) 
 	    	{
 	    		System.out.println("Path to file could not be created.");
@@ -352,8 +353,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 				bos.flush();
 				bos.close();
 
-				File imageFile = new File("/sdcard/usbong/" +UsbongUtils.getDateTimeStamp() +"/" + myPictureName+".jpg");
-			    
+//				File imageFile = new File("/sdcard/usbong/" +UsbongUtils.getDateTimeStamp() +"/" + myPictureName+".jpg");
+				File imageFile = new File(UsbongUtils.BASE_FILE_PATH +UsbongUtils.getDateTimeStamp() +"/" + myPictureName+".jpg");
+						    
 				if(imageFile.exists())
 				{
 					System.out.println("FILE EXISTS!");

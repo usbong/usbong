@@ -1,29 +1,11 @@
 package usbong.android.features.node;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import usbong.android.R;
 import usbong.android.UsbongDecisionTreeEngineActivity;
-import usbong.android.multimedia.graphics.MyCanvas;
-import usbong.android.utils.UsbongUtils;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
-import android.view.View.OnClickListener;
 
 /*
  * Reference: answer by Seshu Vinay at stackoverflow
@@ -85,7 +67,8 @@ public class QRCodeReaderActivity extends Activity
                 
                 //added by Mike, Dec. 23, 2012
                 UsbongDecisionTreeEngineActivity.setQRCodeContent(content);
-				UsbongDecisionTreeEngineActivity.setCurrScreen(UsbongDecisionTreeEngineActivity.QR_CODE_READER_SCREEN);				
+			    //removed by Mike, Sept. 21, 2013
+//				UsbongDecisionTreeEngineActivity.setCurrScreen(UsbongDecisionTreeEngineActivity.QR_CODE_READER_SCREEN);				
 				this.finish();
 
 			}
