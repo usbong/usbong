@@ -1,5 +1,5 @@
 --Usbong (beta)--
-ver: Sept. 10, 2013
+ver: Sept. 23, 2013
 
 Usbong helps you create your own web-mobile systems to digitize and streamline processes, and make your life and the lives of the people that matter to you, more meaningful, more peaceful-- HAPPIER. =)
 

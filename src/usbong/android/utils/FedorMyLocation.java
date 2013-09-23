@@ -16,11 +16,14 @@ package usbong.android.utils;
 
 import java.util.Timer;
 import java.util.TimerTask;
+
+import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 
 //Reference: http://stackoverflow.com/questions/3145089/what-is-the-simplest-and-most-robust-way-to-get-the-users-current-location-in-a/3145655#3145655; last accessed: 14 Aug. 2012
 public class FedorMyLocation {
@@ -100,11 +103,13 @@ public class FedorMyLocation {
              }
 
              if(gps_loc!=null){
-                 locationResult.gotLocation(gps_loc);
+                 Log.d(">>>>>>gps:","got gps location");                 
+            	 locationResult.gotLocation(gps_loc);
                  return;
              }
              if(net_loc!=null){
-                 locationResult.gotLocation(net_loc);
+                 Log.d(">>>>>>network:","got network location");
+            	 locationResult.gotLocation(net_loc);
                  return;
              }
              locationResult.gotLocation(null);

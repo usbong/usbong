@@ -25,12 +25,14 @@ import usbong.android.UsbongDecisionTreeEngineActivity;
 import usbong.android.utils.FedorMyLocation.LocationResult;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.provider.Settings;
 import android.text.InputType;
 import android.util.Log;
@@ -45,6 +47,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -60,11 +63,30 @@ import android.widget.VideoView;
 public class UsbongScreenProcessor
 {    
 	private UsbongDecisionTreeEngineActivity udtea;
+	private LocationResult locationResult;
+	
+	public static String myLatitude;
+	public static String myLongitude;
+		
+	public TextView myLongitudeTextView;
+	public TextView myLatitudeTextView;
+	
+	public ProgressBar myLoadingProgressBar;
+	
+	public boolean hasGottenGPSLocation;
+	
+	public UsbongScreenProcessor(){		
+	}
 	
 	public UsbongScreenProcessor(Activity a) {
         udtea = (UsbongDecisionTreeEngineActivity) a;	
 //        this.setInstance((UsbongDecisionTreeEngineActivity) a);	
 	}
+	
+	public LocationResult getLocationResult() {
+		return locationResult;
+	}
+	
     /*
      * Initialize processor
      */
@@ -783,34 +805,47 @@ public class UsbongScreenProcessor
 			udtea.initBackNextButtons();
 			TextView myGPSLocationTextView = (TextView)udtea.findViewById(R.id.gps_location_textview);
 			myGPSLocationTextView = (TextView) UsbongUtils.applyTagsInView(myGPSLocationTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
-			final TextView myLongitudeTextView = (TextView)udtea.findViewById(R.id.longitude_textview);
-			final TextView myLatitudeTextView = (TextView)udtea.findViewById(R.id.latitude_textview);
-			LocationResult locationResult = new LocationResult(){
-			    @Override
+//			TextView myLongitudeTextView = (TextView)udtea.findViewById(R.id.longitude_textview);
+//			TextView myLatitudeTextView = (TextView)udtea.findViewById(R.id.latitude_textview);
+			hasGottenGPSLocation=false;
+			
+			locationResult = new LocationResult(){
+				@Override
 			    public void gotLocation(Location location){
 			        //Got the location!
-			    	try {
 			    		System.out.println(">>>>>>>>>>>>>>>>>location: "+location);
+			        	if (location!=null) {
+			        		myLongitude = location.getLongitude()+"";
+			        		myLatitude = location.getLatitude()+"";
 
-			        	if (location!=null) {		            	
-			            	myLongitudeTextView.setText("long: "+location.getLongitude());
-			            	myLatitudeTextView.setText("lat: "+location.getLatitude());
+			    			myLongitudeTextView = (TextView)udtea.findViewById(R.id.longitude_textview);
+			    			myLatitudeTextView = (TextView)udtea.findViewById(R.id.latitude_textview);
+			    			
+			    			hasGottenGPSLocation=true;
+			    			
+			    			udtea.runOnUiThread(new Runnable() {
+			                    @Override
+			                    public void run() {
+					    			myLongitudeTextView.setText(myLongitude);
+					    			myLatitudeTextView.setText(myLatitude);
+			                    }
+			                });
 			        	}
 			        	else {
-			        		Toast.makeText(UsbongDecisionTreeEngineActivity.getInstance(), "Error getting location. Please make sure you are not inside a building.", Toast.LENGTH_SHORT).show();			            		
+			        		Toast.makeText(UsbongDecisionTreeEngineActivity.getInstance(), "Error getting location. Please make sure you are not inside a building.", Toast.LENGTH_SHORT).show();
 			        	}
-			    	}
-			    	catch (Exception e ){
-			    		Toast.makeText(UsbongDecisionTreeEngineActivity.getInstance(), "Error getting location.", Toast.LENGTH_SHORT).show();
-			    		e.getStackTrace();
-			    	}
-			    }
+			    }				
 			};
+//			myLoadingProgressBar =  new ProgressBar(udtea);
+//			myLoadingProgressBar.setIndeterminate(false);
+//			myLoadingProgressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);			
+			
 			udtea.myLocation = new FedorMyLocation();
-			//get location only if there's no value yet for long (and lat)
-			if (myLongitudeTextView.getText().toString().equals("long: loading...")) {
-				udtea.myLocation.getLocation(udtea, locationResult);		        
-			}
+			udtea.myLocation.getLocation(udtea, locationResult);		        
+			
+			myLoadingProgressBar = (ProgressBar) udtea.findViewById(R.id.progressBar);
+			new ProgressTask().execute();			
+			
 		} else if (udtea.currScreen == udtea.YES_NO_DECISION_SCREEN) {
 			udtea.setContentView(R.layout.yes_no_decision_screen);
 			udtea.initBackNextButtons();
@@ -892,4 +927,25 @@ public class UsbongScreenProcessor
 			udtea.hasReturnedFromAnotherActivity=false;
 		}
     }    
+    
+	private class ProgressTask extends AsyncTask <Void,Void,Void>{
+	    @Override
+	    protected void onPreExecute(){
+//	    	myLoadingProgressBar.show();
+	    	myLoadingProgressBar.setVisibility(View.VISIBLE);
+	    }
+
+	    @Override
+	    protected Void doInBackground(Void... arg0) {   
+			while(!hasGottenGPSLocation);
+	    	
+	    	return null;
+	    }
+
+	    @Override
+	    protected void onPostExecute(Void result) {
+//	    	myLoadingProgressBar.dismiss();
+	    	myLoadingProgressBar.setVisibility(View.GONE);
+	    }
+	}
 }
