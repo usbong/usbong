@@ -3,29 +3,37 @@
 	style="@style/UsbongSpecialParentLayout"
 	android:id="@+id/parent_layout_id"       	
 	>
-	<ScrollView style="@style/UsbongDefaultScrollView"
-	>		 	
+
+	<ScrollView
+	    style="@style/UsbongDefaultScrollView"
+	    android:layout_height="wrap_content" >
+		 	
 	<LinearLayout style="@style/UsbongTextImageMainLayout">
-		<TextView android:id="@+id/gps_location_textview"
-		    style="@style/UsbongDefaultTextView"	    	
-		    android:text="@string/default_textview" 
-		/>
-		<TextView android:id="@+id/longitude_textview"
-		    style="@style/UsbongDefaultTextView"	    	
-		    android:text="@string/loading_long_textview" 
-		/>
-		<TextView android:id="@+id/latitude_textview"
-		    style="@style/UsbongDefaultTextView"	    	
-		    android:text="@string/loading_lat_textview" 
-		/>			    
-	</LinearLayout>	
+			<TextView android:id="@+id/gps_location_textview"
+			    style="@style/UsbongDefaultTextView"	    	
+			    android:text="@string/default_textview" 
+			/>
+			<TextView android:id="@+id/longitude_textview"
+			    style="@style/UsbongDefaultTextView"	    	
+			    android:text="@string/loading_long_textview" 
+			/>
+			<TextView android:id="@+id/latitude_textview"
+			    style="@style/UsbongDefaultTextView"	    	
+			    android:text="@string/loading_lat_textview" 
+			/>						
+			<ProgressBar
+	            android:id="@+id/progressBar"
+	            style="?android:attr/progressBarStyleLarge"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content">
+	        </ProgressBar>
+       	</LinearLayout>	
 	</ScrollView>	    	        
 	<LinearLayout
 		style="@style/UsbongDefaultBackNextButtonLayout">	
 	    <Button android:id="@+id/back_button"
 		    style="@style/UsbongDefaultBackNextButton"
-		    android:text="Back"/>
-		    
+		    android:text="Back"/>		    
 	   	<Button android:id="@+id/next_button"
 		    style="@style/UsbongDefaultBackNextButton"
 		    android:text="Next"/>	    
