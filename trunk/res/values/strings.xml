@@ -2,8 +2,8 @@
 <resources>
     <string name="hello">Hello World, UsbongActivity!</string>
     <string name="app_name">Usbong</string>
-    <string name="group_a_name">Group A</string>    
-    <string name="group_b_name">Group B</string>    
+    <string name="back">Back</string>    
+    <string name="next">Next</string>    
     <string name="team_name_textview">Team Name:</string>    
 	<string name="pleaseChooseAnAnswerStringValue">Please choose an answer.</string>
 	<string name="pleaseChooseAnAnswerStringValueJapanese">答えを選んでください。</string>

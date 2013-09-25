@@ -1,5 +1,5 @@
 --Usbong (beta)--
-ver: Sept. 23, 2013
+ver: Sept. 25, 2013
 
 Usbong helps you create your own web-mobile systems to digitize and streamline processes, and make your life and the lives of the people that matter to you, more meaningful, more peaceful-- HAPPIER. =)
 
@@ -77,7 +77,7 @@ University of the Philippines-Manila
 Ateneo de Manila University
 
 Contact:
-Website: https://sites.google.com/site/theusbongproject
+Website: www.usbong.ph
 Mailing list: usbong-users@googlegroups.com
 Email: usbong.com@gmail.com
 

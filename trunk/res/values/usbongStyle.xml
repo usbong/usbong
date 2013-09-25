@@ -21,8 +21,8 @@
         <item name="android:background">@drawable/bg</item>
         <item name="android:orientation">vertical</item>  
         <item name="android:gravity">center</item>      
-	    <item name="android:paddingRight">5dp</item>
-        <item name="android:paddingLeft">5dp</item>                
+	    <item name="android:paddingRight">4dp</item>
+        <item name="android:paddingLeft">4dp</item>                
 	</style>	   
 		
 	<style name="UsbongTitleParentLayout">
@@ -71,6 +71,9 @@
         <item name="android:background">@drawable/bg</item>
         <item name="android:orientation">vertical</item>  
         <item name="android:gravity">center_vertical|center_horizontal</item>
+	    <item name="android:paddingTop">16dp</item>                
+		<item name="android:paddingLeft">4dp</item>    	
+		<item name="android:paddingRight">4dp</item>    							        
     </style>	   
 
 	<style name="UsbongLoginParentLayout">
@@ -79,8 +82,8 @@
         <item name="android:background">@drawable/bg</item>
         <item name="android:orientation">vertical</item>  
         <item name="android:gravity">center_vertical|center_horizontal</item>
-        <item name="android:paddingRight">5dp</item>
-        <item name="android:paddingLeft">5dp</item>        
+        <item name="android:paddingRight">4dp</item>
+        <item name="android:paddingLeft">4dp</item>        
     </style>	   
 
 	<style name="UsbongSignupLayout">
@@ -88,7 +91,8 @@
 		<item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>  
         <item name="android:gravity">right</item>
-        <item name="android:paddingRight">5dp</item>
+        <item name="android:paddingRight">4dp</item>
+        <item name="android:paddingLeft">4dp</item>    			
     </style>	   
 			
 	<style name="UsbongAudioPlayerParentLayout">
@@ -96,6 +100,9 @@
 		<item name="android:layout_height">fill_parent</item>
         <item name="android:orientation">vertical</item>  
         <item name="android:gravity">center</item>      
+	    <item name="android:paddingTop">16dp</item>                
+		<item name="android:paddingLeft">4dp</item>    	
+		<item name="android:paddingRight">4dp</item>    							
     </style>	 
     
 	<style name="UsbongDefaultScrollView">
@@ -112,6 +119,8 @@
         <item name="android:layout_weight">0.9</item>
         <item name="android:orientation">vertical</item>   
         <item name="android:paddingTop">16dp</item>                
+		<item name="android:paddingLeft">4dp</item>    			
+		<item name="android:paddingRight">4dp</item>    				
     </style>	   
 
 	<style name="UsbongTextImageMainLayout">
@@ -121,6 +130,8 @@
         <item name="android:layout_weight">0.9</item>
         <item name="android:orientation">vertical</item>   
         <item name="android:paddingTop">16dp</item>                
+		<item name="android:paddingLeft">4dp</item>    			
+		<item name="android:paddingRight">4dp</item>    				
     </style>	   
 	
     <style name="UsbongSpecialImageMainLayout">
@@ -137,7 +148,9 @@
         <item name="android:gravity">center_vertical|center_horizontal</item>
         <item name="android:layout_weight">0.9</item>
         <item name="android:orientation">vertical</item>   
-        <item name="android:paddingTop">4px</item>                
+        <item name="android:paddingTop">16dp</item>                
+		<item name="android:paddingLeft">4dp</item>    			
+		<item name="android:paddingRight">4dp</item>    				
     </style>	           
 
 	<style name="UsbongDateMainLayout">
@@ -147,6 +160,8 @@
         <item name="android:layout_weight">0.9</item>
         <item name="android:orientation">horizontal</item>   
         <item name="android:paddingTop">4dp</item>                
+		<item name="android:paddingLeft">4dp</item>    			
+		<item name="android:paddingRight">4dp</item>    				        
     </style>	           
 
 	<style name="UsbongMultipleRadioButtonsMainLayout">
@@ -155,7 +170,9 @@
         <item name="android:gravity">center_vertical|center_horizontal</item>
         <item name="android:layout_weight">0.9</item>
         <item name="android:orientation">vertical</item>   
-        <item name="android:paddingTop">4dp</item>                
+        <item name="android:paddingTop">16dp</item>                
+		<item name="android:paddingLeft">4dp</item>    			
+		<item name="android:paddingRight">4dp</item>    				
     </style>	   
 
 	<style name="UsbongMultipleCheckBoxesMainLayout">
@@ -164,7 +181,9 @@
         <item name="android:gravity">center_vertical|center_horizontal</item>
         <item name="android:layout_weight">0.9</item>
         <item name="android:orientation">vertical</item>   
-        <item name="android:paddingTop">4dp</item>                
+        <item name="android:paddingTop">16dp</item>  
+		<item name="android:paddingLeft">4dp</item>    			
+		<item name="android:paddingRight">4dp</item>    				
     </style>	   
     
 	<style name="UsbongDefaultTextView">
@@ -231,14 +250,14 @@
         <item name="android:gravity">center</item>
         <item name="android:paddingTop">20dp</item>        
         <item name="android:textColor">#4a452a</item>
-        <item name="android:textSize">30dp</item>
+        <item name="android:textSize">32dp</item>
     </style>	   
     
     <style name="UsbongDefaultEditText">
 		<item name="android:layout_width">fill_parent</item>
 		<item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">#000000</item>
-        <item name="android:textSize">30dp</item>
+        <item name="android:textSize">32dp</item>
     </style>	       
     
     <style name="UsbongTextAreaEditText">
@@ -295,7 +314,7 @@
 		<item name="android:textSize">20dp</item>		
 		<item name="android:layout_gravity">center</item>
 		<item name="android:background">@drawable/button</item>	
-		<item name="android:layout_marginBottom">5dp</item>	
+		<item name="android:layout_marginBottom">4dp</item>	
     </style>	   
     
     
@@ -311,7 +330,10 @@
 		<item name="android:textSize">20dp</item>		
 		<item name="android:layout_gravity">center</item>
 		<item name="android:background">@drawable/button_yellow</item>	
-		<item name="android:layout_marginBottom">5dp</item>		
+		<item name="android:layout_marginBottom">4dp</item>		
+	    <item name="android:paddingTop">4dp</item>                
+		<item name="android:paddingLeft">4dp</item>    	
+		<item name="android:paddingRight">4dp</item>    							
 	</style>	               
     
     <style name="UsbongAudioPlayerButton">
@@ -331,8 +353,9 @@
     	<item name="android:ellipsize">marquee</item>
     	<item name="android:layout_gravity">right</item>
     	<item name="android:layout_weight">1</item>
-		<item name="android:paddingRight">5dp</item>    	
-    </style>	                       
+		<item name="android:paddingLeft">4dp</item>    	
+		<item name="android:paddingRight">4dp</item>    					
+	</style>	                       
 
     <style name="UsbongMultipleRadioButtons">
     	<item name="android:textSize">20dp</item>
@@ -353,12 +376,26 @@
 		<item name="android:textSize">20dp</item>		
 		<item name="android:layout_gravity">center</item>
 		<item name="android:background">@drawable/button_yellow</item>	
-		<item name="android:layout_marginBottom">5dp</item>	
-    </style>	    
+		<item name="android:layout_marginBottom">4dp</item>	
+        <item name="android:paddingTop">4dp</item>                
+		<item name="android:paddingLeft">4dp</item>    		
+		<item name="android:paddingRight">4dp</item>    			
+	</style>	    
 
     <style name="UsbongCameraImageView">
 		<item name="android:layout_width">wrap_content</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:scaleType">fitCenter</item>				
     </style>	        
+    
+    <style name="UsbongEndStateParentLayout">
+		<item name="android:layout_width">fill_parent</item>
+		<item name="android:layout_height">fill_parent</item>
+        <item name="android:background">@drawable/bg</item>
+        <item name="android:orientation">vertical</item>  
+        <item name="android:gravity">center_vertical|center_horizontal</item>
+	    <item name="android:paddingTop">16dp</item>                
+		<item name="android:paddingLeft">4dp</item>    	
+		<item name="android:paddingRight">4dp</item>    							        
+    </style>	       
 </resources>

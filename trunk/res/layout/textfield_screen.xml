@@ -7,12 +7,10 @@
 		<TextView android:id="@+id/textfield_textview"
 		    style="@style/UsbongDefaultTextView"	    	
 		    android:text="@string/default_textview" 
-	    	android:layout_marginTop="16px"/>
-		/>	
+	    	/>
 		    
 		<EditText android:id="@+id/textfield_edittext"
 			style="@style/UsbongDefaultEditText"	
-		    android:layout_alignParentBottom="true"
 		/>
 	<LinearLayout
 		style="@style/UsbongDefaultBackNextButtonLayout">	
