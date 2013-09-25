@@ -3,10 +3,7 @@
 	style="@style/UsbongDefaultParentLayout"
 	android:id="@+id/parent_layout_id"       	
 	>
-	<ScrollView android:isScrollContainer="true"
-	android:layout_width="fill_parent"
-	android:layout_height="wrap_content"
-	android:layout_weight="0.6">		 	
+	<ScrollView style="@style/UsbongDefaultScrollView">		 	
 		<LinearLayout
 			style="@style/UsbongMultipleRadioButtonsMainLayout"> 
 			<TextView android:id="@+id/yes_no_decision_textview"

@@ -48,6 +48,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import usbong.android.R;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetManager;
@@ -1250,22 +1252,27 @@ public class UsbongUtils {
 	//answer from Chistopher, stackoverflow
 	//Reference: http://stackoverflow.com/questions/2730706/highlighting-text-color-using-html-fromhtml-in-android;
 	//last accessed: 19 Sept. 2012
-    public static View applyTagsInView(View myView, int type, String myCurrUsbongNode) {
+    public static View applyTagsInView(Activity a, View myView, int type, String myCurrUsbongNode) {
 //    	String styledText = applyTagsInString(myCurrUsbongNode);
 //    	Spanned mySpanned = Html.fromHtml(styledText);
     	Spanned mySpanned = applyTagsInString(myCurrUsbongNode);
+
 		switch(type) {
 			case IS_TEXTVIEW:
 				((TextView)myView).setText(mySpanned, TextView.BufferType.SPANNABLE);
 				((TextView)myView).setMovementMethod(LinkMovementMethod.getInstance());
+//				((TextView)myView).setBackgroundResource(android.R.drawable.list_selector_background);
+//				((TextView)myView).setTextSize((a.getResources().getDimension(R.dimen.textsize)));
 				break;
 			case IS_RADIOBUTTON:
 				((RadioButton)myView).setText(mySpanned, TextView.BufferType.SPANNABLE);
 				((RadioButton)myView).setMovementMethod(LinkMovementMethod.getInstance());
+//				((RadioButton)myView).setTextSize((a.getResources().getDimension(R.dimen.textsize)));
 				break;
 			case IS_CHECKBOX:
 				((CheckBox)myView).setText(mySpanned, TextView.BufferType.SPANNABLE);
 				((CheckBox)myView).setMovementMethod(LinkMovementMethod.getInstance());
+//				((CheckBox)myView).setTextSize((a.getResources().getDimension(R.dimen.textsize)));
 				break;				
 		}
 

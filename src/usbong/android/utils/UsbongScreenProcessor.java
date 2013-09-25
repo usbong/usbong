@@ -125,12 +125,12 @@ public class UsbongScreenProcessor
 			udtea.setContentView(R.layout.multiple_radio_buttons_screen);
 			udtea.initBackNextButtons();
 			TextView myMultipleRadioButtonsScreenTextView = (TextView)udtea.findViewById(R.id.radio_buttons_textview);
-			myMultipleRadioButtonsScreenTextView = (TextView) UsbongUtils.applyTagsInView(myMultipleRadioButtonsScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			myMultipleRadioButtonsScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myMultipleRadioButtonsScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			RadioGroup radioGroup = (RadioGroup)udtea.findViewById(R.id.multiple_radio_buttons_radiogroup);
 			int totalRadioButtonsInContainer = udtea.radioButtonsContainer.size();
 			for (int i=0; i<totalRadioButtonsInContainer; i++) {
 			    View radioButtonView = new RadioButton(udtea.getBaseContext());
-			    RadioButton radioButton = (RadioButton) UsbongUtils.applyTagsInView(radioButtonView, UsbongUtils.IS_RADIOBUTTON, udtea.radioButtonsContainer.elementAt(i).toString());
+			    RadioButton radioButton = (RadioButton) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), radioButtonView, UsbongUtils.IS_RADIOBUTTON, udtea.radioButtonsContainer.elementAt(i).toString());
 			    radioButton.setTextSize(20);
 			    radioButton.setId(i);
 			    radioButton.setTextColor(Color.parseColor("#4a452a"));			        
@@ -172,12 +172,12 @@ public class UsbongScreenProcessor
 			udtea.currUsbongNodeWithoutAnswer=udtea.currUsbongNodeWithoutAnswer.substring(0, udtea.currUsbongNodeWithoutAnswer.length()-udtea.myMultipleRadioButtonsWithAnswerScreenAnswer.length()-1); //do a -1 for the last tilde    			
 //    			Log.d(">>>>>>>>udtea.currUsbongNodeWithoutAnswer", udtea.currUsbongNodeWithoutAnswer);
 			TextView myMultipleRadioButtonsWithAnswerScreenTextView = (TextView)udtea.findViewById(R.id.radio_buttons_textview);
-			myMultipleRadioButtonsWithAnswerScreenTextView = (TextView) UsbongUtils.applyTagsInView(myMultipleRadioButtonsWithAnswerScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNodeWithoutAnswer);
+			myMultipleRadioButtonsWithAnswerScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myMultipleRadioButtonsWithAnswerScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNodeWithoutAnswer);
 			RadioGroup myMultipleRadioButtonsWithAnswerRadioGroup = (RadioGroup)udtea.findViewById(R.id.multiple_radio_buttons_radiogroup);
 			int myMultipleRadioButtonsWithAnswerTotalRadioButtonsInContainer = udtea.radioButtonsContainer.size();
 			for (int i=0; i<myMultipleRadioButtonsWithAnswerTotalRadioButtonsInContainer; i++) {
 			    View radioButtonView = new RadioButton(udtea.getBaseContext());
-			    RadioButton radioButton = (RadioButton) UsbongUtils.applyTagsInView(radioButtonView, UsbongUtils.IS_RADIOBUTTON, udtea.radioButtonsContainer.elementAt(i).toString());
+			    RadioButton radioButton = (RadioButton) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), radioButtonView, UsbongUtils.IS_RADIOBUTTON, udtea.radioButtonsContainer.elementAt(i).toString());
 			    radioButton.setTextSize(20);
 			    radioButton.setId(i);
 			    radioButton.setTextColor(Color.parseColor("#4a452a"));			        
@@ -194,14 +194,15 @@ public class UsbongScreenProcessor
 		} else if (udtea.currScreen == udtea.LINK_SCREEN) {
 			//use same contentView as multiple_radio_buttons_screen
 			udtea.setContentView(R.layout.multiple_radio_buttons_screen);
-			//		        udtea.initBackNextButtons();
+			udtea.initBackNextButtons();
 			TextView myLinkScreenTextView = (TextView)udtea.findViewById(R.id.radio_buttons_textview);
-			myLinkScreenTextView = (TextView) UsbongUtils.applyTagsInView(myLinkScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			myLinkScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myLinkScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+
 			RadioGroup myLinkScreenRadioGroup = (RadioGroup)udtea.findViewById(R.id.multiple_radio_buttons_radiogroup);
 			int myLinkScreenTotalRadioButtonsInContainer = udtea.radioButtonsContainer.size();
 			for (int i=0; i<myLinkScreenTotalRadioButtonsInContainer; i++) {
 			    View radioButtonView = new RadioButton(udtea.getBaseContext());
-			    RadioButton radioButton = (RadioButton) UsbongUtils.applyTagsInView(radioButtonView, UsbongUtils.IS_RADIOBUTTON, UsbongUtils.trimUsbongNodeName(udtea.radioButtonsContainer.elementAt(i).toString()));
+			    RadioButton radioButton = (RadioButton) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), radioButtonView, UsbongUtils.IS_RADIOBUTTON, UsbongUtils.trimUsbongNodeName(udtea.radioButtonsContainer.elementAt(i).toString()));
 
 				Log.d(">>>>>radioButton",radioButton.getText().toString());
 
@@ -223,7 +224,7 @@ public class UsbongScreenProcessor
 			udtea.setContentView(R.layout.multiple_checkboxes_screen);
 			udtea.initBackNextButtons();
 			TextView myMultipleCheckBoxesScreenTextView = (TextView)udtea.findViewById(R.id.checkboxes_textview);
-			myMultipleCheckBoxesScreenTextView = (TextView) UsbongUtils.applyTagsInView(myMultipleCheckBoxesScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			myMultipleCheckBoxesScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myMultipleCheckBoxesScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			LinearLayout myMultipleCheckboxesLinearLayout = (LinearLayout)udtea.findViewById(R.id.multiple_checkboxes_linearlayout);
 			int totalCheckBoxesInContainer = udtea.checkBoxesContainer.size();
 			StringTokenizer myMultipleCheckboxStringTokenizer = new StringTokenizer(myStringToken, ",");
@@ -242,7 +243,7 @@ public class UsbongScreenProcessor
 			for (int i=0; i<totalCheckBoxesInContainer; i++) {
 			    CheckBox checkBox = new CheckBox(udtea.getBaseContext());
 //		            checkBox.setText(StringEscapeUtils.unescapeJava(udtea.checkBoxesContainer.elementAt(i).toString()));
-			    checkBox = (CheckBox) UsbongUtils.applyTagsInView(checkBox, UsbongUtils.IS_CHECKBOX, StringEscapeUtils.unescapeJava(udtea.checkBoxesContainer.elementAt(i).toString()));
+			    checkBox = (CheckBox) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), checkBox, UsbongUtils.IS_CHECKBOX, StringEscapeUtils.unescapeJava(udtea.checkBoxesContainer.elementAt(i).toString()));
 			        
 			    for (int k=0; k<myCheckedAnswers.size(); k++) {
 			    	try {
@@ -264,7 +265,7 @@ public class UsbongScreenProcessor
 			udtea.initRecordAudioScreen();
 			udtea.initBackNextButtons();
 			TextView myAudioRecorderTextView = (TextView)udtea.findViewById(R.id.audio_recorder_textview);
-			myAudioRecorderTextView = (TextView) UsbongUtils.applyTagsInView(myAudioRecorderTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			myAudioRecorderTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myAudioRecorderTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			Button recordButton = (Button)udtea.findViewById(R.id.record_button);
 			Button stopButton = (Button)udtea.findViewById(R.id.stop_button);
 			Button playButton = (Button)udtea.findViewById(R.id.play_button);
@@ -290,7 +291,7 @@ public class UsbongScreenProcessor
 			}
 			udtea.initBackNextButtons();
 			TextView myPhotoCaptureScreenTextView = (TextView)udtea.findViewById(R.id.photo_capture_textview);
-			myPhotoCaptureScreenTextView = (TextView) UsbongUtils.applyTagsInView(myPhotoCaptureScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			myPhotoCaptureScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myPhotoCaptureScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			Button photoCaptureButton = (Button)udtea.findViewById(R.id.photo_capture_button);
 			if (udtea.currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
 				photoCaptureButton.setText((String) udtea.getResources().getText(R.string.UsbongTakePhotoTextViewFILIPINO));				    		
@@ -308,7 +309,7 @@ public class UsbongScreenProcessor
 			}
 			udtea.initBackNextButtons();
 			TextView myPaintScreenTextView = (TextView)udtea.findViewById(R.id.paint_textview);
-			myPaintScreenTextView = (TextView) UsbongUtils.applyTagsInView(myPaintScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			myPaintScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myPaintScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			Button paintButton = (Button)udtea.findViewById(R.id.paint_button);
 			if (udtea.currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
 				paintButton.setText((String) udtea.getResources().getText(R.string.UsbongRunPaintTextViewFILIPINO));				    		
@@ -326,7 +327,7 @@ public class UsbongScreenProcessor
 			}
 			udtea.initBackNextButtons();
 			TextView myQRCodeReaderScreenTextView = (TextView)udtea.findViewById(R.id.qr_code_reader_textview);
-			myQRCodeReaderScreenTextView = (TextView) UsbongUtils.applyTagsInView(myQRCodeReaderScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			myQRCodeReaderScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myQRCodeReaderScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			Button qrCodeReaderButton = (Button)udtea.findViewById(R.id.qr_code_reader_button);
 			if (udtea.currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
 				qrCodeReaderButton .setText((String) udtea.getResources().getText(R.string.UsbongQRCodeReaderTextViewFILIPINO));				    		
@@ -341,7 +342,7 @@ public class UsbongScreenProcessor
 			udtea.setContentView(R.layout.textfield_screen);
 			udtea.initBackNextButtons();
 			TextView myTextFieldScreenTextView = (TextView)udtea.findViewById(R.id.textfield_textview);
-			myTextFieldScreenTextView = (TextView) UsbongUtils.applyTagsInView(myTextFieldScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			myTextFieldScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextFieldScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			EditText myTextFieldScreenEditText = (EditText)udtea.findViewById(R.id.textfield_edittext);
 			myTextFieldScreenEditText.setText(myStringToken);
 		} else if (udtea.currScreen == udtea.TEXTFIELD_WITH_ANSWER_SCREEN) {
@@ -361,14 +362,14 @@ public class UsbongScreenProcessor
 			udtea.myTextFieldWithAnswerScreenAnswer=myTextFieldWithAnswerScreenStringToken.toString();
 			udtea.currUsbongNodeWithoutAnswer=udtea.currUsbongNodeWithoutAnswer.substring(0, udtea.currUsbongNodeWithoutAnswer.length()-udtea.myTextFieldWithAnswerScreenAnswer.length()-1); //do a -1 for the last tilde    			
 			TextView myTextFieldWithAnswerScreenTextView = (TextView)udtea.findViewById(R.id.textfield_textview);
-			myTextFieldWithAnswerScreenTextView = (TextView) UsbongUtils.applyTagsInView(myTextFieldWithAnswerScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNodeWithoutAnswer);
+			myTextFieldWithAnswerScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextFieldWithAnswerScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNodeWithoutAnswer);
 			EditText myTextFieldScreenWithAnswerEditText = (EditText)udtea.findViewById(R.id.textfield_edittext);
 			myTextFieldScreenWithAnswerEditText.setText(myStringToken);
 		} else if (udtea.currScreen == udtea.TEXTAREA_SCREEN) {
 			udtea.setContentView(R.layout.textarea_screen);
 			udtea.initBackNextButtons();
 			TextView myTextAreaScreenTextView = (TextView)udtea.findViewById(R.id.textarea_textview);
-			myTextAreaScreenTextView = (TextView) UsbongUtils.applyTagsInView(myTextAreaScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			myTextAreaScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextAreaScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			EditText myTextAreaScreenEditText = (EditText)udtea.findViewById(R.id.textarea_edittext);
 			myTextAreaScreenEditText.setText(myStringToken);
 		} else if (udtea.currScreen == udtea.TEXTAREA_WITH_ANSWER_SCREEN) {
@@ -388,14 +389,14 @@ public class UsbongScreenProcessor
 			udtea.myTextAreaWithAnswerScreenAnswer=myTextAreaWithAnswerScreenStringToken.toString();
 			udtea.currUsbongNodeWithoutAnswer=udtea.currUsbongNodeWithoutAnswer.substring(0, udtea.currUsbongNodeWithoutAnswer.length()-udtea.myTextAreaWithAnswerScreenAnswer.length()-1); //do a -1 for the last tilde    			
 			TextView myTextAreaWithAnswerScreenTextView = (TextView)udtea.findViewById(R.id.textarea_textview);
-			myTextAreaWithAnswerScreenTextView = (TextView) UsbongUtils.applyTagsInView(myTextAreaWithAnswerScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNodeWithoutAnswer);
+			myTextAreaWithAnswerScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextAreaWithAnswerScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNodeWithoutAnswer);
 			EditText myTextAreaScreenWithAnswerEditText = (EditText)udtea.findViewById(R.id.textarea_edittext);
 			myTextAreaScreenWithAnswerEditText.setText(myStringToken);
 		} else if (udtea.currScreen == udtea.TEXTFIELD_WITH_UNIT_SCREEN) {
 			udtea.setContentView(R.layout.textfield_with_unit_screen);
 			udtea.initBackNextButtons();
 			TextView myTextFieldWithUnitScreenTextView = (TextView)udtea.findViewById(R.id.textfield_textview);
-			myTextFieldWithUnitScreenTextView = (TextView) UsbongUtils.applyTagsInView(myTextFieldWithUnitScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			myTextFieldWithUnitScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextFieldWithUnitScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			EditText myEditText = (EditText)udtea.findViewById(R.id.textfield_edittext);
 			myEditText.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);
 			myEditText.setText(myStringToken);
@@ -405,7 +406,7 @@ public class UsbongScreenProcessor
 			udtea.setContentView(R.layout.textfield_screen);
 			udtea.initBackNextButtons();
 			TextView myTextFieldNumericalScreenTextView = (TextView)udtea.findViewById(R.id.textfield_textview);
-			myTextFieldNumericalScreenTextView = (TextView) UsbongUtils.applyTagsInView(myTextFieldNumericalScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			myTextFieldNumericalScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextFieldNumericalScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			EditText myTextFieldNumericalScreenEditText = (EditText)udtea.findViewById(R.id.textfield_edittext);
 			myTextFieldNumericalScreenEditText.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);
 			myTextFieldNumericalScreenEditText.setText(myStringToken);
@@ -413,13 +414,13 @@ public class UsbongScreenProcessor
 			udtea.setContentView(R.layout.classification_screen);
 			udtea.initBackNextButtons();
 			TextView myClassificationScreenTextView = (TextView)udtea.findViewById(R.id.classification_textview);
-			myClassificationScreenTextView = (TextView) UsbongUtils.applyTagsInView(myClassificationScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			myClassificationScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myClassificationScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			LinearLayout myClassificationLinearLayout = (LinearLayout)udtea.findViewById(R.id.classification_linearlayout);
 			int totalClassificationsInContainer = udtea.classificationContainer.size();
 			for (int i=0; i<totalClassificationsInContainer; i++) {
 			    TextView myTextView = new TextView(udtea.getBaseContext());
 			    //consider removing this code below; not needed; Mike, May 23, 2013
-			    myTextView = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			    myTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 
 				int bulletCount = i+1;
 			    if (UsbongUtils.USE_UNESCAPE) {
@@ -440,7 +441,7 @@ public class UsbongScreenProcessor
 			udtea.setContentView(R.layout.dcat_summary_screen);
 			udtea.initBackNextButtons();
 			TextView myDCATSummaryScreenTextView = (TextView)udtea.findViewById(R.id.dcat_summary_textview);
-			myDCATSummaryScreenTextView = (TextView) UsbongUtils.applyTagsInView(myDCATSummaryScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			myDCATSummaryScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myDCATSummaryScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			udtea.myDcatSummaryStringBuffer= new StringBuffer();
 			String weightsString = "1.9;2.1;2.6;1.8;2.4;1.8;.7;1.0;1.6;2.6;6.9;5.7;3.3;2.2;3.3;3.3;2;2;1.7;1.9;3.9;1.3;2.5;.8";
 			StringTokenizer myWeightsStringTokenizer = new StringTokenizer(weightsString, ";");
@@ -488,10 +489,10 @@ public class UsbongScreenProcessor
 			    		String s = udtea.usbongAnswerContainer.elementAt(i).toString().replace(";", "");
 			    		s = s.replace("A,", "");
 			    		if (!s.equals("")) {
-			    			myIssuesTextView  = (TextView) UsbongUtils.applyTagsInView(myIssuesTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: "+s+"{br}");
+			    			myIssuesTextView  = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myIssuesTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: "+s+"{br}");
 			    		}
 			    		else {
-			    			myIssuesTextView  = (TextView) UsbongUtils.applyTagsInView(myIssuesTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: none{br}");
+			    			myIssuesTextView  = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myIssuesTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: none{br}");
 			    		}
 
 			            myIssuesTextView.setPadding(udtea.padding_in_px, 0, 0, 0); //add 5 so that the text does not touch the left border
@@ -506,7 +507,7 @@ public class UsbongScreenProcessor
 						myWeightString = myWeightsStringTokenizer.nextToken();
 					}
 
-			        myTextView = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, 
+			        myTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextView, UsbongUtils.IS_TEXTVIEW, 
 			        		"//--------------------"+
 							" STANDARD "+tempCurrStandard+" (TOTAL){br}"+ 
 							"Total (Rating): "+String.format("%.2f",dcatSum[currStandard][sumWeightedRatingIndex]) +"{br}"+
@@ -526,10 +527,10 @@ public class UsbongScreenProcessor
 					String s = udtea.usbongAnswerContainer.elementAt(i).toString().replace(";", "");
 					s = s.replace("A,", "");
 					if (!s.equals("")) {
-			    		myTextView = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: "+s+"{br}");
+			    		myTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: "+s+"{br}");
 					}
 					else {
-			    		myTextView = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: none{br}");
+			    		myTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextView, UsbongUtils.IS_TEXTVIEW, "ISSUES: none{br}");
 					}
 					
 					if (myWeightsStringTokenizer.hasMoreElements()) {
@@ -539,7 +540,7 @@ public class UsbongScreenProcessor
 				}
 				else if (udtea.usbongNodeContainer.elementAt(i).toString().contains("Weighted")){
 			        TextView myWeightedTextView = new TextView(udtea.getBaseContext());
-			        myWeightedTextView = (TextView) UsbongUtils.applyTagsInView(myWeightedTextView, UsbongUtils.IS_TEXTVIEW, udtea.usbongNodeContainer.elementAt(i).toString().replace("{br}(Weighted Score)",""));
+			        myWeightedTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myWeightedTextView, UsbongUtils.IS_TEXTVIEW, udtea.usbongNodeContainer.elementAt(i).toString().replace("{br}(Weighted Score)",""));
 			        myWeightedTextView.setPadding(udtea.padding_in_px, 0, 0, 0); //add 5 so that the text does not touch the left border
 			        myWeightedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,24);
 			        myWeightedTextView.setTextColor(Color.parseColor("#4a452a"));			        
@@ -569,7 +570,7 @@ public class UsbongScreenProcessor
 					dcatSum[currStandard][sumWeightedRatingIndex]+=weightedAnswer;
 					dcatSum[currStandard][sumWeightedScoreIndex]+=myWeightedScoreInt;		        		
 					
-					myTextView = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, 
+					myTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextView, UsbongUtils.IS_TEXTVIEW, 
 							"Weighted: " +myWeightedScoreInt);
 				}
 				else if (udtea.usbongNodeContainer.elementAt(i).toString().contains("Negotiated")){
@@ -595,12 +596,12 @@ public class UsbongScreenProcessor
 					dcatSum[currStandard][sumNegotiatedRatingIndex]+=negotiatedAnswer;
 					dcatSum[currStandard][sumNegotiatedScoreIndex]+=myNegotiatedWeightedScoreInt;		        		
 
-					myTextView = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, 
+					myTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextView, UsbongUtils.IS_TEXTVIEW, 
 							"Negotiated: " + myNegotiatedWeightedScoreInt);		        				        				        		
 //		        		hasReachedNegotiated=true;
 				}
 				else {
-			        myTextView = (TextView) UsbongUtils.applyTagsInView(myTextView, UsbongUtils.IS_TEXTVIEW, udtea.usbongNodeContainer.elementAt(i).toString()+"{br}");
+			        myTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextView, UsbongUtils.IS_TEXTVIEW, udtea.usbongNodeContainer.elementAt(i).toString()+"{br}");
 				}
 
 //	        		if (!hasReachedStandardTotal) {
@@ -616,7 +617,7 @@ public class UsbongScreenProcessor
 			udtea.setContentView(R.layout.date_screen);
 			udtea.initBackNextButtons();
 			TextView myDateScreenTextView = (TextView)udtea.findViewById(R.id.date_textview);
-			myDateScreenTextView = (TextView) UsbongUtils.applyTagsInView(myDateScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			myDateScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myDateScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			//Reference: http://code.google.com/p/android/issues/detail?id=2037
 			//last accessed: 21 Aug. 2012
 			Configuration userConfig = new Configuration();
@@ -690,13 +691,13 @@ public class UsbongScreenProcessor
 			udtea.setContentView(R.layout.text_display_screen);
 			udtea.initBackNextButtons();
 			TextView mySpecialScreenTextView = (TextView)udtea.findViewById(R.id.special_textview);
-			mySpecialScreenTextView = (TextView) UsbongUtils.applyTagsInView(mySpecialScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			mySpecialScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), mySpecialScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 		} else if (udtea.currScreen == udtea.TIMESTAMP_DISPLAY_SCREEN) {
 			udtea.setContentView(R.layout.timestamp_display_screen);
 			udtea.initBackNextButtons();
 			TextView myTimeDisplayScreenTextView = (TextView)udtea.findViewById(R.id.time_display_textview);
 			udtea.timestampString = UsbongUtils.getCurrTimeStamp();
-			myTimeDisplayScreenTextView = (TextView) UsbongUtils.applyTagsInView(myTimeDisplayScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode+"{br}"+udtea.timestampString);
+			myTimeDisplayScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTimeDisplayScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode+"{br}"+udtea.timestampString);
 		} else if (udtea.currScreen == udtea.IMAGE_DISPLAY_SCREEN) {
 			udtea.setContentView(R.layout.image_display_screen);
 			udtea.initBackNextButtons();
@@ -723,10 +724,11 @@ public class UsbongScreenProcessor
 			    public void onClick(View v) {
 //	                	myMessage = UsbongUtils.applyTagsInString(udtea.currUsbongNode).toString();	    				
 			    	
-			    	TextView tv = (TextView) UsbongUtils.applyTagsInView(new TextView(UsbongDecisionTreeEngineActivity.getInstance()), UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			    	TextView tv = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(UsbongDecisionTreeEngineActivity.getInstance()), UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			    	if (tv.toString().equals("")) {
 			    		tv.setText("No message.");
 			    	}
+	    	    	tv.setTextSize((UsbongDecisionTreeEngineActivity.getInstance().getResources().getDimension(R.dimen.textsize)));
 
 			    	new AlertDialog.Builder(udtea).setTitle("Hey!")
 //	            		.setMessage(myMessage)
@@ -742,7 +744,7 @@ public class UsbongScreenProcessor
 			udtea.setContentView(R.layout.text_clickable_image_display_screen);
 			udtea.initBackNextButtons();
 			TextView myTextClickableImageDisplayTextView = (TextView)udtea.findViewById(R.id.text_clickable_image_display_textview);
-			myTextClickableImageDisplayTextView = (TextView) UsbongUtils.applyTagsInView(myTextClickableImageDisplayTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			myTextClickableImageDisplayTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextClickableImageDisplayTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			ImageButton myTextClickableImageDisplayScreenImageButton = (ImageButton)udtea.findViewById(R.id.clickable_image_display_imagebutton);
 			if (!UsbongUtils.setClickableImageDisplay(myTextClickableImageDisplayScreenImageButton, udtea.myTree, UsbongUtils.getResName(udtea.currUsbongNode))) {
 			//Reference: http://www.anddev.org/tinytut_-_get_resources_by_name__getidentifier_-t460.html; last accessed 14 Sept 2011
@@ -755,10 +757,11 @@ public class UsbongScreenProcessor
 			    public void onClick(View v) {
 //	                	myMessage = UsbongUtils.applyTagsInString(udtea.currUsbongNode).toString();	    				
 			    	
-			    	TextView tv = (TextView) UsbongUtils.applyTagsInView(new TextView(udtea), UsbongUtils.IS_TEXTVIEW, UsbongUtils.getAlertName(udtea.currUsbongNode));
+			    	TextView tv = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(udtea), UsbongUtils.IS_TEXTVIEW, UsbongUtils.getAlertName(udtea.currUsbongNode));
 			    	if (tv.toString().equals("")) {
 			    		tv.setText("No message.");
 			    	}
+	    	    	tv.setTextSize((UsbongDecisionTreeEngineActivity.getInstance().getResources().getDimension(R.dimen.textsize)));
 
 			    	new AlertDialog.Builder(udtea).setTitle("Hey!")
 //	            		.setMessage(myMessage)
@@ -782,7 +785,7 @@ public class UsbongScreenProcessor
 			udtea.setContentView(R.layout.video_from_file_with_text_screen);
 			udtea.initBackNextButtons();
 			TextView myVideoFromFileWithTextTextView = (TextView)udtea.findViewById(R.id.video_from_file_with_text_textview);
-			myVideoFromFileWithTextTextView = (TextView) UsbongUtils.applyTagsInView(myVideoFromFileWithTextTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			myVideoFromFileWithTextTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myVideoFromFileWithTextTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			VideoView myVideoFromFileWithTextScreenVideoView = (VideoView)udtea.findViewById(R.id.video_from_file_with_text_videoview);
 			myVideoFromFileWithTextScreenVideoView.setVideoPath(UsbongUtils.getPathOfVideoFile(udtea.myTree, UsbongUtils.getResName(udtea.currUsbongNode)));
 			myVideoFromFileWithTextScreenVideoView.setMediaController(new MediaController(((Activity)udtea)));
@@ -791,7 +794,7 @@ public class UsbongScreenProcessor
 			udtea.setContentView(R.layout.text_image_display_screen);
 			udtea.initBackNextButtons();
 			TextView mytextImageDisplayTextView = (TextView)udtea.findViewById(R.id.text_image_display_textview);
-			mytextImageDisplayTextView = (TextView) UsbongUtils.applyTagsInView(mytextImageDisplayTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			mytextImageDisplayTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), mytextImageDisplayTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			ImageView myTextImageDisplayImageView = (ImageView)udtea.findViewById(R.id.image_display_imageview);
 			//		        if (!UsbongUtils.setImageDisplay(myTextImageDisplayImageView, myTree+".utree/res/" +UsbongUtils.getResName(udtea.currUsbongNode))) {
 			if (!UsbongUtils.setImageDisplay(myTextImageDisplayImageView, udtea.myTree, UsbongUtils.getResName(udtea.currUsbongNode))) {
@@ -804,7 +807,7 @@ public class UsbongScreenProcessor
 			udtea.setContentView(R.layout.gps_location_screen);
 			udtea.initBackNextButtons();
 			TextView myGPSLocationTextView = (TextView)udtea.findViewById(R.id.gps_location_textview);
-			myGPSLocationTextView = (TextView) UsbongUtils.applyTagsInView(myGPSLocationTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			myGPSLocationTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myGPSLocationTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 //			TextView myLongitudeTextView = (TextView)udtea.findViewById(R.id.longitude_textview);
 //			TextView myLatitudeTextView = (TextView)udtea.findViewById(R.id.latitude_textview);
 			hasGottenGPSLocation=false;
@@ -814,26 +817,31 @@ public class UsbongScreenProcessor
 			    public void gotLocation(Location location){
 			        //Got the location!
 			    		System.out.println(">>>>>>>>>>>>>>>>>location: "+location);
-			        	if (location!=null) {
-			        		myLongitude = location.getLongitude()+"";
-			        		myLatitude = location.getLatitude()+"";
-
-			    			myLongitudeTextView = (TextView)udtea.findViewById(R.id.longitude_textview);
-			    			myLatitudeTextView = (TextView)udtea.findViewById(R.id.latitude_textview);
-			    			
-			    			hasGottenGPSLocation=true;
-			    			
-			    			udtea.runOnUiThread(new Runnable() {
-			                    @Override
-			                    public void run() {
-					    			myLongitudeTextView.setText(myLongitude);
-					    			myLatitudeTextView.setText(myLatitude);
-			                    }
-			                });
-			        	}
-			        	else {
-			        		Toast.makeText(UsbongDecisionTreeEngineActivity.getInstance(), "Error getting location. Please make sure you are not inside a building.", Toast.LENGTH_SHORT).show();
-			        	}
+			    		if (udtea.currScreen==udtea.GPS_LOCATION_SCREEN) {
+				        	if (location!=null) {
+				        		myLongitude = location.getLongitude()+"";
+				        		myLatitude = location.getLatitude()+"";
+	
+				    			myLongitudeTextView = (TextView)udtea.findViewById(R.id.longitude_textview);
+				    			myLatitudeTextView = (TextView)udtea.findViewById(R.id.latitude_textview);
+				    			
+				    			hasGottenGPSLocation=true;
+				    			
+				    			udtea.runOnUiThread(new Runnable() {
+				                    @Override
+				                    public void run() {
+						    			myLongitudeTextView.setText("long: "+myLongitude);
+						    			myLatitudeTextView.setText("lat: "+myLatitude);
+				                    }
+				                });
+				        	}
+				        	else {
+				        		Toast.makeText(UsbongDecisionTreeEngineActivity.getInstance(), "Error getting location. Please make sure you are not inside a building.", Toast.LENGTH_SHORT).show();
+				        	}
+			    		}
+			    		else {
+			    			hasGottenGPSLocation=true; //to stop the cycling progress bar
+			    		}
 			    }				
 			};
 //			myLoadingProgressBar =  new ProgressBar(udtea);
@@ -850,7 +858,7 @@ public class UsbongScreenProcessor
 			udtea.setContentView(R.layout.yes_no_decision_screen);
 			udtea.initBackNextButtons();
 			TextView myYesNoDecisionScreenTextView = (TextView)udtea.findViewById(R.id.yes_no_decision_textview);
-			myYesNoDecisionScreenTextView = (TextView) UsbongUtils.applyTagsInView(myYesNoDecisionScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			myYesNoDecisionScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myYesNoDecisionScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			RadioButton myYesRadioButton = (RadioButton)udtea.findViewById(R.id.yes_radiobutton);
 			myYesRadioButton.setText(udtea.yesStringValue);
 			myYesRadioButton.setTextSize(20);
@@ -867,7 +875,7 @@ public class UsbongScreenProcessor
 			udtea.setContentView(R.layout.yes_no_decision_screen);
 			udtea.initBackNextButtons();
 			TextView mySendToCloudBasedServiceScreenTextView = (TextView)udtea.findViewById(R.id.yes_no_decision_textview);
-			mySendToCloudBasedServiceScreenTextView = (TextView) UsbongUtils.applyTagsInView(mySendToCloudBasedServiceScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			mySendToCloudBasedServiceScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), mySendToCloudBasedServiceScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			RadioButton mySendToCloudBasedServiceScreenYesRadioButton = (RadioButton)udtea.findViewById(R.id.yes_radiobutton);
 			mySendToCloudBasedServiceScreenYesRadioButton.setText(udtea.yesStringValue);
 			mySendToCloudBasedServiceScreenYesRadioButton.setTextSize(20);
@@ -884,9 +892,17 @@ public class UsbongScreenProcessor
 			udtea.setContentView(R.layout.send_to_webserver_screen);
 			udtea.initBackNextButtons();
 			TextView mySendToWebserverScreenTextView = (TextView)udtea.findViewById(R.id.send_to_webserver_textview);
-			mySendToWebserverScreenTextView = (TextView) UsbongUtils.applyTagsInView(mySendToWebserverScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			mySendToWebserverScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), mySendToWebserverScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			TextView myWebserverURLScreenTextView = (TextView)udtea.findViewById(R.id.webserver_url_textview);
-			myWebserverURLScreenTextView.setText(UsbongUtils.getDestinationServerURL());
+			
+			if (!UsbongUtils.getDestinationServerURL().toString().equals("")) {
+				myWebserverURLScreenTextView.setText("["+UsbongUtils.getDestinationServerURL()+"]");				
+			}
+			else {
+				myWebserverURLScreenTextView.setText("[Warning: No URL specified in Settings.]");								
+			}
+
+			
 			RadioButton mySendToWebserverYesRadioButton = (RadioButton)udtea.findViewById(R.id.yes_radiobutton);
 			mySendToWebserverYesRadioButton.setText(udtea.yesStringValue);
 			mySendToWebserverYesRadioButton.setTextSize(20);
