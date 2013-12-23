@@ -18,6 +18,10 @@ import java.util.Calendar;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import usbong.android.R;
@@ -25,7 +29,6 @@ import usbong.android.UsbongDecisionTreeEngineActivity;
 import usbong.android.utils.FedorMyLocation.LocationResult;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -690,14 +693,41 @@ public class UsbongScreenProcessor
 		} else if (udtea.currScreen == udtea.TEXT_DISPLAY_SCREEN) {
 			udtea.setContentView(R.layout.text_display_screen);
 			udtea.initBackNextButtons();
-			TextView mySpecialScreenTextView = (TextView)udtea.findViewById(R.id.special_textview);
-			mySpecialScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), mySpecialScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			TextView myTextDisplayScreenTextView = (TextView)udtea.findViewById(R.id.text_display_textview);
+			myTextDisplayScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextDisplayScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+		
 		} else if (udtea.currScreen == udtea.TIMESTAMP_DISPLAY_SCREEN) {
 			udtea.setContentView(R.layout.timestamp_display_screen);
 			udtea.initBackNextButtons();
 			TextView myTimeDisplayScreenTextView = (TextView)udtea.findViewById(R.id.time_display_textview);
 			udtea.timestampString = UsbongUtils.getCurrTimeStamp();
 			myTimeDisplayScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTimeDisplayScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode+"{br}"+udtea.timestampString);
+
+		} else if (udtea.currScreen == udtea.SIMPLE_ENCRYPT_SCREEN) {
+			udtea.setContentView(R.layout.simple_encrypt_screen);
+			udtea.initBackNextButtons();
+			TextView myEncryptScreenTextView = (TextView)udtea.findViewById(R.id.encrypt_textview);
+			myEncryptScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myEncryptScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+
+			String message ="";
+			if (udtea.currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
+				message = (String) udtea.getResources().getText(R.string.UsbongEncryptAlertMessageFILIPINO);
+			}
+			else if (udtea.currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
+				 message = (String) udtea.getResources().getText(R.string.UsbongEncryptAlertMessageJAPANESE);				    		
+			}
+			else { //if (udtea.currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
+				message = (String) udtea.getResources().getText(R.string.UsbongEncryptAlertMessageENGLISH);				    		
+			}
+
+	    	new AlertDialog.Builder(udtea).setTitle("Hey!")
+	    	.setMessage(message)
+			.setPositiveButton("OK", new DialogInterface.OnClickListener() {					
+				@Override
+				public void onClick(DialogInterface dialog, int which) {	            				
+				}
+			}).show();
+						
 		} else if (udtea.currScreen == udtea.IMAGE_DISPLAY_SCREEN) {
 			udtea.setContentView(R.layout.image_display_screen);
 			udtea.initBackNextButtons();

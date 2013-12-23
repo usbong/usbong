@@ -20,6 +20,7 @@ public class MyCanvas extends View implements OnTouchListener {
 	private float currPosY;
 	
 	private Bitmap myBitmap;
+	
 	public Bitmap getMyBitmap() {
 		return myBitmap;
 	}
@@ -163,8 +164,6 @@ public class MyCanvas extends View implements OnTouchListener {
 				return true;
 		}
 		return false;
-	}
-	
-	
+	}	
 }
 

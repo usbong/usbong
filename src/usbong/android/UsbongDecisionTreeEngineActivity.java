@@ -108,8 +108,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	public final int MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN=26;	
 	public final int TEXTFIELD_WITH_ANSWER_SCREEN=27;	
 	public final int TEXTAREA_WITH_ANSWER_SCREEN=28;	
-
-	public final int END_STATE_SCREEN=29;		
+	public final int SIMPLE_ENCRYPT_SCREEN=29;	
+	
+	public final int END_STATE_SCREEN=30;		
 	
 	public int currScreen=TEXTFIELD_SCREEN;
 	
@@ -439,6 +440,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			case(R.id.speak):
 //				Log.d(">>>>currScreen",currScreen+"");
 				switch(currScreen) {
+					//edit later, Mike, Sept. 26, 2013
+					case SIMPLE_ENCRYPT_SCREEN:
+						break;
 					//edit later, Mike, May 23, 2013
 					case DCAT_SUMMARY_SCREEN:
 						break;
@@ -1172,6 +1176,12 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 								else if (myStringToken.equals("paint")) { 
 									parser.nextTag(); //go to transition tag
 									currScreen=PAINT_SCREEN;
+
+									parseYesNoAnswers(parser);
+								}
+								else if (myStringToken.equals("simpleEncrypt")) { 
+									parser.nextTag(); //go to transition tag
+									currScreen=SIMPLE_ENCRYPT_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
@@ -2314,22 +2324,6 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 							usbongAnswerContainerCounter++;
 
 				    		initParser();				
-/*
-				        	if (!isAnOptionalNode) {
-			    					showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
-			    					wasNextButtonPressed=false;
-			    					hasUpdatedDecisionTrackerContainer=true;
-			    					return;
-				        		}
-				        		else {
-						    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-//									usbongAnswerContainer.addElement("A;");															
-									UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
-									usbongAnswerContainerCounter++;
-						    		
-						    		initParser();				
-				        		}
-*/				        		
 				        }
 		    		}	
 		    		else if (currScreen==SEND_TO_WEBSERVER_SCREEN) {
@@ -2381,24 +2375,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
 				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
 							usbongAnswerContainerCounter++;
-
 //				    		initParser();				
-/*
-				        	if (!isAnOptionalNode) {
-				        		showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
-		    					wasNextButtonPressed=false;
-		    					hasUpdatedDecisionTrackerContainer=true;
-		    					return;
-			        		}
-			        		else {
-					    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-//								usbongAnswerContainer.addElement("A;");															
-					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
-								usbongAnswerContainerCounter++;
-
-								initParser();				
-			        		}
-*/			        		
 				        }
 						initParser();				
 		    		}	
@@ -2677,16 +2654,6 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 								
 								initParser();
 							}
-/*			    			
-				        }
-				        else {
-//							usbongAnswerContainer.addElement("A,"+myTextFieldScreenEditText.getText()+";");							
-				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myTextFieldScreenEditText.getText()+";", usbongAnswerContainerCounter);
-							usbongAnswerContainerCounter++;
-
-				        	initParser();				        	
-				        }
-*/				        
 		    		}
 		    		else if (currScreen==TEXTFIELD_WITH_ANSWER_SCREEN) {
 		    			currUsbongNode = nextUsbongNodeIfYes; 
@@ -2751,14 +2718,6 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 								
 								initParser();
 							}
-				        /*}
-				        else {
-//							usbongAnswerContainer.addElement("A,"+myTextAreaScreenEditText.getText()+";");							
-				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myTextAreaScreenEditText.getText()+";", usbongAnswerContainerCounter);
-							usbongAnswerContainerCounter++;
-							
-							initParser();				        	
-				        }*/
 		    		}
 		    		else if (currScreen==TEXTAREA_WITH_ANSWER_SCREEN) {
 		    			currUsbongNode = nextUsbongNodeIfYes; 
@@ -2805,6 +2764,51 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			            initParser();				        	
 
 		    		}
+		    		else if (currScreen==SIMPLE_ENCRYPT_SCREEN) {
+						EditText myPinEditText = (EditText)findViewById(R.id.pin_edittext);
+
+		    			if (myPinEditText.getText().toString().length()!=4) {
+		    				String message ="";
+		    				if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
+		    					message = (String) getResources().getText(R.string.Usbong4DigitsPinAlertMessageFILIPINO);
+		    				}
+		    				else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
+		    					 message = (String) getResources().getText(R.string.Usbong4DigitsPinAlertMessageJAPANESE);				    		
+		    				}
+		    				else { //if (udtea.currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
+		    					message = (String) getResources().getText(R.string.Usbong4DigitsPinAlertMessageENGLISH);				    		
+		    				}
+		    				
+		    				new AlertDialog.Builder(UsbongDecisionTreeEngineActivity.this).setTitle("Hey!")
+			    	    	.setMessage(message)
+			    			.setPositiveButton("OK", new DialogInterface.OnClickListener() {					
+			    				@Override
+			    				public void onClick(DialogInterface dialog, int which) {	            				
+			    				}
+			    			}).show();		    				
+		    			}
+		    			else {
+							int yourKey = Integer.parseInt(myPinEditText.getText().toString());
+			    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
+	
+				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
+							usbongAnswerContainerCounter++;
+								
+	//						Log.d(">>>>>>>start encode","encode");
+							for(int i=0; i<usbongAnswerContainerCounter; i++) {							
+								try {
+									usbongAnswerContainer.set(i,UsbongUtils.performSimpleFileEncrypt(yourKey, usbongAnswerContainer.elementAt(i)));
+	//								Log.d(">>>>>>"+i,""+usbongAnswerContainer.get(i));
+	//								Log.d(">>>decoded"+i,""+UsbongUtils.performSimpleFileDecode(yourKey, usbongAnswerContainer.get(i)));
+								}
+								catch(Exception e) {
+									e.printStackTrace();
+								}			
+							}
+																		
+				            initParser();				        	
+		    			}
+		    		}		    		
 		    		else if (currScreen==DATE_SCREEN) {
 		    			currUsbongNode = nextUsbongNodeIfYes;
 				    	Spinner dateMonthSpinner = (Spinner) findViewById(R.id.date_month_spinner);

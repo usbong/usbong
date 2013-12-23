@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="usbong.android"
-      android:versionCode="29"
-      android:versionName="Sept. 25, 2013"
+      android:versionCode="31"
+      android:versionName="Dec. 23, 2013"
       android:installLocation="preferExternal"      
 >
-    <uses-sdk android:minSdkVersion="8" />
+    <uses-sdk android:minSdkVersion="8" 
+              android:targetSdkVersion="17" />
 
     <!-- Reference: answer of Dixit Patel from stackoverflow; http://stackoverflow.com/questions/14562738/why-my-app-is-not-compatible-with-nexus-7-in-google-play-->    	
     <supports-screens
         android:anyDensity="true"
         android:largeScreens="true"
         android:normalScreens="true"
-        android:smallScreens="true" />
+        android:smallScreens="true" 
+        android:xlargeScreens="true" />
 
 	<compatible-screens>
     <!-- small size screens -->
