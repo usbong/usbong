@@ -79,6 +79,14 @@
     <string name="UsbongQRCodeReaderContentResultENGLISH">QR Code content successfully saved!</string>        
     <string name="UsbongQRCodeReaderContentResultJAPANESE">QRコードの内容が保存された！</string>       
     
+    <string name="UsbongEncryptAlertMessageFILIPINO">Maglagay ng 4-digit PIN code upang ma-encrypt ang iyong data. Siguraduhing tandaan ang PIN na ito, sapagkat kakailanganin mo ito sa pag-decrypt na iyong data.</string>        
+    <string name="UsbongEncryptAlertMessageENGLISH">Enter a 4-digit PIN code to encrypt your data. Make sure to remember this PIN, because you will need it when you decrypt your data later on.</string>        
+    <string name="UsbongEncryptAlertMessageJAPANESE">データを暗号するために4桁のPINコードを入力してください。後でデータを復号する時にこのPINが必要ですので、忘れないでください。</string>           
+    
+    <string name="Usbong4DigitsPinAlertMessageFILIPINO">Dapat may eksaktong 4 na digit ang iyong PIN code.</string>        
+    <string name="Usbong4DigitsPinAlertMessageENGLISH">Your PIN code should have exactly 4 digits.</string>        
+    <string name="Usbong4DigitsPinAlertMessageJAPANESE">PINコードが必ず4桁にしてください。</string>           
+    
     <string name="UsbongEndStateTextView">You\'ve now reached the end. \n　終点に着いた。 \n　你已经到了终点。</string>        
     <string name="default_textview">default</string>    
     <string name="loading_textview">loading...</string>    
@@ -163,4 +171,6 @@
     <string name="select_language">Select language.</string>
     <string name="select">Select</string>
     <string name="cancel">Cancel</string>
+    
+    <string name="enter_pin">PIN</string>
 </resources>

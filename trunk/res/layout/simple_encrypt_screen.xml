@@ -3,24 +3,31 @@
 	style="@style/UsbongSpecialParentLayout"
 	android:id="@+id/parent_layout_id"       
 	>
-	<ScrollView style="@style/UsbongDefaultScrollView"
+    <ScrollView style="@style/UsbongDefaultScrollView"
 	>		 	
 	<LinearLayout style="@style/UsbongDefaultMainLayout">
-		<TextView android:id="@+id/text_display_textview"
+		<TextView android:id="@+id/encrypt_textview"
 		    style="@style/UsbongDefaultTextView"	    	
 		    android:text="@string/default_textview" 
-		    android:layout_alignParentBottom="true"	    			
 		/>
+		<EditText android:id="@+id/pin_edittext"
+		    style="@style/UsbongDefaultTextView"	    	
+		    android:inputType="number"
+		    android:digits="0123456789"
+		    android:hint="@string/enter_pin"
+		    android:ems="4"
+		    android:maxLength="4"	    
+		/>    		
 	</LinearLayout>
 	</ScrollView>	    	    
 	<LinearLayout
 		style="@style/UsbongDefaultBackNextButtonLayout">	
 	    <Button android:id="@+id/back_button"
 		    style="@style/UsbongDefaultBackNextButton"
-		    android:text="Back"/>
+		    android:text="@string/back"/>
 		    
 	   	<Button android:id="@+id/next_button"
 		    style="@style/UsbongDefaultBackNextButton"
-		    android:text="Next"/>	    
+		    android:text="@string/next"/>	    
 	</LinearLayout>
 </LinearLayout>

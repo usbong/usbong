@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -35,6 +36,11 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.HttpResponse;
@@ -47,8 +53,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
-
-import usbong.android.R;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -120,6 +124,11 @@ public class UsbongUtils {
 	      );	
 	
 	public static boolean is_a_utree=false;
+	
+	public static char[] alphanumeric = {'a','b','c','d','e','f','g','h','i','j',
+        							 	 'k','l','m','n','o','p','q','r','s','t',
+        							 	 'u','v','w','x','y','z','0','1','2','3',
+        							 	 '4','5','6','7','8','9'};
 	
 	public static boolean checkEmail(String email) {
         return EMAIL_ADDRESS_PATTERN.matcher(email).matches();
@@ -1372,4 +1381,123 @@ public class UsbongUtils {
 			usbongAnswerContainer.addElement(s);																							
 		}
 	}
+	
+	//answer by ZeroTek from stackoverflow
+	//Reference: http://stackoverflow.com/questions/4275311/how-to-encrypt-and-decrypt-file-in-android;
+	//last accessed: Sept. 27, 2013	
+	public static byte[] generateKey(String password) throws Exception
+	{
+	    byte[] keyStart = password.getBytes("UTF-8");
+
+	    KeyGenerator kgen = KeyGenerator.getInstance("AES");
+	    SecureRandom sr = SecureRandom.getInstance("SHA1PRNG", "Crypto");
+	    sr.setSeed(keyStart);
+	    kgen.init(128, sr);
+	    SecretKey skey = kgen.generateKey();
+	    return skey.getEncoded();
+	}
+
+	//answer by ZeroTek from stackoverflow
+	//Reference: http://stackoverflow.com/questions/4275311/how-to-encrypt-and-decrypt-file-in-android;
+	//last accessed: Sept. 27, 2013	
+    public static byte[] encodeFile(byte[] key, byte[] fileData) throws Exception
+    {
+
+        SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+
+        byte[] encrypted = cipher.doFinal(fileData);
+
+        return encrypted;
+    }
+
+    public static String performSimpleFileEncrypt(int key, String fileData) 
+    {
+    	StringBuffer myFileData = new StringBuffer(fileData.toString());
+    	StringBuffer encrypted = new StringBuffer();
+    	int myFileDataLength = fileData.length();
+    	int myAlphanumericLength = alphanumeric.length;    	
+    	boolean isUpperCase=false;
+    	
+    	for(int i=0; i<myFileDataLength; i++) {
+    		if (Character.isUpperCase(myFileData.charAt(i))) {
+    			isUpperCase=true;
+    		}
+    		else {
+    			isUpperCase=false;
+    		}
+    		
+    		if (Character.isLetter(myFileData.charAt(i))||Character.isDigit(myFileData.charAt(i))) {    			
+	    		for(int k=0; k<myAlphanumericLength; k++) {
+	    			if (Character.toLowerCase(myFileData.charAt(i)) == alphanumeric[k]) {
+	    				int counter = (k+key)%myAlphanumericLength; //do a plus
+	    				if (isUpperCase) {
+	    		    		encrypted.append(Character.toUpperCase(alphanumeric[counter]));    					
+	    				}
+	    				else {
+	    		    		encrypted.append(alphanumeric[counter]);    					    					
+	    				}
+	    			}
+	    		}
+    		}
+    		else {
+	    		encrypted.append(fileData.charAt(i));    					    					    			
+    		}
+    	}
+        return encrypted.toString();
+    }
+
+    public static String performSimpleFileDecrypt(int key, String fileData)
+    {
+    	StringBuffer myFileData = new StringBuffer(fileData.toString());
+    	StringBuffer decoded = new StringBuffer();
+    	int myFileDataLength = fileData.length();
+    	int myAlphanumericLength = alphanumeric.length;    	
+    	boolean isUpperCase=false;
+    	
+    	for(int i=0; i<myFileDataLength; i++) {
+    		if (Character.isUpperCase(myFileData.charAt(i))) {
+    			isUpperCase=true;
+    		}
+    		else {
+    			isUpperCase=false;
+    		}
+    		
+    		if (Character.isLetter(myFileData.charAt(i))||Character.isDigit(myFileData.charAt(i))) {    			
+	    		for(int k=0; k<myAlphanumericLength; k++) {
+	    			if (Character.toLowerCase(myFileData.charAt(i)) == alphanumeric[k]) {
+	    				//Reference: http://stackoverflow.com/questions/11464890/first-char-to-upper-case;
+	    				//last accessed: 21 Dec. 2013; answered by Jon
+//	    				int counter = ((k-key) % 26 + 26) % 26;
+	    				int counter = ((k-key) % myAlphanumericLength + myAlphanumericLength) % myAlphanumericLength;
+	    				if (isUpperCase) {
+	    		    		decoded.append(Character.toUpperCase(alphanumeric[counter]));    					
+	    				}
+	    				else {
+	    		    		decoded.append(alphanumeric[counter]);    					    					
+	    				}
+	    			}
+	    		}
+    		}
+    		else {
+	    		decoded.append(fileData.charAt(i));    					    					    			
+    		}
+    	}
+        return decoded.toString();
+    }
+    
+	//answer by ZeroTek from stackoverflow
+	//Reference: http://stackoverflow.com/questions/4275311/how-to-encrypt-and-decrypt-file-in-android;
+	//last accessed: Sept. 27, 2013	
+    public static byte[] decodeFile(byte[] key, byte[] fileData) throws Exception
+    {
+        SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+
+        byte[] decrypted = cipher.doFinal(fileData);
+
+        return decrypted;
+    }
 }
