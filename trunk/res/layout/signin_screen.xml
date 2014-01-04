@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	style="@style/UsbongLoginParentLayout">
+	style="@style/UsbongLoginParentLayout"
+	android:background="@drawable/menu">
     <ImageView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
@@ -18,19 +19,39 @@
 	/>
 	<Button
 	    style="@style/UsbongDefaultButton"
-        android:text="Sign in"
+        android:text="Sign In"
 	    android:id="@+id/signin_button"
 	/>
-	<LinearLayout style="@style/UsbongSignupLayout">
-			<TextView
+		<RelativeLayout
+	    style="@style/UsbongSignupLayout"
+	    android:layout_height="wrap_content"
+	    android:layout_width="wrap_content" 
+	    >
+	    	<TextView
+				style="@style/UsbongSignupTextView"   
+				android:paddingTop="22dp"     
+				android:id="@+id/filler"
+		    ></TextView>
+		    <TextView
 				style="@style/UsbongSignupTextView"        
 		        android:text="Don't have an account?"
 		        android:id="@+id/signup_question"
+		        android:layout_below="@+id/filler"	        
+	    		android:layout_alignParentRight="true"
+	    		android:layout_height="wrap_content"
+	    		android:layout_width="wrap_content"
+	    		android:textColor="#FFFFFF"
+	    		android:textStyle="bold"
 			/>
 			<TextView
 				style="@style/UsbongSignupTextView"        
 				android:text="@string/signup"
 		        android:id="@+id/signup"
+		        android:layout_alignParentRight="true"
+		        android:layout_below="@+id/signup_question"	        
+	    		android:layout_width="wrap_content"
+	    		android:textColor="#FFFFFF"
+	    		android:textStyle="bold"
 			/>
-	</LinearLayout>
+		</RelativeLayout>	
 </LinearLayout>

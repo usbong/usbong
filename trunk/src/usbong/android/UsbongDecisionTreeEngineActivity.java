@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
@@ -309,6 +310,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		listOfTreesArrayList = UsbongUtils.getTreeArrayList(UsbongUtils.USBONG_TREES_FILE_PATH);
 		
 		mCustomAdapter = new CustomDataAdapter(this, R.layout.tree_loader, listOfTreesArrayList);
+		//Reference: http://stackoverflow.com/questions/8908549/sorting-of-listview-by-name-of-the-product-using-custom-adaptor;
+		//last accessed: 2 Jan. 2014; answer by Alex Lockwood
+		mCustomAdapter.sort(new Comparator<String>() {
+		    public int compare(String arg0, String arg1) {
+		        return arg0.compareTo(arg1);
+		    }
+		});
 		
 		treesListView = (ListView)findViewById(R.id.tree_list_view);
 		treesListView.setLongClickable(true);

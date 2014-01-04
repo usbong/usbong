@@ -1,5 +1,5 @@
 --Usbong (beta)--
-ver: Dec. 23, 2013
+ver: Jan. 4, 2014
 
 Usbong helps you create your own web-mobile systems to digitize and streamline processes, and make your life and the lives of the people that matter to you, more meaningful, more peaceful-- HAPPIER. =)
 
@@ -9,30 +9,18 @@ For us (and hopefully for you too), "Usbong" also means an open-source platform 
 
 Context -> Tree -> Mobile + Web System
 
-Right now, we are developing the Usbong platform with the Ateneo Innovation Center (AIC), along with government, academe, and industry partners, and we would love to work with people from different parts of the world too.
+Right now, we are developing the Usbong platform along with government, academe, and industry partners, and we would love to work with people from different parts of the world too.
 
 Usbong Social Systems, Inc.
 --Founder--
-Michael Syson, MSCS
+Michael Syson, PhD Student
 
---UsbongEvangelist--
+--UsbongEvangelist & UsbongFITS--
 Diane Gonzales, Master's in Information Systems Student
 
---UsbongFITS--
-Diane Gonzales, MIS Student
-Mia Montayre, MSECE Student
-
---Usbong4CHAMPSVisualNovels--
-Ma. Regina Estuar, Ph.D.
-Christine Amarra, MSCS
-Jeffery Jongko, MSCS
-Lev Leetian, MSCS Student
-
 --Usbong4DCAT (Tuberculosis)--
-Dennis Batangan, M.D., MS
-
---Usbong4SPED--
-Ronjo Solis, MSECE Student
+Dennis Batangan, MD, MS
+Ma. Regina Estuar, PhD
 
 --Usbong4Networks--
 Kenneth Llanto, MSCS
@@ -50,17 +38,17 @@ Paul Cabacungan, MSECE
 
 --Usbong4Positive
 Psychology--
-Cristina Tangonan, Ph.D. Student
+Cristina Tangonan, PhD Student
 
 --Usbong4Aquaculture--
-Nathaniel Libatique, Ph.D.
+Nathaniel Libatique, PhD
 Cesar Pineda
 Matthew Cua, MSES Student
 Dominic Solpico, MSECE Student
 
 Advisors:
-Gregory Tangonan, Ph.D. (Ateneo Innovation Center AND COMSTE)
-Alvin Marcelo, M.D. (PhilHealth)
+Gregory Tangonan, PhD (Ateneo Innovation Center AND COMSTE)
+Alvin Marcelo, MD (PhilHealth)
 Mark Ruiz (Social Entrepreneurship)
 
 Partners:
@@ -81,4 +69,4 @@ Website: www.usbong.ph
 Mailing list: usbong-users@googlegroups.com
 Email: usbong.com@gmail.com
 
-Copyright 2011-2013.
+Copyright 2011-2014.
