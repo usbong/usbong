@@ -17,14 +17,15 @@ package usbong.android;
 import usbong.android.utils.UsbongUtils;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /*
@@ -99,18 +100,33 @@ public class UsbongMainActivity extends Activity
     	    														 new TextView(UsbongMainActivity.getInstance()), 
     	    														 UsbongUtils.IS_TEXTVIEW,     	    														 
     	    														 UsbongUtils.readTextFileInAssetsFolder(UsbongMainActivity.getInstance(),"instructions.txt")); //don't add a '/', otherwise the file would not be found    	    	
-    	    	tv.setTextSize((getResources().getDimension(R.dimen.textsize)));
 */
+/*
+    			TextView tv = new TextView(UsbongMainActivity.getInstance());
+    			tv.setText(UsbongUtils.readTextFileInAssetsFolder(UsbongMainActivity.this,"instructions.txt"));
+    			ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(-1, -2);
+    			LinearLayout layout = new LinearLayout(new Context(), params);
+    			layout.addView(tv, params);
+    			tv.setBackgroundResource(R.layout.dialog);
+*/    			
+//    	    	tv.setTextSize((getResources().getDimension(R.dimen.textsize)));
+
     	    	AlertDialog.Builder prompt = new AlertDialog.Builder(UsbongMainActivity.this);
-				prompt.setTitle("Instructions");
+    	    	prompt.setTitle("Instructions");
+//    	    	prompt.setView(getLayoutInflater().inflate(R.layout.dialog, null));
+/*
+    	    	prompt.setView(layout); 
+*/    	    	
 //				prompt.setView(tv); 
 				prompt.setMessage(UsbongUtils.readTextFileInAssetsFolder(UsbongMainActivity.this,"instructions.txt")); //don't add a '/', otherwise the file would not be found
+    	    	prompt.setInverseBackgroundForced(true);
 				prompt.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 					}
 				});
-				prompt.show();
+				AlertDialog alert = prompt.create();
+				alert.show();
 			}
     	});
 

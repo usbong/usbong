@@ -47,7 +47,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class SignInActivity extends Activity {
-    private Intent gotoTitleActivityIntent;
+    private Intent gotoUsbongMainActivityIntent;
     
 	/** Called when the activity is first created. */
     @Override
@@ -95,7 +95,7 @@ public class SignInActivity extends Activity {
         	e.printStackTrace();
         }
         
-		gotoTitleActivityIntent = new Intent().setClass(this, TitleActivity.class);
+		gotoUsbongMainActivityIntent = new Intent().setClass(this, UsbongMainActivity.class);
         
         //EditText declarations
         final EditText etUsername = (EditText)findViewById(R.id.signin_username);
@@ -142,7 +142,7 @@ public class SignInActivity extends Activity {
 				    (etUsername.getText().toString().equals(UsbongUtils.debug_username) && 
 				    (etPassword.getText().toString().equals(UsbongUtils.debug_password)))) {
 					finish();
-					startActivity(gotoTitleActivityIntent);					
+					startActivity(gotoUsbongMainActivityIntent);					
 				}
 				else {				
 					List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
@@ -158,7 +158,7 @@ public class SignInActivity extends Activity {
 							System.out.println("EntityUtils.toString(response.getEntity()): "+usbongStringResponse);
 							if (usbongStringResponse.equals("True")) {
 								finish();
-								startActivity(gotoTitleActivityIntent);
+								startActivity(gotoUsbongMainActivityIntent);
 							}
 							else {
 								Toast.makeText(getApplicationContext(), "Incorrect username or password.", Toast.LENGTH_LONG).show();								

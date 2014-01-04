@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	style="@style/UsbongMainMenuParentLayout">
-	
+  	<ImageView android:id="@+id/logo_imageview"
+	android:background="@drawable/usbong_logo"
+  	style="@style/UsbongDefaultImageView"
+  	android:contentDescription="@string/logo"/>	    
+
 	<Button android:id="@+id/newEntry_button"
 	style="@style/UsbongMainMenuButton" 
-	android:text="New Entry" />
+	android:text="@string/start" />
 
 	<Button android:id="@+id/instructions_button"
 	style="@style/UsbongMainMenuButton"
-    android:text="Instructions" />
+    android:text="@string/instructions" />
 
 	<Button android:id="@+id/about_button"
 	style="@style/UsbongMainMenuButton"
-    android:text="About" />
+    android:text="@string/about" />
 
 	<Button android:id="@+id/settings_button"
 	style="@style/UsbongMainMenuButton"
-    android:text="Settings" />
+    android:text="@string/settings" />
 	
 	<Button android:id="@+id/exit_button"
 	style="@style/UsbongMainMenuButton"
-    android:text="Exit" />    
+    android:text="@string/exit" />    
 </LinearLayout>
