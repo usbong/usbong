@@ -41,11 +41,19 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class RegisterActivity extends Activity {
+	private HttpClient httpClient;
+	private HttpPost httpPost;
+	private HttpResponse response;
+
+	private static Activity myActivityInstance;
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.registration_screen);
+        
+        myActivityInstance = this;
         
         //EditText declarations
         final EditText etFirstName = (EditText)findViewById(R.id.reg_first_name);
@@ -60,8 +68,8 @@ public class RegisterActivity extends Activity {
 		       .setPositiveButton("Agree", new DialogInterface.OnClickListener() {				
 				public void onClick(DialogInterface dialog, int which) {
 					try {
-						HttpClient httpClient = new DefaultHttpClient();
-						HttpPost httpPost = new HttpPost();
+						httpClient = new DefaultHttpClient();
+						httpPost = new HttpPost();
 						try {
 							httpPost.setURI(new URI("http://usbong3.appspot.com/sign_up"));
 						} catch (URISyntaxException e1) {
@@ -77,14 +85,41 @@ public class RegisterActivity extends Activity {
 						try {
 							httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 							try {
-								HttpResponse response = httpClient.execute(httpPost);
-								if(EntityUtils.toString(response.getEntity()).equals("True")) {
-									Toast.makeText(getApplicationContext(), "Registration Successful", Toast.LENGTH_SHORT).show();
-									finish();
-								}
-								else {
-									Toast.makeText(getApplicationContext(), "Registration Failed", Toast.LENGTH_SHORT).show();
-								}
+								//Reference: http://stackoverflow.com/questions/6343166/android-os-networkonmainthreadexception;
+								//last accessed: 9 Jan. 2014; answer by Dr.Luiji
+								Thread thread = new Thread(new Runnable(){
+								    @Override
+								    public void run() {
+								        try {
+								            //Your code goes here
+											response = httpClient.execute(httpPost);
+											if(EntityUtils.toString(response.getEntity()).equals("True")) {
+//												Toast.makeText(getApplicationContext(), "Registration Successful", Toast.LENGTH_SHORT).show();
+												//Reference: http://stackoverflow.com/questions/3134683/android-toast-in-a-thread;
+												//last accessed: 9 Jan. 2014; answer by Lauri Lehtinen
+												myActivityInstance.runOnUiThread(new Runnable() {
+												    public void run() {
+														Toast.makeText(getApplicationContext(), "Registration Successful", Toast.LENGTH_SHORT).show();																																			    
+													}
+												});											
+												finish();
+											}
+											else {
+//												Toast.makeText(getApplicationContext(), "Registration Failed", Toast.LENGTH_SHORT).show();
+												//Reference: http://stackoverflow.com/questions/3134683/android-toast-in-a-thread;
+												//last accessed: 9 Jan. 2014; answer by Lauri Lehtinen
+												myActivityInstance.runOnUiThread(new Runnable() {
+												    public void run() {
+														Toast.makeText(getApplicationContext(), "Registration Failed", Toast.LENGTH_SHORT).show();
+												    }
+												});
+											}				
+								        } catch (Exception e) {
+								            e.printStackTrace();
+								        }
+								    }
+								});
+								thread.start(); 							
 							}
 							catch(Exception a) {
 								Toast.makeText(getApplicationContext(), a.toString(), Toast.LENGTH_SHORT).show();
