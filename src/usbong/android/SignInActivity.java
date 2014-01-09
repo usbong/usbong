@@ -35,10 +35,11 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 
 import usbong.android.utils.UsbongUtils;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -48,13 +49,22 @@ import android.widget.Toast;
 
 public class SignInActivity extends Activity {
     private Intent gotoUsbongMainActivityIntent;
-    
+	private HttpClient httpClient;
+	private HttpPost httpPost;
+	
+	private static Activity myActivityInstance;
+/*
+	private Handler handler;
+*/	
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signin_screen);
-        
+/*        
+        handler = new Handler(Looper.getMainLooper());
+*/        
+        myActivityInstance = this;
         try 
         {
         	System.out.println(">>>>>> Creating file structure.");
@@ -127,8 +137,8 @@ public class SignInActivity extends Activity {
 				int timeoutSocket = 3000;
 				HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
 				
-				HttpClient httpClient = new DefaultHttpClient(httpParameters);
-				HttpPost httpPost = new HttpPost();
+				httpClient = new DefaultHttpClient(httpParameters);
+				httpPost = new HttpPost();
 				
 				try {
 					httpPost.setURI(new URI("http://usbong3.appspot.com/json"));
@@ -137,14 +147,21 @@ public class SignInActivity extends Activity {
 					e1.printStackTrace();
 				}
 				
+				
+			    if (etUsername.getText().toString().equals("")) {
+					Toast.makeText(getApplicationContext(), "Please enter a username.", Toast.LENGTH_LONG).show();											    	
+			    }
+			    else if (etPassword.getText().toString().equals("")) {
+					Toast.makeText(getApplicationContext(), "Please enter a password.", Toast.LENGTH_LONG).show();											    	
+			    }
 				//check if using debug username and passwords
-				if ((UsbongUtils.IS_IN_DEBUG_MODE) &&
+			    else if ((UsbongUtils.IS_IN_DEBUG_MODE) &&
 				    (etUsername.getText().toString().equals(UsbongUtils.debug_username) && 
 				    (etPassword.getText().toString().equals(UsbongUtils.debug_password)))) {
 					finish();
 					startActivity(gotoUsbongMainActivityIntent);					
 				}
-				else {				
+				else {														
 					List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 					nameValuePairs.add(new BasicNameValuePair("username", etUsername.getText().toString()));
 					nameValuePairs.add(new BasicNameValuePair("password", etPassword.getText().toString()));				
@@ -152,17 +169,43 @@ public class SignInActivity extends Activity {
 					try {
 						httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 						try {
-							HttpResponse response = httpClient.execute(httpPost);
-//							Toast.makeText(getApplicationContext(), EntityUtils.toString(response.getEntity()), Toast.LENGTH_LONG).show();
-							String usbongStringResponse = EntityUtils.toString(response.getEntity());
-							System.out.println("EntityUtils.toString(response.getEntity()): "+usbongStringResponse);
-							if (usbongStringResponse.equals("True")) {
-								finish();
-								startActivity(gotoUsbongMainActivityIntent);
-							}
-							else {
-								Toast.makeText(getApplicationContext(), "Incorrect username or password.", Toast.LENGTH_LONG).show();								
-							}
+							//Reference: http://stackoverflow.com/questions/6343166/android-os-networkonmainthreadexception;
+							//last accessed: 9 Jan. 2014; answer by Dr.Luiji
+							Thread thread = new Thread(new Runnable(){
+							    @Override
+							    public void run() {							    	
+/*							    	handler.post(new Runnable() { // This thread runs in the UI
+					                    @Override
+					                    public void run() {					                    
+*/									        try {
+									        	//Your code goes here
+												HttpResponse response = httpClient.execute(httpPost);
+//												Toast.makeText(getApplicationContext(), EntityUtils.toString(response.getEntity()), Toast.LENGTH_LONG).show();
+												String usbongStringResponse = EntityUtils.toString(response.getEntity());
+												System.out.println("EntityUtils.toString(response.getEntity()): "+usbongStringResponse);
+												if (usbongStringResponse.equals("True")) {
+													finish();
+													startActivity(gotoUsbongMainActivityIntent);
+												}
+												else {
+													//Reference: http://stackoverflow.com/questions/3134683/android-toast-in-a-thread;
+													//last accessed: 9 Jan. 2014; answer by Lauri Lehtinen
+													myActivityInstance.runOnUiThread(new Runnable() {
+													    public void run() {
+													    	Toast.makeText(getApplicationContext(), "Incorrect username or password.", Toast.LENGTH_LONG).show();																					    }
+													});
+//													Toast.makeText(getApplicationContext(), "Incorrect username or password.", Toast.LENGTH_LONG).show();								
+												}
+									        } catch (Exception e) {
+									            e.printStackTrace();
+									        }
+/*				                    	}
+					                });
+*/					                
+							    }
+							});
+
+							thread.start(); 							
 						}
 						catch(Exception a) {
 //							Toast.makeText(getApplicationContext(), "Incorrect username or password.", Toast.LENGTH_LONG).show();								
@@ -170,7 +213,7 @@ public class SignInActivity extends Activity {
 						}
 					}
 					catch(Exception e) {
-						Toast.makeText(getApplicationContext(), "awsad", Toast.LENGTH_SHORT).show();
+						Toast.makeText(getApplicationContext(), "Usbong Error:", Toast.LENGTH_SHORT).show();
 					}
 				}
 			}
