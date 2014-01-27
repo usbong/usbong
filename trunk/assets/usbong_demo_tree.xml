@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <process-definition  xmlns="urn:jbpm.org:jpdl-3.2"  name="usbongDemoTree">
-
-
 	<start-state name="start-state1">
-		<transition to="textDisplay~Usbong Demo Tree (ver.Sept.25,2013)"></transition>
+		<transition to="textDisplay~Usbong Demo Tree (ver.Jan27,2014)"></transition>
 	</start-state>
 
-
-	<task-node name="textDisplay~Usbong Demo Tree (ver.Sept.25,2013)">
+	<task-node name="textDisplay~Usbong Demo Tree (ver.Jan27,2014)">
 		<transition to='textDisplay~Welcome! Usbong is an open-source platform that allows you to create and run, what we call, "Trees."'></transition>
 	</task-node>
 
@@ -46,10 +43,6 @@
 	</task-node>
 
 	<task-node name='textImageDisplay~sample_image~You can display both a text and an image as well. This is called, "textImageDisplay." If you only want to display an image, that type of node is called, "imageDisplay."'>
-		<transition to='gps~If you want to get your GPS location, you can do so using the "gps" task-node.'></transition>
-	</task-node>
-
-	<task-node name='gps~If you want to get your GPS location, you can do so using the "gps" task-node.'>
 		<transition to='photoCapture~The camera is also available for you to use!'></transition>
 	</task-node>
 
@@ -74,10 +67,10 @@
 	</task-node>
 
 	<task-node name='textField~This is an example of a "textField". This allows a person to enter text onto the device.'>
-		<transition to='textFieldWithUnit~kilogram(s)~Another variation of text fields is the "textFieldWithUnit". Notice that only numbers are allowed to be entered.'></transition>
+		<transition to='textFieldWithUnit~kilogram(s)~Another variation of text fields is the "textFieldWithUnit". Notice that only numbers are allowed to be entered here.'></transition>
 	</task-node>
 
-	<task-node name='textFieldWithUnit~kilogram(s)~Another variation of text fields is the "textFieldWithUnit". Notice that only numbers are allowed to be entered.'>
+	<task-node name='textFieldWithUnit~kilogram(s)~Another variation of text fields is the "textFieldWithUnit". Notice that only numbers are allowed to be entered here.'>
 		<transition to='date~To get the date today, you can use the "date" task-node.'></transition>
 	</task-node>
 
@@ -122,6 +115,7 @@
 		<task name="videoFromFile"/>
 		<task name="videoFromFileWithText"/>
 		<task name="timestampDisplay"/>
+		<task name="simpleEncrypt"/>
 		<transition to="textDisplay~You can find out more about these by reading the {a href='http://www.usbong.ph/guide'}guides{/a}." name="Any"></transition>
 	</task-node>
 	
@@ -142,10 +136,10 @@
 	</task-node>
 
 	<task-node name="textDisplay~Oh, and one more thing. By pressing the menu button on the device (outside the screen), you can actually make Usbong read aloud the displayed text! At present, Usbong can speak in Filipino, English, and Japanese. The Japanese Text-to-Speech though should first be purchased in Google Play.">
-		<transition to='Well, I hope this piqued your interest! If you have questions or concerns, do voice them out at "usbong-users@googlegroups.com". Hooray! '></transition>
+		<transition to='Well, I hope this piqued your interest! If you have questions or concerns, do voice them out via "usbong-users@googlegroups.com". Hooray! '></transition>
 	</task-node>
 
-	<task-node name='Well, I hope this piqued your interest! If you have questions or concerns, do voice them out at "usbong-users@googlegroups.com". Hooray! '>
+	<task-node name='Well, I hope this piqued your interest! If you have questions or concerns, do voice them out via "usbong-users@googlegroups.com". Hooray! '>
 		<transition to="end-state1"></transition>
 	</task-node>
 	<end-state name="end-state1"></end-state>
