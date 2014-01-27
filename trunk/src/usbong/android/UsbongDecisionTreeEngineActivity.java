@@ -2683,6 +2683,28 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 					    		initParser();				
 			    			}
 							else {
+								//added by Mike, Jan. 27, 2014
+								Vector<String> myPossibleAnswers = new Vector<String>();
+								StringTokenizer myPossibleAnswersStringTokenizer = new StringTokenizer(myTextFieldWithAnswerScreenAnswer, "||");
+								if (myPossibleAnswersStringTokenizer != null) {
+									while (myPossibleAnswersStringTokenizer.hasMoreTokens()) { //get last element (i.e. Mike in "textFieldWithAnswer~Who is the founder of Usbong (nickname)?Answer=Mike")
+										myPossibleAnswers.add(myPossibleAnswersStringTokenizer.nextToken()); 
+									}
+								}
+								int size = myPossibleAnswers.size();
+								for(int i=0; i<size; i++) {
+				        			if (myPossibleAnswers.elementAt(i).equals(myTextFieldScreenEditText.getText().toString().trim())) {
+										currUsbongNode = nextUsbongNodeIfYes; 	
+							    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y,"+myTextFieldScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
+							    		break;
+							        }	
+
+				        			if (i==size-1) { //if this is the last element in the vector
+										currUsbongNode = nextUsbongNodeIfNo; 				        					        	
+							    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N,"+myTextFieldScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
+				        			}
+								}								
+/*								
 			        			if (myTextFieldWithAnswerScreenAnswer.equals(myTextFieldScreenEditText.getText().toString().trim())) {
 									currUsbongNode = nextUsbongNodeIfYes; 	
 						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y,"+myTextFieldScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
@@ -2691,7 +2713,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 									currUsbongNode = nextUsbongNodeIfNo; 				        					        	
 						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N,"+myTextFieldScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
 						        }				        
-
+*/
 								usbongAnswerContainerCounter++;
 				    			initParser();
 							}
@@ -2747,6 +2769,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 					    		initParser();				
 			    			}
 							else {
+/*								
 			        			if (myTextAreaWithAnswerScreenAnswer.equals(myTextAreaScreenEditText.getText().toString().trim())) {
 									currUsbongNode = nextUsbongNodeIfYes; 	
 						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y,"+myTextAreaScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
@@ -2755,7 +2778,29 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 									currUsbongNode = nextUsbongNodeIfNo; 				        					        	
 						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N,"+myTextAreaScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
 						        }				        
+*/
+								//added by Mike, Jan. 27, 2014
+								Vector<String> myPossibleAnswers = new Vector<String>();
+								StringTokenizer myPossibleAnswersStringTokenizer = new StringTokenizer(myTextAreaWithAnswerScreenAnswer, "||");
+								if (myPossibleAnswersStringTokenizer != null) {
+									while (myPossibleAnswersStringTokenizer.hasMoreTokens()) { //get last element (i.e. Mike in "textAreaWithAnswer~Who is the founder of Usbong (nickname)?Answer=Mike||mike")
+										myPossibleAnswers.add(myPossibleAnswersStringTokenizer.nextToken()); 
+									}
+								}
+								int size = myPossibleAnswers.size();
+								for(int i=0; i<size; i++) {
+//									Log.d(">>>>>>myPossibleAnswers: ",myPossibleAnswers.elementAt(i));
+									if (myPossibleAnswers.elementAt(i).equals(myTextAreaScreenEditText.getText().toString().trim())) {
+										currUsbongNode = nextUsbongNodeIfYes; 	
+							    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y,"+myTextAreaScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
+							    		break;
+							        }	
 
+				        			if (i==size-1) { //if this is the last element in the vector
+										currUsbongNode = nextUsbongNodeIfNo; 				        					        	
+							    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N,"+myTextAreaScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
+				        			}
+								}								
 								usbongAnswerContainerCounter++;
 				    			initParser();
 							}
