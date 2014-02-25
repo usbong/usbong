@@ -6,7 +6,7 @@
   	style="@style/UsbongDefaultImageView"
   	android:contentDescription="@string/logo"/>	    
 
-	<Button android:id="@+id/newEntry_button"
+	<Button android:id="@+id/start_button"
 	style="@style/UsbongMainMenuButton" 
 	android:text="@string/start" />
 

@@ -33,7 +33,7 @@ import android.widget.TextView;
  */
 public class UsbongMainActivity extends Activity 
 {	
-	private Button newEntryButton;
+	private Button startButton;
 	private Button instructionsButton;
 	private Button aboutButton;
 	private Button settingsButton;
@@ -74,13 +74,13 @@ public class UsbongMainActivity extends Activity
     
     public void initMainMenuScreen()
     {
-    	newEntryButton = (Button)findViewById(R.id.newEntry_button);
+    	startButton = (Button)findViewById(R.id.start_button);
     	instructionsButton = (Button)findViewById(R.id.instructions_button);
     	aboutButton = (Button)findViewById(R.id.about_button);
     	settingsButton = (Button)findViewById(R.id.settings_button);
     	exitButton = (Button)findViewById(R.id.exit_button);    	
 
-		newEntryButton.setOnClickListener(new OnClickListener() {
+		startButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 //				myUsbongDecisionTreeEngineActivity = new UsbongDecisionTreeEngineActivity();
