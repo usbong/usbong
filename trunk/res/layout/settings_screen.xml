@@ -41,6 +41,19 @@
 				    android:text=""
 				    android:state_enabled="false"
 				    android:inputType="text"/>	
+			<LinearLayout
+		      android:orientation="horizontal"
+		      android:layout_width="fill_parent"
+		      android:layout_height="fill_parent"
+		      android:layout_weight="1">  		
+				<TextView android:id="@+id/settings_store_output_textview"
+						style="@style/UsbongSettingsTextView"
+					    android:text="Store Output"					    
+					    />		
+				<CheckBox android:id="@+id/settings_store_output_checkbox"
+						style="@style/UsbongSettingsCheckBox"
+						android:onClick="onCheckBoxSettingsDoNotStoreOutputClicked"/>
+			</LinearLayout>			
 		</LinearLayout>
 	</ScrollView>					    
 </LinearLayout>

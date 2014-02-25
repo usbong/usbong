@@ -75,6 +75,7 @@ import android.widget.TextView;
 
 public class UsbongUtils {		
 	public static boolean IS_IN_DEBUG_MODE=false;
+	public static boolean STORE_OUTPUT=true;
 
 	public static String BASE_FILE_PATH = Environment.getExternalStorageDirectory()+"/usbong/";
 	public static String USBONG_TREES_FILE_PATH = BASE_FILE_PATH + "usbong_trees/";
@@ -110,7 +111,12 @@ public class UsbongUtils {
 	public static void setDebugMode(boolean b) {
 		IS_IN_DEBUG_MODE=b;
 	}
-	
+
+	//added by Mike, Feb. 24, 2014
+	public static void setStoreOutput(boolean b) {
+		STORE_OUTPUT=b;
+	}
+
 	//Reference: Andrei Buneyeu's answer in http://stackoverflow.com/questions/1819142/how-should-i-validate-an-e-mail-address-on-android;
 	//last accessed: 21 Aug. 2012
 	public static final Pattern EMAIL_ADDRESS_PATTERN = Pattern.compile(
@@ -152,7 +158,26 @@ public class UsbongUtils {
 
 	    return false;
 	}
-	
+
+	public static boolean checkIfStoreOutput() {
+	    try {	    	
+			InputStreamReader reader = UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + "usbong.config");	
+			BufferedReader br = new BufferedReader(reader);    		
+	    	String currLineString;        	
+	    	while((currLineString=br.readLine())!=null)
+	    	{ 	
+				if (currLineString.equals("STORE_OUTPUT=OFF")) {
+					return false;
+				}
+	    	}	        				
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+
+	    return true;
+	}
+
 	public static String getDestinationServerURL() {
 		return destinationServerURL;
 	}
@@ -171,7 +196,8 @@ public class UsbongUtils {
 		int sec = date.get(Calendar.SECOND);
 //		int millisec = date.get(Calendar.MILLISECOND);
 		
-		dateTimeStamp = "" + day +"-"+ month +"-"+ year +"-"+ hour +"hr"+ min +"min"+ sec + "sec";//millisec;
+//		dateTimeStamp = "" + day +"-"+ month +"-"+ year +"-"+ hour +"hr"+ min +"min"+ sec + "sec";//millisec;
+		dateTimeStamp = "" + year +"-"+ month +"-"+ day +"-"+ hour +"hr"+ min +"min"+ sec + "sec";//millisec; //updated by Mike, Feb. 24, 2014
     }
 
     public static String getDateTimeStamp() {
@@ -633,7 +659,7 @@ public class UsbongUtils {
 		
 		try
 		{
-	    	UsbongUtils.createNewOutputFolderStructure();
+//	    	UsbongUtils.createNewOutputFolderStructure();
 
 			File file = new File(filePath);
 			if(!file.exists())
@@ -1233,6 +1259,19 @@ public class UsbongUtils {
 
         fileOrDirectory.delete();
     }
+
+    public static void deleteEmptyOutputFolder(File fileOrDirectory) {
+        Log.d(">>>>deleteEmptyOutputFolder", "1");
+    	if (fileOrDirectory.isDirectory())
+            for (File child : fileOrDirectory.listFiles()) {
+                Log.d(">>>>deleteEmptyOutputFolder", "2");                
+                return;
+            }
+        Log.d(">>>>deleteEmptyOutputFolder", "3");
+        fileOrDirectory.delete();
+        Log.d(">>>>deleteEmptyOutputFolder", "4");        
+    }
+
     
     //added by Mike, Feb. 4, 2013
     public static Spanned applyTagsInString(String myCurrUsbongNode) {
@@ -1251,7 +1290,7 @@ public class UsbongUtils {
     	//keep the curly braces for <indent>
 //    	styledText = styledText.replaceAll("<indent>", "{indent}");//"\u0020\u0020\u0020\u0020\u0020");					
     	styledText = processIndent(styledText);
-    
+
     	Spanned mySpanned = Html.fromHtml(styledText);
 //		return styledText;
     	return mySpanned;
@@ -1499,5 +1538,18 @@ public class UsbongUtils {
         byte[] decrypted = cipher.doFinal(fileData);
 
         return decrypted;
+    }
+    
+    public static String processStringToBeFilenameReady(String s) {
+    	s = s.replace("<", "ls");
+    	s = s.replace(">", "gs");
+    	s = s.replace("\\", "bs");    	
+    	s = s.replace("/", "fs");
+    	s = s.replace("*", "asterisk");
+    	s = s.replace("?", "questionMark");
+    	s = s.replace("\"", "quotationMark");
+    	s = s.replace("|", "pipe");
+
+    	return s;
     }
 }

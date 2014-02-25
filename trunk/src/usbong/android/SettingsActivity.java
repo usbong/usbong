@@ -35,6 +35,7 @@ public class SettingsActivity extends Activity {
 	private CheckBox myDebugModeCheckBox;
 	private CheckBox myDestinationURLCheckBox;
 	private EditText myDestinationURLEditText;
+	private CheckBox myStoreOutputCheckBox;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) 
@@ -45,6 +46,8 @@ public class SettingsActivity extends Activity {
 		myDestinationURLCheckBox = (CheckBox)findViewById(R.id.settings_destination_url_checkbox);		
 		myDestinationURLEditText = (EditText)findViewById(R.id.settings_edittext);		
 				
+		myStoreOutputCheckBox = (CheckBox)findViewById(R.id.settings_store_output_checkbox);
+		
 		//hide virtual keyboard, instead of auto-focusing on the first edittext
 		myDestinationURLEditText.setInputType(0);	
 		myDestinationURLEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -60,11 +63,18 @@ public class SettingsActivity extends Activity {
 			InputStreamReader reader = UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + "usbong.config");	
 			BufferedReader br = new BufferedReader(reader);    		
 	    	String currLineString;        	
+			myStoreOutputCheckBox.setChecked(true);				
+
 	    	while((currLineString=br.readLine())!=null)
 	    	{ 	
 				if (currLineString.equals("IS_IN_DEBUG_MODE=ON")) {
 					myDebugModeCheckBox.setChecked(true);				
 				}
+				
+				if (currLineString.equals("STORE_OUTPUT=OFF")) {
+					myStoreOutputCheckBox.setChecked(false);				
+				}
+				
 				if (currLineString.equals("DESTINATION_URL_CHECKBOX=ON")) {
 					myDestinationURLCheckBox.setChecked(true);				
 				}								
@@ -124,6 +134,16 @@ public class SettingsActivity extends Activity {
 		    		UsbongUtils.setDebugMode(false);
 				}
 
+				if (myStoreOutputCheckBox.isChecked()) {
+		    		out.println("STORE_OUTPUT=ON");
+		    		UsbongUtils.setStoreOutput(true);
+				}
+				else {
+		    		out.println("STORE_OUTPUT=OFF");					
+		    		UsbongUtils.setStoreOutput(false);
+				}
+
+				
 				if (myDestinationURLCheckBox.isChecked()) {
 					out.println("DESTINATION_URL_CHECKBOX=ON");
 //		    		out.println("DESTINATION_URL="+myDestinationURLEditText.getText().toString());
@@ -152,7 +172,18 @@ public class SettingsActivity extends Activity {
 //    		myDebugModeCheckBox.setChecked(false);
     	}    	
 	}
-	
+
+	public void onCheckBoxSettingsDoNotStoreOutputClicked(View v){
+    	if (((CheckBox) v).isChecked()){
+    		System.out.println("ON!");
+//    		myDebugModeCheckBox.setChecked(true);
+    	}
+    	else {
+    		System.out.println("OFF!");
+//    		myDebugModeCheckBox.setChecked(false);
+    	}    	
+	}
+
 	public void onCheckBoxSettingsDestinationURLClicked(View v) {
     	if (((CheckBox) v).isChecked()){
 			myDestinationURLEditText.setEnabled(true);

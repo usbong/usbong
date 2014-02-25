@@ -803,6 +803,39 @@ public class UsbongScreenProcessor
 					}).show();
 			    }
 			});
+		} else if (udtea.currScreen == udtea.CLICKABLE_IMAGE_TEXT_DISPLAY_SCREEN) {
+			udtea.setContentView(R.layout.clickable_image_text_display_screen);
+			udtea.initBackNextButtons();
+			TextView myClickableImageTextDisplayTextView = (TextView)udtea.findViewById(R.id.clickable_image_text_display_textview);
+			myClickableImageTextDisplayTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myClickableImageTextDisplayTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			ImageButton myClickableImageTextDisplayScreenImageButton = (ImageButton)udtea.findViewById(R.id.clickable_image_display_imagebutton);
+			if (!UsbongUtils.setClickableImageDisplay(myClickableImageTextDisplayScreenImageButton, udtea.myTree, UsbongUtils.getResName(udtea.currUsbongNode))) {
+			//Reference: http://www.anddev.org/tinytut_-_get_resources_by_name__getidentifier_-t460.html; last accessed 14 Sept 2011
+//			        Resources myRes = getResources();
+			    myDrawableImage = myRes.getDrawable(myRes.getIdentifier("no_image", "drawable", udtea.myPackageName));
+			    myClickableImageTextDisplayScreenImageButton.setBackgroundDrawable(myDrawableImage);
+			}
+			myClickableImageTextDisplayScreenImageButton.setOnClickListener(new OnClickListener() {
+			    @Override
+			    public void onClick(View v) {
+//	                	myMessage = UsbongUtils.applyTagsInString(udtea.currUsbongNode).toString();	    				
+			    	
+			    	TextView tv = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(udtea), UsbongUtils.IS_TEXTVIEW, UsbongUtils.getAlertName(udtea.currUsbongNode));
+			    	if (tv.toString().equals("")) {
+			    		tv.setText("No message.");
+			    	}
+	    	    	tv.setTextSize((UsbongDecisionTreeEngineActivity.getInstance().getResources().getDimension(R.dimen.textsize)));
+
+			    	new AlertDialog.Builder(udtea).setTitle("Hey!")
+//	            		.setMessage(myMessage)
+					.setView(tv)
+					.setPositiveButton("OK", new DialogInterface.OnClickListener() {					
+						@Override
+						public void onClick(DialogInterface dialog, int which) {	            				
+						}
+					}).show();
+			    }
+			});
 		} else if (udtea.currScreen == udtea.VIDEO_FROM_FILE_SCREEN) {
 			udtea.setContentView(R.layout.video_from_file_screen);
 			udtea.initBackNextButtons();
@@ -823,8 +856,8 @@ public class UsbongScreenProcessor
 		} else if (udtea.currScreen == udtea.TEXT_IMAGE_DISPLAY_SCREEN) {
 			udtea.setContentView(R.layout.text_image_display_screen);
 			udtea.initBackNextButtons();
-			TextView mytextImageDisplayTextView = (TextView)udtea.findViewById(R.id.text_image_display_textview);
-			mytextImageDisplayTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), mytextImageDisplayTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			TextView myTextImageDisplayTextView = (TextView)udtea.findViewById(R.id.text_image_display_textview);
+			myTextImageDisplayTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextImageDisplayTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			ImageView myTextImageDisplayImageView = (ImageView)udtea.findViewById(R.id.image_display_imageview);
 			//		        if (!UsbongUtils.setImageDisplay(myTextImageDisplayImageView, myTree+".utree/res/" +UsbongUtils.getResName(udtea.currUsbongNode))) {
 			if (!UsbongUtils.setImageDisplay(myTextImageDisplayImageView, udtea.myTree, UsbongUtils.getResName(udtea.currUsbongNode))) {
@@ -832,6 +865,19 @@ public class UsbongScreenProcessor
 //			        Resources myRes = getResources();
 			    myDrawableImage = myRes.getDrawable(myRes.getIdentifier("no_image", "drawable", udtea.myPackageName));
 			    myTextImageDisplayImageView.setImageDrawable(myDrawableImage);		        		        	
+			}
+		} else if (udtea.currScreen == udtea.IMAGE_TEXT_DISPLAY_SCREEN) {
+			udtea.setContentView(R.layout.image_text_display_screen);
+			udtea.initBackNextButtons();
+			TextView myImageTextDisplayTextView = (TextView)udtea.findViewById(R.id.image_text_display_textview);
+			myImageTextDisplayTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myImageTextDisplayTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			ImageView myImageTextDisplayImageView = (ImageView)udtea.findViewById(R.id.image_display_imageview);
+
+			if (!UsbongUtils.setImageDisplay(myImageTextDisplayImageView, udtea.myTree, UsbongUtils.getResName(udtea.currUsbongNode))) {
+			//Reference: http://www.anddev.org/tinytut_-_get_resources_by_name__getidentifier_-t460.html; last accessed 14 Sept 2011
+//			        Resources myRes = getResources();
+			    myDrawableImage = myRes.getDrawable(myRes.getIdentifier("no_image", "drawable", udtea.myPackageName));
+			    myImageTextDisplayImageView.setImageDrawable(myDrawableImage);		        		        	
 			}
 		} else if (udtea.currScreen == udtea.GPS_LOCATION_SCREEN) {
 			udtea.setContentView(R.layout.gps_location_screen);
