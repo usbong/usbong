@@ -31,8 +31,11 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -54,6 +57,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import usbong.android.UsbongDecisionTreeEngineActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetManager;
@@ -385,6 +389,33 @@ public class UsbongUtils {
 		return myStringToken;
     }
 
+    //This methods checks the string for something like "@name=getInput()", 
+    //where @name is the variable name (this can be any variable name, 
+    //as long as it is preceded by "@").
+    //Afterwards, this method processes it accordingly.
+    //example: <task-node name="textField~@name=getInput()~What is your name?">
+    public static void processStoreVariableMethod(Activity a, String currUsbongNode) {
+		if (!currUsbongNode.contains("@")) {
+			return;
+		}
+    	
+    	StringTokenizer st = new StringTokenizer(currUsbongNode, "~");
+		String myStringToken = st.nextToken();
+		while (st.hasMoreTokens()) {
+			if (myStringToken.contains("@")) {
+				Log.d(">>>>>>","inside myStringToken.contains('@')");
+				String[] s = myStringToken.split("=");
+
+				Log.d("s[0]: ",s[0]);
+				Log.d("s[1]: ",s[1]);
+
+				((UsbongDecisionTreeEngineActivity)a).setVariableOntoMyUsbongVariableMemory(s[0],s[1]);
+			}
+			
+			myStringToken = st.nextToken(); 
+		}
+    }    
+    
     //This methods gets the second to the last string token element using '~' as delimeter
     //example: <task-node name="textClickableImageDisplay~frame_1~You've just clicked the image!~Life is good">
     //becomes "Life is good"
@@ -660,7 +691,7 @@ public class UsbongUtils {
 		try
 		{
 //	    	UsbongUtils.createNewOutputFolderStructure();
-
+	
 			File file = new File(filePath);
 			if(!file.exists())
 			{
@@ -1261,20 +1292,41 @@ public class UsbongUtils {
     }
 
     public static void deleteEmptyOutputFolder(File fileOrDirectory) {
-        Log.d(">>>>deleteEmptyOutputFolder", "1");
+//        Log.d(">>>>deleteEmptyOutputFolder", "1");
     	if (fileOrDirectory.isDirectory())
             for (File child : fileOrDirectory.listFiles()) {
-                Log.d(">>>>deleteEmptyOutputFolder", "2");                
+//                Log.d(">>>>deleteEmptyOutputFolder", "2");                
                 return;
             }
-        Log.d(">>>>deleteEmptyOutputFolder", "3");
+//        Log.d(">>>>deleteEmptyOutputFolder", "3");
         fileOrDirectory.delete();
-        Log.d(">>>>deleteEmptyOutputFolder", "4");        
+//        Log.d(">>>>deleteEmptyOutputFolder", "4");        
     }
 
+    //added by Mike, March 26, 2014
+    //Reference: http://stackoverflow.com/questions/17145990/how-to-get-substring-based-on-special-characters-in-android;
+    //last accessed: March 26, 2014
+    public static String processLoadTagsInString(Activity a, String myText) {
+		while (myText.contains("<@")) {
+			Log.d(">>>>", myText);
+			Matcher m = Pattern.compile("<@(.+?)>").matcher(myText);
+			String v="";
+			while(m.find()) {
+			    v = m. group(1);
+			    Log.d(">>>> v",v);
+				try {
+					myText=myText.replaceAll("<@"+v+">", ((UsbongDecisionTreeEngineActivity)a).getVariableFromMyUsbongVariableMemory("@"+v));
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+				}
+			}    		
+		}
+		return myText;
+    }    
     
     //added by Mike, Feb. 4, 2013
-    public static Spanned applyTagsInString(String myCurrUsbongNode) {
+    public static Spanned applyTagsInString(Activity a, String myCurrUsbongNode) {
     	String styledText;
 
     	if (USE_UNESCAPE) {
@@ -1287,6 +1339,13 @@ public class UsbongUtils {
     	styledText = performTranslation(styledText);
 
     	styledText = replaceAllCurlyBracesWithGreaterThanLessThanSign(styledText);
+
+    	//added by Mike, March 26, 2014
+    	styledText = processLoadTagsInString(a, styledText);
+
+    	//added by Mike, March 26, 2014
+    	processStoreVariableMethod(a, myCurrUsbongNode); //does not return anything
+
     	//keep the curly braces for <indent>
 //    	styledText = styledText.replaceAll("<indent>", "{indent}");//"\u0020\u0020\u0020\u0020\u0020");					
     	styledText = processIndent(styledText);
@@ -1303,7 +1362,7 @@ public class UsbongUtils {
     public static View applyTagsInView(Activity a, View myView, int type, String myCurrUsbongNode) {
 //    	String styledText = applyTagsInString(myCurrUsbongNode);
 //    	Spanned mySpanned = Html.fromHtml(styledText);
-    	Spanned mySpanned = applyTagsInString(myCurrUsbongNode);
+    	Spanned mySpanned = applyTagsInString(a, myCurrUsbongNode);
 
 		switch(type) {
 			case IS_TEXTVIEW:
@@ -1551,5 +1610,24 @@ public class UsbongUtils {
     	s = s.replace("|", "pipe");
 
     	return s;
+    }
+    
+    //added by Mike, March 26, 2014
+    //Reference: http://stackoverflow.com/questions/1383797/java-hashmap-how-to-get-key-from-value
+    //last accessed: March 26, 2014; answer by Vitalii Fedorenko
+    public static void processUsbongVariableAssignment(Map<String, String> myUsbongVariableMemory, String myStringValue) {    	
+    	for (Entry<String, String> entry : myUsbongVariableMemory.entrySet()) {    		
+    		Log.d(">>>>>", entry.getKey()+","+entry.getValue());    		
+            if ("getInput()".equals(entry.getValue())) {
+            	if (myStringValue.length()<=3) {
+                	myUsbongVariableMemory.put(entry.getKey(), "");
+            		return;
+            	}            				
+            	//sample myStringValue: "A,mike;"
+            	Log.d(">>>>>>", myStringValue.substring(2, myStringValue.length()-1));
+            	myUsbongVariableMemory.put(entry.getKey(), myStringValue.substring(2, myStringValue.length()-1));
+            	return;
+            }
+        }    	    	
     }
 }
