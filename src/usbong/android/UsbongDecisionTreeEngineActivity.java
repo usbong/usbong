@@ -19,8 +19,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -217,6 +219,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     
     private UsbongScreenProcessor myUsbongScreenProcessor;
 
+	private Map<String, String> myUsbongVariableMemory;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);        
@@ -286,6 +290,15 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
         UsbongUtils.setStoreOutput(UsbongUtils.checkIfStoreOutput());
         
         myUsbongScreenProcessor = new UsbongScreenProcessor(UsbongDecisionTreeEngineActivity.getInstance());
+        myUsbongVariableMemory = new HashMap<String, String>();
+
+        //added by Mike, March 26, 2014
+		try {
+			UsbongUtils.createNewOutputFolderStructure();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
         
     	initTreeLoader();
     }
@@ -299,7 +312,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 */              
         }
 
-        public void onNothingSelected(AdapterView parent) {
+        public void onNothingSelected(AdapterView<?> parent) {
           // Do nothing.
         }
         
@@ -755,8 +768,12 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 //		hasReachedEndOfAllDecisionTrees=false;
 		
 //			decisionTrackerContainer.addElement(usbongAnswerContainer.lastElement());
-		
+
+		Log.d(">>>>>", "initParser");
+
 		if (wasNextButtonPressed) {
+			Log.d(">>>>>", "wasNextButtonPressed");
+			
 			if (!hasUpdatedDecisionTrackerContainer) {
 				decisionTrackerContainer.addElement(usbongAnswerContainer.elementAt(usbongAnswerContainerCounter-1));
 				hasUpdatedDecisionTrackerContainer=true;
@@ -766,21 +783,23 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 //			System.out.println(">>>>>>>>>> usbongAnswerContainerCounter: "+usbongAnswerContainerCounter);
 
 			for (int i=0; i<usbongAnswerContainer.size(); i++) {
-				System.out.println(i+": "+usbongAnswerContainer.elementAt(i));
+				System.out.println(i+": "+usbongAnswerContainer.elementAt(i));				
 			}			
 			
+			UsbongUtils.processUsbongVariableAssignment(myUsbongVariableMemory, usbongAnswerContainer.elementAt(usbongAnswerContainer.size()-1));
+
 			if ((!usbongAnswerContainer.isEmpty()) && (usbongAnswerContainerCounter < usbongAnswerContainer.size())) {
 				currAnswer = usbongAnswerContainer.elementAt(usbongAnswerContainerCounter);
-//				System.out.println(">>>> loob currAnswer: "+currAnswer);
+//				System.out.println(">>>> loob currAnswer: "+currAnswer);				
 			}
 			else {
 				currAnswer="";
 			}
-
 			
 			wasNextButtonPressed=false;
 		}
-
+		Log.d(">>>>", "end of wasNextButtonPressed");
+		
 		try {
 		  XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
 	      factory.setNamespaceAware(true);
@@ -1431,7 +1450,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				    		}
 
 				        	myOutputDirectory=UsbongUtils.getDateTimeStamp()+"/";
-				    		UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", outputStringBuffer.toString());
+			    			try {
+			    				UsbongUtils.createNewOutputFolderStructure();
+			    			}
+			    			catch(Exception e) {
+			    				e.printStackTrace();
+			    			}				        	
+				        	UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", outputStringBuffer.toString());
 
 				    		//send to server
 				    		UsbongUtils.performFileUpload(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv");
@@ -1490,7 +1515,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				    		}
 
 				        	myOutputDirectory=UsbongUtils.getDateTimeStamp()+"/";
-				    		UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", outputStringBuffer.toString());
+			    			try {
+			    				UsbongUtils.createNewOutputFolderStructure();
+			    			}
+			    			catch(Exception e) {
+			    				e.printStackTrace();
+			    			}				        	
+				        	UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", outputStringBuffer.toString());
 
 				    		//send to cloud-based service
 				    		Intent sendToCloudBasedServiceIntent = UsbongUtils.performSendToCloudBasedServiceProcess(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", attachmentFilePaths);
@@ -2376,4 +2407,17 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			}
 		}).show();
 	}	
+	
+	public String getVariableFromMyUsbongVariableMemory(String key) {		
+		if (myUsbongVariableMemory.containsKey(key)) {
+			return myUsbongVariableMemory.get(key);
+		}	
+		return "variable_not_found";
+	}
+	
+	public void setVariableOntoMyUsbongVariableMemory(String varName, String varValue) {
+//		if (!myUsbongVariableMemory.containsKey(varName)) {
+			myUsbongVariableMemory.put(varName, varValue);			
+//		}
+	}
 }

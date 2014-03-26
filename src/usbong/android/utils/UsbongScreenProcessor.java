@@ -145,7 +145,6 @@ public class UsbongScreenProcessor
 			    catch (NumberFormatException e) {//if myStringToken is not an int;
 			    	myStringTokenInt=-1;
 				}
-
 			    
 			    if ((!myStringToken.equals("")) && (i == myStringTokenInt)) {
 			    	radioButton.setChecked(true);
