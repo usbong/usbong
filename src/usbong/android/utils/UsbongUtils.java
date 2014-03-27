@@ -1341,10 +1341,10 @@ public class UsbongUtils {
     	styledText = replaceAllCurlyBracesWithGreaterThanLessThanSign(styledText);
 
     	//added by Mike, March 26, 2014
-    	styledText = processLoadTagsInString(a, styledText);
+    	processStoreVariableMethod(a, myCurrUsbongNode); //does not return anything
 
     	//added by Mike, March 26, 2014
-    	processStoreVariableMethod(a, myCurrUsbongNode); //does not return anything
+    	styledText = processLoadTagsInString(a, styledText);
 
     	//keep the curly braces for <indent>
 //    	styledText = styledText.replaceAll("<indent>", "{indent}");//"\u0020\u0020\u0020\u0020\u0020");					

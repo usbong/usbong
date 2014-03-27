@@ -786,8 +786,10 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				System.out.println(i+": "+usbongAnswerContainer.elementAt(i));				
 			}			
 			
-			UsbongUtils.processUsbongVariableAssignment(myUsbongVariableMemory, usbongAnswerContainer.elementAt(usbongAnswerContainer.size()-1));
-
+			if (usbongAnswerContainer.size()!=0) {
+				UsbongUtils.processUsbongVariableAssignment(myUsbongVariableMemory, usbongAnswerContainer.elementAt(usbongAnswerContainer.size()-1));
+			}
+			
 			if ((!usbongAnswerContainer.isEmpty()) && (usbongAnswerContainerCounter < usbongAnswerContainer.size())) {
 				currAnswer = usbongAnswerContainer.elementAt(usbongAnswerContainerCounter);
 //				System.out.println(">>>> loob currAnswer: "+currAnswer);				
