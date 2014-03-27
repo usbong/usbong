@@ -1,4 +1,4 @@
-1) Select the "New Entry" button in the Main Menu.
+1) Select the "Start" button in the Main Menu.
 2) Select "usbong_demo_tree" for a guided tour on what you can do with Usbong
 3) For details on how to create your own trees, visit our website: www.usbong.ph
 4) For the source code itself, you may download it from http://code.google.com/p/usbong/

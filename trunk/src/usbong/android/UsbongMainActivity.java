@@ -17,16 +17,13 @@ package usbong.android;
 import usbong.android.utils.UsbongUtils;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 /*
  * This is Usbong's Main Menu activity. 
@@ -36,6 +33,7 @@ public class UsbongMainActivity extends Activity
 	private Button startButton;
 	private Button instructionsButton;
 	private Button aboutButton;
+	private Button communityButton;
 	private Button settingsButton;
 	private Button exitButton;
 			
@@ -77,6 +75,7 @@ public class UsbongMainActivity extends Activity
     	startButton = (Button)findViewById(R.id.start_button);
     	instructionsButton = (Button)findViewById(R.id.instructions_button);
     	aboutButton = (Button)findViewById(R.id.about_button);
+    	communityButton = (Button)findViewById(R.id.community_button);
     	settingsButton = (Button)findViewById(R.id.settings_button);
     	exitButton = (Button)findViewById(R.id.exit_button);    	
 
@@ -150,6 +149,27 @@ public class UsbongMainActivity extends Activity
 					}
 				});
 				prompt.show();
+			}
+    	});
+
+    	communityButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {		
+				AlertDialog.Builder prompt = new AlertDialog.Builder(UsbongMainActivity.this);
+				prompt.setTitle("Community Hint");
+//				prompt.setView(tv);
+				prompt.setMessage(UsbongUtils.readTextFileInAssetsFolder(UsbongMainActivity.this,"community_hint.txt")); //don't add a '/', otherwise the file would not be found
+				prompt.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						//Reference: http://stackoverflow.com/questions/5026349/how-to-open-a-website-when-a-button-is-clicked-in-android-application;
+						//last accessed: March 27, 2014; answer by: Alain Pannetier
+						Uri uriUrl = Uri.parse("http://usbong.pythonanywhere.com/upload/search/");
+				        Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl);
+				        startActivity(launchBrowser);
+					}
+				});
+				prompt.show();			
 			}
     	});
     	

@@ -18,6 +18,10 @@
 	style="@style/UsbongMainMenuButton"
     android:text="@string/about" />
 
+	<Button android:id="@+id/community_button"
+	style="@style/UsbongMainMenuButton"
+    android:text="@string/community" />
+	
 	<Button android:id="@+id/settings_button"
 	style="@style/UsbongMainMenuButton"
     android:text="@string/settings" />
