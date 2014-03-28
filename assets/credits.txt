@@ -1,72 +1,16 @@
 --Usbong (beta)--
-ver: March 27, 2014
+ver: March 28, 2014
 
-Usbong helps you create your own web-mobile systems to digitize and streamline processes, and make your life and the lives of the people that matter to you, more meaningful, more peaceful-- HAPPIER. =)
-
-"Usbong" in Filipino is both a noun and a verb. As a noun, it can mean "a bud, a sprout, a shoot". As a verb, it means "to sprout, to grow, to develop". In Bisaya, it means "to burgeon, to grow, to expand, and to flourish."
-
-For us (and hopefully for you too), "Usbong" also means an open-source platform that allows people to create their own web-mobile systems by putting together components (like text inputs, checkboxes, radiobuttons, the camera, voice recorder) and forming a "tree" using a Graphical User Interface (GUI) or Google Drive Spreadsheet. 
-
-Context -> Tree -> Mobile + Web System
-
-Right now, we are developing the Usbong platform along with government, academe, and industry partners, and we would love to work with people from different parts of the world too.
+"Usbong" is an open source platform that helps non-technical people create their own Android apps for use in data collection, assessment, training, and digital storytelling by putting together components to form a "tree" using a Graphical User Interface (GUI) or Google Drive Spreadsheet.
 
 Usbong Social Systems, Inc.
---Founder--
-Michael Syson, PhD Student
-
---UsbongEvangelist & UsbongFITS--
-Diane Gonzales, Master's in Information Systems Student
-
---Usbong4DCAT (Tuberculosis)--
-Dennis Batangan, MD, MS
-Ma. Regina Estuar, PhD
-
---Usbong4Networks--
-Kenneth Llanto, MSCS
-
---Usbong4Telerehab--
-JP Talusan, MSECE Student
-Denica Oarde, MSECE Student
-
---Usbong4PediatricCare--
-Roger dela Cruz, MSCS Student
-
---Usbong4TheBlind--
-Czarina Saloma-Akpedonu, Ph.D.
-Paul Cabacungan, MSECE
-
---Usbong4Positive
-Psychology--
-Cristina Tangonan, PhD Student
-
---Usbong4Aquaculture--
-Nathaniel Libatique, PhD
-Cesar Pineda
-Matthew Cua, MSES Student
-Dominic Solpico, MSECE Student
-
-Advisors:
-Gregory Tangonan, PhD (Ateneo Innovation Center AND COMSTE)
-Alvin Marcelo, MD (PhilHealth)
-Mark Ruiz (Social Entrepreneurship)
-
-Partners:
-Ateneo Innovation Center
-Congressional Commission on Science and Technology and Engineering (COMSTE)
-Ionics, EMS., Inc.
-Philippine Business for Social Progress (PBSP)
-Ephpheta Foundation for the Blind, Inc.
-Laro, Lapis, at Libro, Inc. (LLLI)
-Ateneo Java Wireless Competency Center (AJWCC)
-Alsons Aquaculture Corp.
-National Telehealth Center
-University of the Philippines-Manila
-Ateneo de Manila University
+--Core Developers--
+Michael B. Syson (Founder)
+Diane Jayne C. Gonzales
 
 Contact:
 Website: www.usbong.ph
-Mailing list: usbong-users@googlegroups.com
-Email: usbong.com@gmail.com
+Mailing List: usbong-users@googlegroups.com
+Email: usbong.ph@gmail.com
 
 Copyright 2011-2014.
