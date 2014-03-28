@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="usbong.android"
       android:versionCode="38"
-      android:versionName="March. 26, 2014"
+      android:versionName="March. 28, 2014"
       android:installLocation="preferExternal"      
 >
     <uses-sdk android:minSdkVersion="8" 
