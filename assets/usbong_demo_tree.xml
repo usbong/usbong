@@ -2,10 +2,10 @@
 
 <process-definition  xmlns="urn:jbpm.org:jpdl-3.2"  name="usbongDemoTree">
 	<start-state name="start-state1">
-		<transition to="textDisplay~Usbong Demo Tree (ver.Jan27,2014)"></transition>
+		<transition to="textDisplay~Usbong Demo Tree (ver.July31,2014)"></transition>
 	</start-state>
 
-	<task-node name="textDisplay~Usbong Demo Tree (ver.Jan27,2014)">
+	<task-node name="textDisplay~Usbong Demo Tree (ver.July31,2014)">
 		<transition to='textDisplay~Welcome! Usbong is an open-source platform that allows you to create and run, what we call, "Trees."'></transition>
 	</task-node>
 
@@ -102,7 +102,7 @@
 
 	<task-node name="Here are some more:">
 		<task name="radioButtons"/>
-		<task name="audioRecorder"/>
+		<task name="audioRecord"/>
 		<task name="photoCapture"/>
 		<task name="link (ala choose-your-own-adventure)"/>
 		<task name="sendToWebServer"/>

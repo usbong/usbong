@@ -99,7 +99,7 @@ public class RegisterActivity extends Activity {
 												//last accessed: 9 Jan. 2014; answer by Lauri Lehtinen
 												myActivityInstance.runOnUiThread(new Runnable() {
 												    public void run() {
-														Toast.makeText(getApplicationContext(), "Registration Successful", Toast.LENGTH_SHORT).show();																																			    
+														Toast.makeText(getApplicationContext(), "Registration Successful", Toast.LENGTH_SHORT).show();
 													}
 												});											
 												finish();
