@@ -221,6 +221,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
 	private Map<String, String> myUsbongVariableMemory;
     
+	protected InputStreamReader isr;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);        
@@ -811,13 +813,23 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 //		  if (UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + myTreeDirectory + myTree + ".xml") == null) { 
 //		  UsbongUtils.getTreeFromSDCardAsReader(/*UsbongUtils.USBONG_TREES_FILE_PATH + */myTree));// + ".xml")		  
 //		  if (!hasRetrievedTree) {
-		  InputStreamReader isr = UsbongUtils.getTreeFromSDCardAsReader(myTree);
+		  //edited by Mike, Sept. 10, 2014
+//		  if (isr==null) {
+//			  System.out.println("isr = null;");
+			  isr = UsbongUtils.getTreeFromSDCardAsReader(myTree);
+
 			  if (isr==null) {
 				  Toast.makeText(getApplicationContext(), "Error loading: "+myTree, Toast.LENGTH_LONG).show();  
 				  return;
 			  }
-//			  hasRetrievedTree=true;
 //		  }
+/*		  else {
+			  System.out.println("isr not = null;"+isr.toString());
+		  }
+*/		  
+//			  hasRetrievedTree=true;
+//		  }		  
+		  
 		  parser.setInput(isr);	
 				  
 		  while(parser.nextTag() != XmlPullParser.END_DOCUMENT) {
@@ -1388,6 +1400,10 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 //		    		emailIntent.addFlags(RESULT_OK);
 		    		startActivityForResult(Intent.createChooser(emailIntent, "Email:"),EMAIL_SENDING_SUCCESS);
 */
+					
+		    		//added by Mike, Sept. 10, 2014
+		    		UsbongUtils.clearTempFolder();
+
 		    		finish();
 		    	}
 		    	else {			
@@ -2298,7 +2314,10 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    			UsbongUtils.deleteRecursive(new File(UsbongUtils.BASE_FILE_PATH + myOutputDirectory));
 		    		}
 
-					//return to main activity
+		    		//added by Mike, Sept. 10, 2014
+		    		UsbongUtils.clearTempFolder();
+
+		    		//return to main activity
 		    		finish();    
 					Intent toUsbongMainActivityIntent = new Intent(UsbongDecisionTreeEngineActivity.this, UsbongMainActivity.class);
 					toUsbongMainActivityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
@@ -2339,6 +2358,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
             				isInTreeLoader=false;
             				
             				myTree = o.toString();
+  
+            				UsbongUtils.clearTempFolder();
+//            				isr=null; //set inputStreamReader to null; i.e. new tree
             		        initParser();
             			}
                 	});

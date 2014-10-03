@@ -588,6 +588,22 @@ public class UsbongUtils {
 	public static void setmyTreeFileName(String myTree) {
 		myTreeFileName = myTree;
 	}
+
+	public static void clearTempFolder() {
+		try 
+		{  	
+			//first create temp folder
+			File file = new File(USBONG_TREES_FILE_PATH+"temp/");
+	    	if (file.exists()) {
+//	        	file.delete();    		
+	    		deleteRecursive(file);//do this to delete contents of the directory
+	    	}
+	    	file.mkdirs();
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+	}
 	
 	//Reference: AbakadaUtils.java; public static ArrayList<String> getWords(String filePath)
 	public static InputStreamReader getTreeFromSDCardAsReader(String treeFile) //example of file would be decision trees
@@ -598,15 +614,16 @@ public class UsbongUtils {
 		try 
 		{  	
 			//first create temp folder
-			File file = new File(USBONG_TREES_FILE_PATH+"temp/");
-	    	if (file.exists()) {
+/*			File file = new File(USBONG_TREES_FILE_PATH+"temp/"); 
+			if (file.exists()) {
 //	        	file.delete();    		
 	    		deleteRecursive(file);//do this to delete contents of the directory
 	    	}
 	    	file.mkdirs();
-
+*/
 			//test if it's a .xml
-			file = new File(UsbongUtils.USBONG_TREES_FILE_PATH + treeFile+".xml");
+			File file = new File(UsbongUtils.USBONG_TREES_FILE_PATH + treeFile+".xml");
+
 			if(!file.exists())
 			{				
 				System.out.println(">>>>>> File " + treeFile + ".xml" + " doesn't exist."); 
@@ -629,7 +646,7 @@ public class UsbongUtils {
 						file = new File(UsbongUtils.USBONG_TREES_FILE_PATH+"temp/"+treeFile+".utree/"+treeFile+".xml");
 
 						if(!file.exists()) {						
-							File f = new File(UsbongUtils.USBONG_TREES_FILE_PATH+"temp/"+ treeFile+".utree");
+							File f = new File(UsbongUtils.USBONG_TREES_FILE_PATH+"temp/"+ treeFile+".utree/");
 				            f.mkdirs();
 							
 							//then unzip file
@@ -1220,17 +1237,21 @@ public class UsbongUtils {
     	final int BUFFER_SIZE = 8192;//1024; //65536;
     	int size;
         byte[] buffer = new byte[BUFFER_SIZE];
-
+        
+        ZipInputStream zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile), BUFFER_SIZE));
+        
         try {
 //        	Log.d(">>>>>>>","1");
             File f = new File(location);
-            if(!f.isDirectory()) {
-                f.mkdirs();
-//            	Log.d(">>>>>>>","1.5: f.mkdirs()");
+            if (!f.exists()) {
+	            if(!f.isDirectory()) {
+	                f.mkdirs();
+//	            	Log.d(">>>>>>>","1.5: f.mkdirs()");
+	            }
             }
 //        	Log.d(">>>>>>>","2");
 
-            ZipInputStream zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile), BUFFER_SIZE));
+//            zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile), BUFFER_SIZE));
             try {
                 ZipEntry ze = null;
                 while ((ze = zin.getNextEntry()) != null) {
@@ -1254,6 +1275,9 @@ public class UsbongUtils {
                     }
                     else {
 //                    	Log.d(">>>>>>>","4.2");
+                    	File file = new File(path);
+                    	file.createNewFile();
+                    	
                     	FileOutputStream out = new FileOutputStream(path, false);
                         BufferedOutputStream fout = new BufferedOutputStream(out, BUFFER_SIZE);
                         try {
@@ -1271,12 +1295,15 @@ public class UsbongUtils {
                     }
                 }
             }
-            finally {
-                zin.close();
+            catch (Exception e) {
+                Log.e(TAG, "Unzip exception (Inner Exception)", e);            	
             }
         }
         catch (Exception e) {
-            Log.e(TAG, "Unzip exception", e);
+            Log.e(TAG, "Unzip exception (Outer Exception)", e);
+        }
+        finally {
+    		zin.close();
         }
     }
     
@@ -1288,7 +1315,12 @@ public class UsbongUtils {
             for (File child : fileOrDirectory.listFiles())
                 deleteRecursive(child);
 
-        fileOrDirectory.delete();
+        //From InformaticOre, stackoverflow
+        //Reference: http://stackoverflow.com/questions/11539657/open-failed-ebusy-device-or-resource-busy;
+        //last accessed: 10 Sept. 2014
+        File to = new File(fileOrDirectory.getAbsolutePath()+System.currentTimeMillis());
+        fileOrDirectory.renameTo(to);
+        to.delete();
     }
 
     public static void deleteEmptyOutputFolder(File fileOrDirectory) {
