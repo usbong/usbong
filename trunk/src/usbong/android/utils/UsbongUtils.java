@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -59,16 +60,26 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import usbong.android.UsbongDecisionTreeEngineActivity;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.DashPathEffect;
+import android.graphics.Paint.Cap;
+import android.graphics.Paint.Style;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.Html;
+import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
+import android.text.method.MovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
@@ -1417,6 +1428,405 @@ public class UsbongUtils {
 
 		return myView;
     }
+    
+    //added by Mike, Oct. 3, 2014
+    public static View applyHintsInView(Activity a, View myView, int type) {
+    	Log.d(">>>>>>","1");
+    	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/hint/hint.xml";
+		File file = new File(filePath);
+		if(!file.exists())
+		{
+	    	Log.d(">>>>>>","2.1");
+			file = new File(UsbongUtils.USBONG_TREES_FILE_PATH+"temp/"+myTreeFileName+".utree/hint/hint.xml");
+
+			if(!file.exists()) 
+			{						
+		    	Log.d(">>>>>>","2.2");
+				return myView; //just send the original view
+			}
+		}
+		//if this point is reached, this means that hint file exists
+
+    	Log.d(">>>>>>","2");
+    	
+    	ArrayList<String> tokenizedStringList = new ArrayList<String>();
+    	Scanner sc; 
+
+    	//added by Mike, Oct. 3, 2014
+    	myView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+    	
+	    switch(type) {
+			case IS_RADIOBUTTON:
+		    	sc = new Scanner(((RadioButton)myView).getText().toString());
+				((RadioButton)myView).setText("");
+		    	break;
+			case IS_CHECKBOX:
+		    	sc = new Scanner(((CheckBox)myView).getText().toString());
+				((CheckBox)myView).setText("");
+		    	break;				
+		    default: //case IS_TEXTVIEW:
+		    	sc = new Scanner(((TextView)myView).getText().toString());
+				((TextView)myView).setText("");
+		    	break;
+	    }
+
+    	//Japanese sentences do not have clear delimiters, such as spaces. 
+    	//They do have particles, but how does a computer know if it's a particle 
+    	//or part of a phrase?
+	    if (getSetLanguage()==getLanguageBasedOnID(LANGUAGE_JAPANESE)) {
+	    	if (sc.hasNext()) {
+	    		tokenizedStringList = tokenizeJapaneseString(sc.next());
+	    	}
+	    }
+	    else {
+	    	while (sc.hasNext()) {
+	    		tokenizedStringList.add(sc.next());
+	    	}		    
+	    }
+    	
+    	for(int i=0; i<tokenizedStringList.size(); i++) {				  
+    		Log.d(">>",""+tokenizedStringList.get(i));    	
+    	}
+
+    	Log.d(">>>>>>","3");
+
+		try {
+			  boolean foundMatch=false;
+			  
+			  for(int i=0; i<tokenizedStringList.size(); i++) {				  
+				  XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+			      factory.setNamespaceAware(true);
+				  XmlPullParser parser = factory.newPullParser();		 		  
+				  
+			      InputStream in = null;
+			      InputStreamReader reader;
+			      try {
+			          in = new BufferedInputStream(new FileInputStream(file));
+			      }  
+			      catch(Exception e) {
+			    	  e.printStackTrace();
+			      }
+			      reader = new InputStreamReader(in,"UTF-8"); 
+				  
+				  parser.setInput(reader);	
+
+				  foundMatch=false;
+				  
+				  //Reference: http://developer.android.com/training/basics/network-ops/xml.html;
+				  //last accessed: 24 Oct. 2012
+				  while(parser.next() != XmlPullParser.END_DOCUMENT) {
+					  if (parser.getEventType() != XmlPullParser.START_TAG) {
+				            continue;
+				      }
+					  
+					  if (parser.getName().equals("string")) {
+/*	
+						  Log.d(">>>>>parser.getAttributeValue(null, 'name'): ",parser.getAttributeValue(null, "name"));
+						  Log.d(">>>>>tokenizedStringList.get("+i+"): ",tokenizedStringList.get(i));
+*/	
+						  if (parser.getAttributeValue(null, "name").equals(tokenizedStringList.get(i))) {
+							  if (parser.next() == XmlPullParser.TEXT) {
+//								  Log.d(">>>>>parser.getText();: ",parser.getText());
+//								  return parser.getText();
+								  
+								  final String hintText = parser.getText();
+								  final UsbongDecisionTreeEngineActivity finalUdtea = (UsbongDecisionTreeEngineActivity)a;
+								  
+							      SpannableString link = makeLinkSpan(tokenizedStringList.get(i), new View.OnClickListener() {          
+							            @Override
+							            public void onClick(View v) {
+									    	new AlertDialog.Builder(finalUdtea).setTitle("Hey!")
+						            		.setMessage(hintText)
+											.setPositiveButton("OK", new DialogInterface.OnClickListener() {					
+												@Override
+												public void onClick(DialogInterface dialog, int which) {	            				
+												}
+											}).show();
+							            }
+							      });					
+							      Log.d(">>>","has match: "+tokenizedStringList.get(i));
+							      foundMatch=true;
+							      switch(type) {
+									case IS_RADIOBUTTON:
+										((RadioButton)myView).append(link);
+									    makeLinksFocusable(((RadioButton)myView), IS_RADIOBUTTON);
+										continue;
+									case IS_CHECKBOX:
+										((CheckBox)myView).append(link);
+									    makeLinksFocusable(((CheckBox)myView), IS_CHECKBOX);
+										continue;				
+									default://case IS_TEXTVIEW:
+										((TextView)myView).append(link);
+									    makeLinksFocusable(((TextView)myView), IS_TEXTVIEW);
+										continue;
+							      }							      
+							  }
+						  }
+					  }
+				  }				  
+				  if (!foundMatch) {
+				        Log.d(">>>",""+tokenizedStringList.get(i));
+					  	if (getSetLanguage()==getLanguageBasedOnID(LANGUAGE_JAPANESE)) {
+							  switch(type) {
+								case IS_RADIOBUTTON:
+									((RadioButton)myView).append(tokenizedStringList.get(i));
+									continue;
+								case IS_CHECKBOX:
+									((CheckBox)myView).append(tokenizedStringList.get(i));
+									continue;				
+								default://case IS_TEXTVIEW:
+									((TextView)myView).append(tokenizedStringList.get(i));
+									continue;
+						      }							      
+					    }
+					    else {
+							  switch(type) {
+								case IS_RADIOBUTTON:
+									((RadioButton)myView).append(" "+tokenizedStringList.get(i));
+									continue;
+								case IS_CHECKBOX:
+									((CheckBox)myView).append(" "+tokenizedStringList.get(i));
+									continue;				
+								default://case IS_TEXTVIEW:
+									((TextView)myView).append(" "+tokenizedStringList.get(i));
+									continue;
+						      }							      
+					    }
+					  }
+				  }	
+			  
+		} 
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return myView;
+    }
+    
+    //added by Mike, Oct. 4, 2014
+    public static ArrayList<String> tokenizeJapaneseString(String s) {
+    	ArrayList<String> output = new ArrayList<String>();
+    	StringBuffer kanjiPhrase = new StringBuffer();
+    	StringBuffer hiraganaPhrase = new StringBuffer();
+    	StringBuffer katakanaPhrase = new StringBuffer();
+    	StringBuffer japanesePunctuationPhrase = new StringBuffer();
+    	StringBuffer othersPhrase = new StringBuffer();
+    	    
+    	int value;
+    	//go through character by character
+    	for(int i=0; i<s.length();) {    		    	
+    		value =(int)s.charAt(i);     		
+//    		Log.d(">>>>",""+s.charAt(i));
+  
+    		//Reference: http://www.rikai.com/library/kanjitables/kanji_codes.unicode.shtml;
+    		//last accessed: 4 Oct. 2014
+    		//Reference: http://stackoverflow.com/questions/3826918/how-to-classify-japanese-characters-as-either-kanji-or-kana;
+    		//last accessed: 4 Oct. 2014;
+    		//answer by Jack, Sept. 30, 2010
+        	//KANJI
+    		for (; i<s.length() && value >= 0x4e00 && value <= 0x9faf;) { //while Kanji Char
+    			kanjiPhrase.append(s.charAt(i));
+    			i++;
+    			if (i<s.length()) {
+    				value =(int)s.charAt(i);
+    			}
+    			else {
+    				break;
+    			}
+    		}
+
+//			Log.d(">>>","kanjiPhrase: "+kanjiPhrase);
+    		if (!kanjiPhrase.toString().equals("")) {
+    			output.add(kanjiPhrase.toString());
+    			kanjiPhrase.replace(0,kanjiPhrase.length(),""); 
+//    			Log.d(">>>","here");
+    			continue;
+    		}
+
+    		//HIRAGANA
+    		for (; i<s.length() && value >= 0x3040 && value <= 0x309f;) { 
+    			hiraganaPhrase.append(s.charAt(i));
+    			i++;
+    			if (i<s.length()) {
+    				value =(int)s.charAt(i);
+    			}
+    			else {
+    				break;
+    			}
+    		}
+
+    		if (!hiraganaPhrase.toString().equals("")) {
+    			output.add(hiraganaPhrase.toString());
+    			hiraganaPhrase.replace(0,hiraganaPhrase.length(),""); 
+    			continue;
+    		}
+
+    		//KATAKANA
+    		for (; i<s.length() && value >= 0x30a0 && value <= 0x30ff;) { 
+    			katakanaPhrase.append(s.charAt(i));
+    			i++;
+    			if (i<s.length()) {
+    				value =(int)s.charAt(i);
+    			}
+    			else {
+    				break;
+    			}
+    		}
+
+    		if (!katakanaPhrase.toString().equals("")) {
+    			output.add(katakanaPhrase.toString());
+    			katakanaPhrase.replace(0,katakanaPhrase.length(),""); 
+    			continue;
+    		}
+  
+        	//JAPANESE PUNCTUATION
+    		for (; i<s.length() && value >= 0x3000 && value <= 0x303f;) { 
+    			japanesePunctuationPhrase.append(s.charAt(i));
+    			i++;
+    			if (i<s.length()) {
+    				value =(int)s.charAt(i);
+    			}
+    			else {
+    				break;
+    			}
+    		}
+
+    		if (!japanesePunctuationPhrase.equals("")) {
+    			output.add(japanesePunctuationPhrase.toString());
+    			japanesePunctuationPhrase.replace(0,japanesePunctuationPhrase.length(),""); 
+    			continue;
+    		}
+
+        	//FULL-WIDTH ROMAN CHARACTERS and HALF-WIDTH KATAKANA
+    		for (;i<s.length() && value >= 0xff00 && value <= 0xffef;) { 
+    			othersPhrase.append(s.charAt(i));
+    			i++;
+    			if (i<s.length()) {
+    				value =(int)s.charAt(i);
+    			}
+    			else {
+    				break;
+    			}
+    		}
+
+    		if (!othersPhrase.toString().equals("")) {
+    			output.add(othersPhrase.toString());
+    			othersPhrase.replace(0,othersPhrase.length(),""); 
+    			continue;
+    		}
+    		
+    		i++; //do increment here    		
+    	}
+    	return output;
+    }
+    
+    //added by Mike, Oct. 4, 2014
+    public static ArrayList<String> extractKanjiPhrasesFromString(String s) {
+    	ArrayList<String> output = new ArrayList<String>();
+    	StringBuffer kanjiPhrase = new StringBuffer();
+    	
+    	//go through character by character
+    	for(int i=0; i<s.length();i++) {    		
+    		//Reference: http://www.rikai.com/library/kanjitables/kanji_codes.unicode.shtml;
+    		//last accessed: 4 Oct. 2014
+    		//Reference: http://stackoverflow.com/questions/3826918/how-to-classify-japanese-characters-as-either-kanji-or-kana;
+    		//last accessed: 4 Oct. 2014;
+    		//answer by Jack, Sept. 30, 2010
+    		//while Kanji Char
+    		for (int value =(int)s.charAt(i);value >= 0x4e00 && value <= 0x9faf;) { 
+    			kanjiPhrase.append(s.charAt(i));
+    			i++;
+    			value =(int)s.charAt(i);
+    		}
+
+    		if (!kanjiPhrase.equals("")) {
+    			output.add(kanjiPhrase.toString());
+    			kanjiPhrase.replace(0,kanjiPhrase.length(),""); 
+    		}
+    	}
+    	
+    	return output;
+    }
+    
+    //Reference: http://stackoverflow.com/questions/14135273/textview-onclick-android;
+    //last accessed: 3 Oct. 2014
+    //answer by: Naveen, Jan. 3, 2013; originally answered by: user370305, Jan. 3, 2013
+    private static void makeLinksFocusable(View v, int type){//TextView tv) {    	
+    	MovementMethod m;  
+    	switch(type) {
+			case IS_TEXTVIEW:
+		    	m = ((TextView)v).getMovementMethod();  
+		        if ((m == null) || !(m instanceof LinkMovementMethod)) {  
+		            if (((TextView)v).getLinksClickable()) {  
+		            	((TextView)v).setMovementMethod(LinkMovementMethod.getInstance());  
+		            }  
+		        }  
+		    	break;
+			case IS_RADIOBUTTON:
+		    	m = ((RadioButton)v).getMovementMethod();  
+		        if ((m == null) || !(m instanceof LinkMovementMethod)) {  
+		            if (((RadioButton)v).getLinksClickable()) {  
+		            	((RadioButton)v).setMovementMethod(LinkMovementMethod.getInstance());  
+		            }  
+		        }  
+		    	break;
+			case IS_CHECKBOX:
+		    	m = ((CheckBox)v).getMovementMethod();  
+		        if ((m == null) || !(m instanceof LinkMovementMethod)) {  
+		            if (((CheckBox)v).getLinksClickable()) {  
+		            	((CheckBox)v).setMovementMethod(LinkMovementMethod.getInstance());  
+		            }  
+		        }  
+		    	break;				
+	      }
+    }
+
+    //Reference: http://stackoverflow.com/questions/14135273/textview-onclick-android;
+    //last accessed: 3 Oct. 2014
+    //answer by: Naveen, Jan. 3, 2013; originally answered by: user370305, Jan. 3, 2013
+    private static SpannableString makeLinkSpan(CharSequence text, View.OnClickListener listener)                 {
+        SpannableString link = new SpannableString(text);
+        link.setSpan(new ClickableString(listener), 0, text.length(), 
+            SpannableString.SPAN_INCLUSIVE_EXCLUSIVE);
+        return link;
+    }
+
+    //Reference: http://stackoverflow.com/questions/14135273/textview-onclick-android;
+    //last accessed: 3 Oct. 2014
+    //answer by: Naveen, Jan. 3, 2013; originally answered by: user370305, Jan. 3, 2013
+    private static class ClickableString extends ClickableSpan {  
+        private View.OnClickListener mListener;          
+//        private TextPaint textpaint; //added by Mike, Oct. 4, 2014
+        public ClickableString(View.OnClickListener listener) {              
+            mListener = listener;  
+        }          
+        @Override  
+        public void onClick(View v) {  
+            mListener.onClick(v);  
+        }        
+        
+        //added by Mike, Oct. 4, 2014
+        @Override
+        public void updateDrawState(TextPaint ds) {
+/*            
+        	textpaint = ds;
+            ds.setColor(ds.linkColor);
+            
+            textpaint.bgColor = Color.GRAY;         
+            textpaint.setARGB(255, 255, 255, 255);
+
+            //Remove default underline associated with spans
+            ds.setUnderlineText(false);
+*/
+//            ds.setColor(Color.BLACK);
+            ds.setARGB(255,0,0,0);
+            ds.setStyle(Style.STROKE);
+//            ds.setStrokeCap(Cap.ROUND);
+//            ds.setStrokeWidth(6);
+            ds.setPathEffect(new DashPathEffect(new float[]{5,5},0));
+            ds.setUnderlineText(true);
+        }        
+    }  
     
 	//added by Mike, Sept. 19, 2012
 	public static String processIndent(String myText) {
