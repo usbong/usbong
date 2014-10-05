@@ -34,14 +34,15 @@
 		    ></TextView>
 		    <TextView
 				style="@style/UsbongSignupTextView"        
-		        android:text="Don't have an account?"
+		        android:text="@string/dont_have_an_account"
 		        android:id="@+id/signup_question"
 		        android:layout_below="@+id/filler"	        
 	    		android:layout_alignParentRight="true"
 	    		android:layout_height="wrap_content"
 	    		android:layout_width="wrap_content"
-	    		android:textColor="#FFFFFF"
+	    		android:textColor="#373833"
 	    		android:textStyle="bold"
+	    		android:background="#f4e5b3"
 			/>
 			<TextView
 				style="@style/UsbongSignupTextView"        
@@ -50,8 +51,9 @@
 		        android:layout_alignParentRight="true"
 		        android:layout_below="@+id/signup_question"	        
 	    		android:layout_width="wrap_content"
-	    		android:textColor="#FFFFFF"
+	    		android:textColor="#373833"
 	    		android:textStyle="bold"
+	    		android:background="#f4e5b3"
 			/>
 		</RelativeLayout>	
 </LinearLayout>
