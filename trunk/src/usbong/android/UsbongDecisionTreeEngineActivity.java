@@ -426,7 +426,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 						public void onCheckedChanged(CompoundButton myRadioButton,
 								boolean isChecked) {
 							if (isChecked) {
-								UsbongUtils.setLanguage(myRadioButton.getText().toString());				        		
+								UsbongUtils.setLanguage(myRadioButton.getText().toString());
 							}
 						}		            	
 		            });		            
@@ -767,13 +767,11 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	//http://kxml.sourceforge.net/kxml2/ ;Last accessed on: June 2,2010    
     //http://developer.android.com/reference/org/xmlpull/v1/XmlPullParser.html; last accessed on: Aug. 23, 2011
 	public void initParser() {
-//		hasReachedEndOfAllDecisionTrees=false;
-		
+//		hasReachedEndOfAllDecisionTrees=false;		
 //			decisionTrackerContainer.addElement(usbongAnswerContainer.lastElement());
-
 		Log.d(">>>>>", "initParser");
 
-		if (wasNextButtonPressed) {
+		if (wasNextButtonPressed){
 			Log.d(">>>>>", "wasNextButtonPressed");
 			
 			if (!hasUpdatedDecisionTrackerContainer) {

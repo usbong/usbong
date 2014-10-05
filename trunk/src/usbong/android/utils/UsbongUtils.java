@@ -66,14 +66,11 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.DashPathEffect;
-import android.graphics.Paint.Cap;
-import android.graphics.Paint.Style;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.Html;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -122,6 +119,8 @@ public class UsbongUtils {
 		
 	public static final boolean USE_UNESCAPE=true; //allows the use of \n (new line) in the decision tree	
 
+	public static ArrayList<String> tokenizedStringList;
+	
 	//added by Mike, Feb. 11, 2013
 	public static void setDebugMode(boolean b) {
 		IS_IN_DEBUG_MODE=b;
@@ -1369,7 +1368,8 @@ public class UsbongUtils {
     }    
     
     //added by Mike, Feb. 4, 2013
-    public static Spanned applyTagsInString(Activity a, String myCurrUsbongNode) {
+    //modified by Mike, Oct. 5, 2014
+    public static String/*Spanned*/ applyTagsInString(Activity a, String myCurrUsbongNode) {
     	String styledText;
 
     	if (USE_UNESCAPE) {
@@ -1393,9 +1393,15 @@ public class UsbongUtils {
 //    	styledText = styledText.replaceAll("<indent>", "{indent}");//"\u0020\u0020\u0020\u0020\u0020");					
     	styledText = processIndent(styledText);
 
-    	Spanned mySpanned = Html.fromHtml(styledText);
-//		return styledText;
+//    	styledText = applyHintsInString(a, styledText);    	
+//    	Log.d(">>>>>styledText",styledText);
+/*    	
+    	Spanned mySpanned = Html.fromHtml(styledText);	
+    	Log.d(">>>>>mySpanned",mySpanned.toString());
+    	
     	return mySpanned;
+*/
+		return styledText; //do "Html.fromHtml(styledText);" later
     }
 
 	//added by Mike, Sept. 27, 2012
@@ -1405,25 +1411,34 @@ public class UsbongUtils {
     public static View applyTagsInView(Activity a, View myView, int type, String myCurrUsbongNode) {
 //    	String styledText = applyTagsInString(myCurrUsbongNode);
 //    	Spanned mySpanned = Html.fromHtml(styledText);
-    	Spanned mySpanned = applyTagsInString(a, myCurrUsbongNode);
+//    	Spanned mySpanned = applyTagsInString(a, myCurrUsbongNode);    	    	
+    	String styledText = applyTagsInString(a, myCurrUsbongNode);    	    	
 
 		switch(type) {
-			case IS_TEXTVIEW:
-				((TextView)myView).setText(mySpanned, TextView.BufferType.SPANNABLE);
-				((TextView)myView).setMovementMethod(LinkMovementMethod.getInstance());
-//				((TextView)myView).setBackgroundResource(android.R.drawable.list_selector_background);
-//				((TextView)myView).setTextSize((a.getResources().getDimension(R.dimen.textsize)));
-				break;
 			case IS_RADIOBUTTON:
-				((RadioButton)myView).setText(mySpanned, TextView.BufferType.SPANNABLE);
-				((RadioButton)myView).setMovementMethod(LinkMovementMethod.getInstance());
-//				((RadioButton)myView).setTextSize((a.getResources().getDimension(R.dimen.textsize)));
+				//modified by Mike, Oct. 5, 2014
+				((RadioButton)myView).setText(styledText);
+				myView = (RadioButton) UsbongUtils.applyHintsInView(UsbongDecisionTreeEngineActivity.getInstance(), (RadioButton)myView, UsbongUtils.IS_RADIOBUTTON);
+				makeLinksFocusable(((RadioButton)myView), IS_RADIOBUTTON);
 				break;
 			case IS_CHECKBOX:
+				//modified by Mike, Oct. 5, 2014
+				((CheckBox)myView).setText(styledText);
+				myView = (CheckBox) UsbongUtils.applyHintsInView(UsbongDecisionTreeEngineActivity.getInstance(), (CheckBox)myView, UsbongUtils.IS_CHECKBOX);
+/*
+		    	mySpanned = applyTagsInString(a, ((CheckBox)myView).getText().toString());
 				((CheckBox)myView).setText(mySpanned, TextView.BufferType.SPANNABLE);
 				((CheckBox)myView).setMovementMethod(LinkMovementMethod.getInstance());
 //				((CheckBox)myView).setTextSize((a.getResources().getDimension(R.dimen.textsize)));
+*/
+				makeLinksFocusable(((CheckBox)myView), IS_CHECKBOX);
 				break;				
+			default: //case IS_TEXTVIEW:
+				//modified by Mike, Oct. 5, 2014
+				((TextView)myView).setText(styledText);
+				myView = (TextView) UsbongUtils.applyHintsInView(UsbongDecisionTreeEngineActivity.getInstance(), (TextView)myView, UsbongUtils.IS_TEXTVIEW);
+				makeLinksFocusable(((TextView)myView), IS_TEXTVIEW);
+				break;
 		}
 
 		return myView;
@@ -1432,32 +1447,49 @@ public class UsbongUtils {
     //added by Mike, Oct. 3, 2014
     public static View applyHintsInView(Activity a, View myView, int type) {
     	Log.d(">>>>>>","1");
-    	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/hint/hint.xml";
+    	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/hints/hints.xml";
 		File file = new File(filePath);
 		if(!file.exists())
 		{
 	    	Log.d(">>>>>>","2.1");
-			file = new File(UsbongUtils.USBONG_TREES_FILE_PATH+"temp/"+myTreeFileName+".utree/hint/hint.xml");
+			file = new File(UsbongUtils.USBONG_TREES_FILE_PATH+"temp/"+myTreeFileName+".utree/hints/hints.xml");
 
 			if(!file.exists()) 
 			{						
 		    	Log.d(">>>>>>","2.2");
-				return myView; //just send the original view
+//				return myView; //just send the original view
+			    switch(type) {
+					case IS_RADIOBUTTON:
+						((RadioButton)myView).setText(Html.fromHtml((((RadioButton)myView).getText().toString())));					
+						return myView;
+					case IS_CHECKBOX:
+						((CheckBox)myView).setText(Html.fromHtml((((CheckBox)myView).getText().toString())));					
+						return myView;
+				    default: //case IS_TEXTVIEW:
+						((TextView)myView).setText(Html.fromHtml(((TextView)myView).getText().toString()));					
+						return myView;
+			    }
 			}
 		}
 		//if this point is reached, this means that hint file exists
 
     	Log.d(">>>>>>","2");
     	
-    	ArrayList<String> tokenizedStringList = new ArrayList<String>();
+    	if (tokenizedStringList==null) {
+    		tokenizedStringList = new ArrayList<String>();
+    	}
+    	else {
+    		tokenizedStringList.clear();
+    	}
     	Scanner sc; 
+    	StringBuffer output = new StringBuffer();
 
     	//added by Mike, Oct. 3, 2014
     	myView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     	
 	    switch(type) {
 			case IS_RADIOBUTTON:
-		    	sc = new Scanner(((RadioButton)myView).getText().toString());
+				sc = new Scanner(((RadioButton)myView).getText().toString());
 				((RadioButton)myView).setText("");
 		    	break;
 			case IS_CHECKBOX:
@@ -1466,6 +1498,11 @@ public class UsbongUtils {
 		    	break;				
 		    default: //case IS_TEXTVIEW:
 		    	sc = new Scanner(((TextView)myView).getText().toString());
+/*
+		    	Spannable myScannable = ((Spannable)((TextView)myView).getText());
+//				sc = new Scanner(Html.toHtml(myScannable));		    	
+				sc = new Scanner(myScannable.toString());		    	
+*/				
 				((TextView)myView).setText("");
 		    	break;
 	    }
@@ -1474,13 +1511,18 @@ public class UsbongUtils {
     	//They do have particles, but how does a computer know if it's a particle 
     	//or part of a phrase?
 	    if (getSetLanguage()==getLanguageBasedOnID(LANGUAGE_JAPANESE)) {
-	    	if (sc.hasNext()) {
-	    		tokenizedStringList = tokenizeJapaneseString(sc.next());
+//	    	if (sc.hasNext()) {
+	    	while (sc.hasNext()) {
+	    		ArrayList<String> temp = tokenizeJapaneseString(sc.next());
+	    		
+	    		for (int i=0; i<temp.size(); i++) {
+	    			tokenizedStringList.add(temp.get(i)); //= tokenizeJapaneseString(sc.next());
+	    		}
 	    	}
 	    }
 	    else {
 	    	while (sc.hasNext()) {
-	    		tokenizedStringList.add(sc.next());
+	    		tokenizedStringList.add(sc.next()+" ");
 	    	}		    
 	    }
     	
@@ -1520,10 +1562,10 @@ public class UsbongUtils {
 				      }
 					  
 					  if (parser.getName().equals("string")) {
-/*	
+	
 						  Log.d(">>>>>parser.getAttributeValue(null, 'name'): ",parser.getAttributeValue(null, "name"));
 						  Log.d(">>>>>tokenizedStringList.get("+i+"): ",tokenizedStringList.get(i));
-*/	
+	
 						  if (parser.getAttributeValue(null, "name").equals(tokenizedStringList.get(i))) {
 							  if (parser.next() == XmlPullParser.TEXT) {
 //								  Log.d(">>>>>parser.getText();: ",parser.getText());
@@ -1546,52 +1588,44 @@ public class UsbongUtils {
 							      });					
 							      Log.d(">>>","has match: "+tokenizedStringList.get(i));
 							      foundMatch=true;
+
 							      switch(type) {
 									case IS_RADIOBUTTON:
 										((RadioButton)myView).append(link);
-									    makeLinksFocusable(((RadioButton)myView), IS_RADIOBUTTON);
+										makeLinksFocusable(((RadioButton)myView), IS_RADIOBUTTON);
 										continue;
 									case IS_CHECKBOX:
 										((CheckBox)myView).append(link);
-									    makeLinksFocusable(((CheckBox)myView), IS_CHECKBOX);
+									    makeLinksFocusable(((CheckBox)myView), IS_CHECKBOX); 
 										continue;				
 									default://case IS_TEXTVIEW:
 										((TextView)myView).append(link);
-									    makeLinksFocusable(((TextView)myView), IS_TEXTVIEW);
+									    makeLinksFocusable(((TextView)myView), IS_TEXTVIEW); 
 										continue;
-							      }							      
+							      }							      							      
 							  }
 						  }
 					  }
 				  }				  
-				  if (!foundMatch) {
-				        Log.d(">>>",""+tokenizedStringList.get(i));
-					  	if (getSetLanguage()==getLanguageBasedOnID(LANGUAGE_JAPANESE)) {
-							  switch(type) {
-								case IS_RADIOBUTTON:
-									((RadioButton)myView).append(tokenizedStringList.get(i));
-									continue;
-								case IS_CHECKBOX:
-									((CheckBox)myView).append(tokenizedStringList.get(i));
-									continue;				
-								default://case IS_TEXTVIEW:
-									((TextView)myView).append(tokenizedStringList.get(i));
-									continue;
-						      }							      
-					    }
-					    else {
-							  switch(type) {
-								case IS_RADIOBUTTON:
-									((RadioButton)myView).append(" "+tokenizedStringList.get(i));
-									continue;
-								case IS_CHECKBOX:
-									((CheckBox)myView).append(" "+tokenizedStringList.get(i));
-									continue;				
-								default://case IS_TEXTVIEW:
-									((TextView)myView).append(" "+tokenizedStringList.get(i));
-									continue;
-						      }							      
-					    }
+				  if (!foundMatch) {					  
+				        Log.d(">>>","i: "+i+" "+tokenizedStringList.get(i));
+				        output.append(tokenizedStringList.get(i));
+			        	switch(type) {
+							case IS_RADIOBUTTON:
+								((RadioButton)myView).append(Html.fromHtml(tokenizedStringList.get(i)));
+								//makeLinksFocusable(((RadioButton)myView), IS_RADIOBUTTON);
+								continue;
+							case IS_CHECKBOX:
+								((CheckBox)myView).append(Html.fromHtml(tokenizedStringList.get(i)));
+//							    makeLinksFocusable(((CheckBox)myView), IS_CHECKBOX); 
+								continue;				
+							default://case IS_TEXTVIEW:
+								((TextView)myView).append(Html.fromHtml(tokenizedStringList.get(i)));
+//								((CheckBox)myView).setText(mySpanned, TextView.BufferType.SPANNABLE);
+//								((TextView)myView).setMovementMethod(LinkMovementMethod.getInstance());
+//							    makeLinksFocusable(((TextView)myView), IS_TEXTVIEW); 
+								continue;
+					      }							      						      
 					  }
 				  }	
 			  
@@ -1599,122 +1633,168 @@ public class UsbongUtils {
 		catch(Exception e) {
 			e.printStackTrace();
 		}
-		
 		return myView;
     }
     
     //added by Mike, Oct. 4, 2014
     public static ArrayList<String> tokenizeJapaneseString(String s) {
     	ArrayList<String> output = new ArrayList<String>();
-    	StringBuffer kanjiPhrase = new StringBuffer();
+    	StringBuffer kanjiCommonPhrase = new StringBuffer();
+    	StringBuffer kanjiRarePhrase = new StringBuffer();
     	StringBuffer hiraganaPhrase = new StringBuffer();
     	StringBuffer katakanaPhrase = new StringBuffer();
     	StringBuffer japanesePunctuationPhrase = new StringBuffer();
-    	StringBuffer othersPhrase = new StringBuffer();
-    	    
+    	StringBuffer fullWidthRomanCharAndHalfWidthKatakanaPhrase = new StringBuffer();
+    	StringBuffer othersPhrase = new StringBuffer();    	
+
+		Log.d(">>>>inside: tokenizeJapaneseString",""+s);
+    	
     	int value;
     	//go through character by character
     	for(int i=0; i<s.length();) {    		    	
     		value =(int)s.charAt(i);     		
-//    		Log.d(">>>>",""+s.charAt(i));
+    		Log.d(">>>>",""+s.charAt(i));
   
     		//Reference: http://www.rikai.com/library/kanjitables/kanji_codes.unicode.shtml;
     		//last accessed: 4 Oct. 2014
     		//Reference: http://stackoverflow.com/questions/3826918/how-to-classify-japanese-characters-as-either-kanji-or-kana;
     		//last accessed: 4 Oct. 2014;
     		//answer by Jack, Sept. 30, 2010
-        	//KANJI
-    		for (; i<s.length() && value >= 0x4e00 && value <= 0x9faf;) { //while Kanji Char
-    			kanjiPhrase.append(s.charAt(i));
-    			i++;
-    			if (i<s.length()) {
-    				value =(int)s.charAt(i);
-    			}
-    			else {
-    				break;
-    			}
+        	//KANJI (COMMON)
+    		if (value >= 0x4e00 && value <= 0x9faf) {
+	    		for (; i<s.length() && value >= 0x4e00 && value <= 0x9faf;) { //while Kanji Char
+	    			kanjiCommonPhrase.append(s.charAt(i));
+	    			i++;
+	    			if (i<s.length()) {
+	    				value =(int)s.charAt(i);
+	    			}
+	    			else {
+	    				break;
+	    			}
+	    		}
+//				Log.d(">>>","kanjiPhrase: "+kanjiPhrase);
+	    		if (!kanjiCommonPhrase.toString().equals("")) {
+	    			output.add(kanjiCommonPhrase.toString());
+	    			kanjiCommonPhrase.replace(0,kanjiCommonPhrase.length(),""); 
+//	    			Log.d(">>>","here");
+	    			continue;
+	    		}
     		}
+        	//KANJI (RARE)
+    		if (value >= 0x3400 && value <= 0x4dbf) {
+	    		for (; i<s.length() && value >= 0x3400 && value <= 0x4dbf;) {
+	    			kanjiRarePhrase.append(s.charAt(i));
+	    			i++;
+	    			if (i<s.length()) {
+	    				value =(int)s.charAt(i);
+	    			}
+	    			else {
+	    				break;
+	    			}
+	    		}
+//				Log.d(">>>","kanjiPhrase: "+kanjiPhrase);
+	    		if (!kanjiRarePhrase.toString().equals("")) {
+	    			output.add(kanjiRarePhrase.toString());
+	    			kanjiRarePhrase.replace(0,kanjiRarePhrase.length(),""); 
+//	    			Log.d(">>>","here");
+	    			continue;
+	    		}
+    		}
+    		else if (value >= 0x3040 && value <= 0x309f) {
+        		//HIRAGANA
+        		for (; i<s.length() && value >= 0x3040 && value <= 0x309f;) { 
+        			hiraganaPhrase.append(s.charAt(i));
+        			i++;
+        			if (i<s.length()) {
+        				value =(int)s.charAt(i);
+        			}
+        			else {
+        				break;
+        			}
+        		}
 
-//			Log.d(">>>","kanjiPhrase: "+kanjiPhrase);
-    		if (!kanjiPhrase.toString().equals("")) {
-    			output.add(kanjiPhrase.toString());
-    			kanjiPhrase.replace(0,kanjiPhrase.length(),""); 
-//    			Log.d(">>>","here");
-    			continue;
+        		if (!hiraganaPhrase.toString().equals("")) {
+        			output.add(hiraganaPhrase.toString());
+        			hiraganaPhrase.replace(0,hiraganaPhrase.length(),""); 
+        			continue;
+        		}    			
     		}
+    		else if (value >= 0x30a0 && value <= 0x30ff) {
+	    		//KATAKANA
+	    		for (; i<s.length() && value >= 0x30a0 && value <= 0x30ff;) { 
+	    			katakanaPhrase.append(s.charAt(i));
+	    			i++;
+	    			if (i<s.length()) {
+	    				value =(int)s.charAt(i);
+	    			}
+	    			else {
+	    				break;
+	    			}
+	    		}
+	
+	    		if (!katakanaPhrase.toString().equals("")) {
+	    			output.add(katakanaPhrase.toString());
+	    			katakanaPhrase.replace(0,katakanaPhrase.length(),""); 
+	    			continue;
+	    		}
+    		}  
+    		else if (value >= 0x3000 && value <= 0x303f) {
+            	//JAPANESE PUNCTUATION
+        		for (; i<s.length() && value >= 0x3000 && value <= 0x303f;) { 
+        			japanesePunctuationPhrase.append(s.charAt(i));
+        			i++;
+        			if (i<s.length()) {
+        				value =(int)s.charAt(i);
+        			}
+        			else {
+        				break;
+        			}
+        		}
 
-    		//HIRAGANA
-    		for (; i<s.length() && value >= 0x3040 && value <= 0x309f;) { 
-    			hiraganaPhrase.append(s.charAt(i));
-    			i++;
-    			if (i<s.length()) {
-    				value =(int)s.charAt(i);
-    			}
-    			else {
-    				break;
-    			}
+        		if (!japanesePunctuationPhrase.equals("")) {
+        			output.add(japanesePunctuationPhrase.toString());
+        			japanesePunctuationPhrase.replace(0,japanesePunctuationPhrase.length(),""); 
+        			continue;
+        		}    			
     		}
+    		else if (value >= 0xff00 && value <= 0xffef) {
+            	//FULL-WIDTH ROMAN CHARACTERS and HALF-WIDTH KATAKANA
+        		for (;i<s.length() && value >= 0xff00 && value <= 0xffef;) { 
+        			fullWidthRomanCharAndHalfWidthKatakanaPhrase.append(s.charAt(i));
+        			i++;
+        			if (i<s.length()) {
+        				value =(int)s.charAt(i);
+        			}
+        			else {
+        				break;
+        			}
+        		}
 
-    		if (!hiraganaPhrase.toString().equals("")) {
-    			output.add(hiraganaPhrase.toString());
-    			hiraganaPhrase.replace(0,hiraganaPhrase.length(),""); 
-    			continue;
+        		if (!fullWidthRomanCharAndHalfWidthKatakanaPhrase.toString().equals("")) {
+        			output.add(fullWidthRomanCharAndHalfWidthKatakanaPhrase.toString());
+        			fullWidthRomanCharAndHalfWidthKatakanaPhrase.replace(0,fullWidthRomanCharAndHalfWidthKatakanaPhrase.length(),""); 
+        			continue;
+        		}
     		}
+    		else {
+            	//IF NONE OF THE ABOVE
+        		for (;i<s.length() && ((value < 0x3000 || value > 0xffef));) { 
+        			othersPhrase.append(s.charAt(i));
+        			i++;
+        			if (i<s.length()) {
+        				value =(int)s.charAt(i);
+        			}
+        			else {
+        				break;
+        			}
+        		}
 
-    		//KATAKANA
-    		for (; i<s.length() && value >= 0x30a0 && value <= 0x30ff;) { 
-    			katakanaPhrase.append(s.charAt(i));
-    			i++;
-    			if (i<s.length()) {
-    				value =(int)s.charAt(i);
-    			}
-    			else {
-    				break;
-    			}
-    		}
-
-    		if (!katakanaPhrase.toString().equals("")) {
-    			output.add(katakanaPhrase.toString());
-    			katakanaPhrase.replace(0,katakanaPhrase.length(),""); 
-    			continue;
-    		}
-  
-        	//JAPANESE PUNCTUATION
-    		for (; i<s.length() && value >= 0x3000 && value <= 0x303f;) { 
-    			japanesePunctuationPhrase.append(s.charAt(i));
-    			i++;
-    			if (i<s.length()) {
-    				value =(int)s.charAt(i);
-    			}
-    			else {
-    				break;
-    			}
-    		}
-
-    		if (!japanesePunctuationPhrase.equals("")) {
-    			output.add(japanesePunctuationPhrase.toString());
-    			japanesePunctuationPhrase.replace(0,japanesePunctuationPhrase.length(),""); 
-    			continue;
-    		}
-
-        	//FULL-WIDTH ROMAN CHARACTERS and HALF-WIDTH KATAKANA
-    		for (;i<s.length() && value >= 0xff00 && value <= 0xffef;) { 
-    			othersPhrase.append(s.charAt(i));
-    			i++;
-    			if (i<s.length()) {
-    				value =(int)s.charAt(i);
-    			}
-    			else {
-    				break;
-    			}
-    		}
-
-    		if (!othersPhrase.toString().equals("")) {
-    			output.add(othersPhrase.toString());
-    			othersPhrase.replace(0,othersPhrase.length(),""); 
-    			continue;
-    		}
-    		
+        		if (!othersPhrase.toString().equals("")) {
+        			output.add(othersPhrase.toString()+" ");
+        			othersPhrase.replace(0,othersPhrase.length(),""); 
+        			continue;
+        		}
+    		}    		
     		i++; //do increment here    		
     	}
     	return output;
@@ -1755,12 +1835,17 @@ public class UsbongUtils {
     	MovementMethod m;  
     	switch(type) {
 			case IS_TEXTVIEW:
-		    	m = ((TextView)v).getMovementMethod();  
+				m = ((TextView)v).getMovementMethod();  
 		        if ((m == null) || !(m instanceof LinkMovementMethod)) {  
 		            if (((TextView)v).getLinksClickable()) {  
 		            	((TextView)v).setMovementMethod(LinkMovementMethod.getInstance());  
 		            }  
 		        }  
+/*				
+		    	Spanned mySpanned = Html.fromHtml(((TextView)v).getText().toString());	
+				((TextView)v).setText(mySpanned, TextView.BufferType.SPANNABLE);
+            	((TextView)v).setMovementMethod(LinkMovementMethod.getInstance());  
+*/            	
 		    	break;
 			case IS_RADIOBUTTON:
 		    	m = ((RadioButton)v).getMovementMethod();  
@@ -1811,13 +1896,13 @@ public class UsbongUtils {
 /*            
         	textpaint = ds;
             ds.setColor(ds.linkColor);
-            
+
             textpaint.bgColor = Color.GRAY;         
             textpaint.setARGB(255, 255, 255, 255);
 
             //Remove default underline associated with spans
             ds.setUnderlineText(false);
-*/
+
 //            ds.setColor(Color.BLACK);
             ds.setARGB(255,0,0,0);
             ds.setStyle(Style.STROKE);
@@ -1825,6 +1910,8 @@ public class UsbongUtils {
 //            ds.setStrokeWidth(6);
             ds.setPathEffect(new DashPathEffect(new float[]{5,5},0));
             ds.setUnderlineText(true);
+*/
+        	ds.setAlpha(128);//make the hint's color lighter
         }        
     }  
     
