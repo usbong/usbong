@@ -1251,40 +1251,40 @@ public class UsbongUtils {
         ZipInputStream zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile), BUFFER_SIZE));
         
         try {
-//        	Log.d(">>>>>>>","1");
+        	Log.d(">>>>>>>","1");
             File f = new File(location);
             if (!f.exists()) {
 	            if(!f.isDirectory()) {
 	                f.mkdirs();
-//	            	Log.d(">>>>>>>","1.5: f.mkdirs()");
+	            	Log.d(">>>>>>>","1.5: f.mkdirs()");
 	            }
             }
-//        	Log.d(">>>>>>>","2");
+        	Log.d(">>>>>>>","2");
 
 //            zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile), BUFFER_SIZE));
             try {
                 ZipEntry ze = null;
                 while ((ze = zin.getNextEntry()) != null) {
                     String path = location + ze.getName();
-//                	Log.d(">>>>>>>","3");
-//                	Log.d(">>>>>>>","location: "+location);
-//                	Log.d(">>>>>>>","ze.getName(): "+ze.getName());
+                	Log.d(">>>>>>>","3");
+                	Log.d(">>>>>>>","location: "+location);
+                	Log.d(">>>>>>>","ze.getName(): "+ze.getName());
 
                     if (ze.isDirectory()) {
-//                    	Log.d(">>>>>>>","4.1");
+                    	Log.d(">>>>>>>","4.1");
 
                     	File unzipFile = new File(path);
-//                    	Log.d(">>>>>>>","5.1");
-//                    	Log.d(">>>>>>>","path: "+path);
+                    	Log.d(">>>>>>>","5.1");
+                    	Log.d(">>>>>>>","path: "+path);
 
                     	if(!unzipFile.isDirectory()) {
-//                        	Log.d(">>>>>>>","6.1");
+                        	Log.d(">>>>>>>","6.1");
                     		unzipFile.mkdirs();
-//                        	Log.d(">>>>>>>","7.1");
+                        	Log.d(">>>>>>>","7.1");
                         }
                     }
                     else {
-//                    	Log.d(">>>>>>>","4.2");
+                    	Log.d(">>>>>>>","4.2");
                     	File file = new File(path);
                     	file.createNewFile();
                     	
@@ -1292,10 +1292,10 @@ public class UsbongUtils {
                         BufferedOutputStream fout = new BufferedOutputStream(out, BUFFER_SIZE);
                         try {
                             while ( (size = zin.read(buffer, 0, BUFFER_SIZE)) != -1 ) {
-//                            	Log.d(">>>>>>>","4.3");
+                            	Log.d(">>>>>>>","4.3");
                             	fout.write(buffer, 0, size);
                             }
-//                        	Log.d(">>>>>>>","4.4");
+                        	Log.d(">>>>>>>","4.4");
                             zin.closeEntry();
                         }
                         finally {
@@ -1521,9 +1521,58 @@ public class UsbongUtils {
 	    	}
 	    }
 	    else {
+	    	//edited by Mike, Oct. 19, 2014
+/*
 	    	while (sc.hasNext()) {
 	    		tokenizedStringList.add(sc.next()+" ");
 	    	}		    
+*/
+	    	StringBuffer temp = new StringBuffer();
+	    	while (sc.hasNext()) {
+	    		temp.append(sc.next()+" ");
+
+	    		Log.d(">>>temp: ",temp.toString());
+	    		
+	    		if (temp.toString().startsWith("<a")) {
+	    			while (sc.hasNext()&&!temp.toString().trim().endsWith("</a>")) {
+	    				temp.append(sc.next()+" ");
+	    			}
+	    		}	    		
+	    		else if (temp.toString().startsWith("<small>")) {
+	    			while (sc.hasNext()&&!temp.toString().trim().endsWith("</small>")) {
+	    				temp.append(sc.next()+" ");
+	    			}
+	    		}	    		
+	    		else if (temp.toString().startsWith("<big>")) {
+	    			while (sc.hasNext()&&!temp.toString().trim().endsWith("</big>")) {
+	    				temp.append(sc.next()+" ");
+	    			}
+	    		}	    		
+	    		else if (temp.toString().startsWith("<font>")) {
+	    			while (sc.hasNext()&&!temp.toString().trim().endsWith("</font>")) {
+	    				temp.append(sc.next()+" ");
+	    			}
+	    		}	    		
+	    		else if (temp.toString().startsWith("<b>")) {
+//	    			Log.d(">>nasa loob","<b>");
+	    			while (sc.hasNext()&&!temp.toString().trim().endsWith("</b>")) {
+	    				temp.append(sc.next()+" ");
+	    			}
+	    		}	    		
+	    		else if (temp.toString().startsWith("<i>")) {
+	    			while (sc.hasNext()&&!temp.toString().trim().endsWith("</i>")) {
+	    				temp.append(sc.next()+" ");
+	    			}
+	    		}	    		
+	    		else if (temp.toString().startsWith("<u>")) {
+	    			while (sc.hasNext()&&!temp.toString().trim().endsWith("</u>")) {
+	    				temp.append(sc.next()+" ");
+	    			}
+	    		}	    		
+	    		
+	    		tokenizedStringList.add(temp.toString()+" ");
+	    		temp.delete(0, temp.length());//reset
+	    	}		    	    	
 	    }
     	
     	for(int i=0; i<tokenizedStringList.size(); i++) {				  
@@ -1566,7 +1615,7 @@ public class UsbongUtils {
 						  Log.d(">>>>>parser.getAttributeValue(null, 'name'): ",parser.getAttributeValue(null, "name"));
 						  Log.d(">>>>>tokenizedStringList.get("+i+"): ",tokenizedStringList.get(i));
 	
-						  if (parser.getAttributeValue(null, "name").equals(tokenizedStringList.get(i))) {
+						  if (parser.getAttributeValue(null, "name").equals(tokenizedStringList.get(i).trim())) {
 							  if (parser.next() == XmlPullParser.TEXT) {
 //								  Log.d(">>>>>parser.getText();: ",parser.getText());
 //								  return parser.getText();
@@ -1577,7 +1626,7 @@ public class UsbongUtils {
 							      SpannableString link = makeLinkSpan(tokenizedStringList.get(i), new View.OnClickListener() {          
 							            @Override
 							            public void onClick(View v) {
-									    	new AlertDialog.Builder(finalUdtea).setTitle("Hey!")
+									    	new AlertDialog.Builder(finalUdtea).setTitle("Phrase Hint!")
 						            		.setMessage(hintText)
 											.setPositiveButton("OK", new DialogInterface.OnClickListener() {					
 												@Override
