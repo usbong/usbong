@@ -1,5 +1,5 @@
 --Usbong (beta)--
-ver: Oct. 6, 2014
+ver: Nov. 5, 2014
 
 "Usbong" is an open source platform that helps non-technical people create their own Android apps for use in data collection, assessment, training, and digital storytelling by putting together components to form a "tree" using a Graphical User Interface (GUI) or Google Drive Spreadsheet.
 
