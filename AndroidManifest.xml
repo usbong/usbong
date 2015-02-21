@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="usbong.android"
-      android:versionCode="43"
-      android:versionName="Nov. 5, 2014"
+      android:versionCode="45"
+      android:versionName="Feb. 21, 2015"
       android:installLocation="auto"      
 >
-    <uses-sdk android:minSdkVersion="11" 
+    <uses-sdk android:minSdkVersion="8" 
               android:targetSdkVersion="19" />
 	
     <supports-screens android:smallScreens="true"

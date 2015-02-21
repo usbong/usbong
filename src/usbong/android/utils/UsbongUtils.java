@@ -1249,7 +1249,7 @@ public class UsbongUtils {
         byte[] buffer = new byte[BUFFER_SIZE];
         
         ZipInputStream zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile), BUFFER_SIZE));
-        
+
         try {
         	Log.d(">>>>>>>","1");
             File f = new File(location);
@@ -1263,7 +1263,7 @@ public class UsbongUtils {
 
 //            zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile), BUFFER_SIZE));
             try {
-                ZipEntry ze = null;
+                ZipEntry ze = null;                
                 while ((ze = zin.getNextEntry()) != null) {
                     String path = location + ze.getName();
                 	Log.d(">>>>>>>","3");
@@ -1373,15 +1373,23 @@ public class UsbongUtils {
     	String styledText;
 
     	if (USE_UNESCAPE) {
-        	styledText = StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(myCurrUsbongNode));
+//    		Log.d(">>>>>","UNESCAPE=true");
+//        	styledText = StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(myCurrUsbongNode));
+        	//added by Mike, Feb. 9, 2015
+    		styledText = (UsbongUtils.trimUsbongNodeName(myCurrUsbongNode)).replace("\n", "{br}");        	  
         }
         else {
+//    		Log.d(">>>>>","UNESCAPE=false");
         	styledText = UsbongUtils.trimUsbongNodeName(myCurrUsbongNode);
         }
 
+//    	Log.d(">>>styledText 1",styledText);
     	styledText = performTranslation(styledText);
 
+//    	Log.d(">>>styledText 2",styledText);
     	styledText = replaceAllCurlyBracesWithGreaterThanLessThanSign(styledText);
+
+//    	Log.d(">>>styledText 3",styledText);
 
     	//added by Mike, March 26, 2014
     	processStoreVariableMethod(a, myCurrUsbongNode); //does not return anything
@@ -1401,7 +1409,7 @@ public class UsbongUtils {
     	
     	return mySpanned;
 */
-		return styledText; //do "Html.fromHtml(styledText);" later
+    	return styledText; //do "Html.fromHtml(styledText);" later
     }
 
 	//added by Mike, Sept. 27, 2012
@@ -1436,6 +1444,7 @@ public class UsbongUtils {
 			default: //case IS_TEXTVIEW:
 				//modified by Mike, Oct. 5, 2014
 				((TextView)myView).setText(styledText);
+				Log.d(">>>> applyTagsInView",((TextView)myView).getText().toString());
 				myView = (TextView) UsbongUtils.applyHintsInView(UsbongDecisionTreeEngineActivity.getInstance(), (TextView)myView, UsbongUtils.IS_TEXTVIEW);
 				makeLinksFocusable(((TextView)myView), IS_TEXTVIEW);
 				break;
@@ -1485,7 +1494,7 @@ public class UsbongUtils {
     	StringBuffer output = new StringBuffer();
 
     	//added by Mike, Oct. 3, 2014
-    	myView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+//    	myView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     	
 	    switch(type) {
 			case IS_RADIOBUTTON:
@@ -1556,11 +1565,13 @@ public class UsbongUtils {
 	    		else if (temp.toString().startsWith("<b>")) {
 //	    			Log.d(">>nasa loob","<b>");
 	    			while (sc.hasNext()&&!temp.toString().trim().endsWith("</b>")) {
+//	    			while (sc.hasNext()&&!temp.toString().trim().contains("</b>")) {
 	    				temp.append(sc.next()+" ");
 	    			}
 	    		}	    		
 	    		else if (temp.toString().startsWith("<i>")) {
 	    			while (sc.hasNext()&&!temp.toString().trim().endsWith("</i>")) {
+//	    			while (sc.hasNext()&&!temp.toString().trim().contains("</i>")) {
 	    				temp.append(sc.next()+" ");
 	    			}
 	    		}	    		
@@ -1659,6 +1670,8 @@ public class UsbongUtils {
 				  if (!foundMatch) {					  
 				        Log.d(">>>","i: "+i+" "+tokenizedStringList.get(i));
 				        output.append(tokenizedStringList.get(i));
+				        Log.d(">>> type",""+type);
+				        
 			        	switch(type) {
 							case IS_RADIOBUTTON:
 								((RadioButton)myView).append(Html.fromHtml(tokenizedStringList.get(i)));
@@ -1669,7 +1682,12 @@ public class UsbongUtils {
 //							    makeLinksFocusable(((CheckBox)myView), IS_CHECKBOX); 
 								continue;				
 							default://case IS_TEXTVIEW:
+//								Log.d(">>>>>myView before Html.fromHtml...",((TextView)myView).getText().toString());
 								((TextView)myView).append(Html.fromHtml(tokenizedStringList.get(i)));
+
+//								((TextView)myView).setText(Html.fromHtml(((TextView)myView).getText().toString()+tokenizedStringList.get(i)));
+								
+								Log.d(">>>>>myView",((TextView)myView).getText().toString());
 //								((CheckBox)myView).setText(mySpanned, TextView.BufferType.SPANNABLE);
 //								((TextView)myView).setMovementMethod(LinkMovementMethod.getInstance());
 //							    makeLinksFocusable(((TextView)myView), IS_TEXTVIEW); 
