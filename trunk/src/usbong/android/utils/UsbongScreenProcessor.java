@@ -694,7 +694,7 @@ public class UsbongScreenProcessor
 			udtea.initBackNextButtons();
 			TextView myTextDisplayScreenTextView = (TextView)udtea.findViewById(R.id.text_display_textview);
 			myTextDisplayScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextDisplayScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
-
+			
 //			Log.d(">>>>>","inside udtea.currScreen == udtea.TEXT_DISPLAY_SCREEN");
 //			myTextDisplayScreenTextView = (TextView) UsbongUtils.applyHintsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextDisplayScreenTextView, UsbongUtils.IS_TEXTVIEW);
 //			Log.d(">>>>>","after myTextDisplayScreenTextView");

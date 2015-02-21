@@ -1,7 +1,7 @@
 --Usbong (beta)--
-ver: Nov. 5, 2014
+ver: Feb. 21, 2015
 
-"Usbong" is an open source platform that helps non-technical people create their own Android apps for use in data collection, assessment, training, and digital storytelling by putting together components to form a "tree" using a Graphical User Interface (GUI) or Google Drive Spreadsheet.
+"Usbong" helps people build apps. We provide training and workshops on Android Development, Software Engineering, and Social Entrepreneurship. We also offer software development services. Our flagship open source product is also called, "Usbong".
 
 Usbong Social Systems, Inc.
 --Core Developers--
@@ -14,4 +14,4 @@ Website: www.usbong.ph
 Mailing List: usbong-users@googlegroups.com
 Email: usbong.ph@gmail.com
 
-Copyright 2011-2014.
+Copyright 2011-2015.
