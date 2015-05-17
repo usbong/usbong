@@ -400,5 +400,10 @@
 	    <item name="android:paddingTop">16dp</item>                
 		<item name="android:paddingLeft">4dp</item>    	
 		<item name="android:paddingRight">4dp</item>    							        
+    </style>
+    
+	<style name="AppBaseTheme" parent="Theme.AppCompat.Light">
+	</style>
+    <style name="AppTheme" parent="AppBaseTheme">
     </style>	       
 </resources>

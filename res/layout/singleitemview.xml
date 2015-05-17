@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="10" >
+ 
+   <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/layout" >
+    
+	   <LinearLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+		   android:id="@+id/other_views"
+	       android:orientation="vertical" >
+	
+		<usbong.android.community.SquareImageView 
+		    android:id="@+id/icon"
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent"
+		    android:scaleType="centerCrop" />
+	           	
+	       <RelativeLayout
+	           android:layout_width="match_parent"
+	           android:layout_height="match_parent"
+	           android:orientation="horizontal" >
+	
+	           <LinearLayout
+	               android:layout_width="match_parent"
+	               android:layout_height="wrap_content"
+	               android:layout_alignParentLeft="true"
+	               android:layout_alignParentStart="true"
+	               android:layout_gravity="start"
+	               android:orientation="vertical" >
+	
+	               <TextView
+	                   android:id="@+id/filename"
+	                   android:layout_width="match_parent"
+	                   android:layout_height="wrap_content" />
+	
+	               <TextView
+	                   android:id="@+id/uploadername"
+	                   android:layout_width="match_parent"
+	                   android:layout_height="wrap_content" />
+	           </LinearLayout>
+	
+	           <Button
+	               android:id="@+id/download"
+	               android:layout_width="wrap_content"
+	               android:layout_height="wrap_content"
+	               android:layout_alignParentEnd="true"
+	               android:layout_alignParentRight="true"
+	               android:layout_gravity="end"
+	               android:text="@string/download" />
+	
+	       </RelativeLayout>
+	
+	       <RelativeLayout
+	           android:layout_width="match_parent"
+	           android:layout_height="wrap_content" >
+	
+			<ImageView
+				android:id="@+id/ratings"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentLeft="true"
+				android:layout_alignParentStart="true"
+				android:src="@drawable/loading"
+				android:contentDescription="@string/desc" />
+				
+			<TextView
+				android:id="@+id/downloadcount"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentEnd="true"
+				android:layout_alignParentRight="true" />
+	
+	       </RelativeLayout>
+	
+	       <TextView
+	           android:id="@+id/description"
+	           android:layout_width="match_parent"
+	           android:layout_height="wrap_content" />
+			
+	   </LinearLayout>
+			<com.google.android.youtube.player.YouTubePlayerView
+                android:id="@+id/youtube_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp" />
+	   <!-- FrameLayout
+	       android:layout_width="match_parent"
+	       android:layout_height="match_parent" >
+
+	       <ImageView
+	           android:id="@+id/thumbnail"
+	           android:layout_width="match_parent"
+	           android:layout_height="match_parent"
+				android:contentDescription="@string/desc" />
+
+	       <ImageButton
+	           android:id="@+id/playImage"
+	           android:background="@drawable/playbutton"
+	           android:layout_width="match_parent"
+	           android:layout_height="match_parent"
+	           android:scaleType="fitXY"
+				android:contentDescription="@string/desc" />
+	   </FrameLayout --> 
+	</LinearLayout>
+</ScrollView>

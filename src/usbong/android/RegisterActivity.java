@@ -30,6 +30,7 @@ import org.apache.http.util.EntityUtils;
 
 import usbong.android.utils.UsbongUtils;
 
+import usbong.android.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;

@@ -14,11 +14,22 @@
  */
 package usbong.android;
 
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+
+import usbong.android.community.FitsListDisplay;
 import usbong.android.utils.UsbongUtils;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -51,13 +62,41 @@ public class UsbongMainActivity extends Activity
     {
         super.onCreate(savedInstanceState);
 //    	if (instance==null) { //comment this out, since the app seems to retain the instance even after we do a finish to GameActivity to close the app...
-	        setContentView(R.layout.main);	        
+	        setContentView(R.layout.main);	   
 	        instance = this;
 //	    	startTime = new Date();
 	    	
 	        reset();
 	        initMainMenuScreen();
+			initUniversalImageLoader();
     }
+
+	private void initUniversalImageLoader() {
+		//TODO: Check how this works efficiently
+		@SuppressWarnings("deprecation")
+		DisplayImageOptions options = new DisplayImageOptions.Builder()
+				.cacheInMemory(true)
+				.cacheOnDisc(true)
+				.imageScaleType(ImageScaleType.EXACTLY)
+				.resetViewBeforeLoading(true)
+				.showImageForEmptyUri(R.drawable.loading)
+				.showImageOnFail(R.drawable.loading)
+				.showImageOnLoading(R.drawable.loading)
+				.bitmapConfig(Bitmap.Config.RGB_565)
+				.displayer(new FadeInBitmapDisplayer(300)).build();
+		
+		ImageLoaderConfiguration.Builder config = new ImageLoaderConfiguration.Builder(this);
+		config.memoryCache(new WeakMemoryCache());
+		config.defaultDisplayImageOptions(options);
+		config.threadPriority(Thread.NORM_PRIORITY - 2);
+		config.denyCacheImageMultipleSizesInMemory();
+		config.diskCacheFileNameGenerator(new Md5FileNameGenerator());
+		config.diskCacheSize(50 * 1024 * 1024); // 50 MiB
+		config.tasksProcessingOrder(QueueProcessingType.LIFO);
+		config.writeDebugLogs(); // Remove for release app
+
+		ImageLoader.getInstance().init(config.build());
+	}
     
     public static UsbongMainActivity getInstance() {
     	return instance;
@@ -154,22 +193,24 @@ public class UsbongMainActivity extends Activity
 
     	communityButton.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View v) {		
-				AlertDialog.Builder prompt = new AlertDialog.Builder(UsbongMainActivity.this);
-				prompt.setTitle("Community Hint");
-//				prompt.setView(tv);
-				prompt.setMessage(UsbongUtils.readTextFileInAssetsFolder(UsbongMainActivity.this,"community_hint.txt")); //don't add a '/', otherwise the file would not be found
-				prompt.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						//Reference: http://stackoverflow.com/questions/5026349/how-to-open-a-website-when-a-button-is-clicked-in-android-application;
-						//last accessed: March 27, 2014; answer by: Alain Pannetier
-						Uri uriUrl = Uri.parse("http://usbong.pythonanywhere.com/upload/search/");
-				        Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl);
-				        startActivity(launchBrowser);
-					}
-				});
-				prompt.show();			
+			public void onClick(View v) {
+            	Intent i = new Intent(UsbongMainActivity.this, FitsListDisplay.class);
+            	startActivity(i);
+//				AlertDialog.Builder prompt = new AlertDialog.Builder(UsbongMainActivity.this);
+//				prompt.setTitle("Community Hint");
+////				prompt.setView(tv);
+//				prompt.setMessage(UsbongUtils.readTextFileInAssetsFolder(UsbongMainActivity.this,"community_hint.txt")); //don't add a '/', otherwise the file would not be found
+//				prompt.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//					@Override
+//					public void onClick(DialogInterface dialog, int which) {
+//						//Reference: http://stackoverflow.com/questions/5026349/how-to-open-a-website-when-a-button-is-clicked-in-android-application;
+//						//last accessed: March 27, 2014; answer by: Alain Pannetier
+//						Uri uriUrl = Uri.parse("http://usbong.pythonanywhere.com/upload/search/");
+//				        Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl);
+//				        startActivity(launchBrowser);
+//					}
+//				});
+//				prompt.show();			
 			}
     	});
     	

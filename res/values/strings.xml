@@ -182,4 +182,10 @@
     <string name="cancel">Cancel</string>
     
     <string name="enter_pin">PIN</string>
+    
+    <string name="download">Download</string>
+    <string name="desc">ImageView</string>
+    <string name="action_search">Search</string>
+    <string name="action_settings">Settings</string>
+    <string name="error_player">There was an error initializing the YouTubePlayer (%1$s)</string>
 </resources>
