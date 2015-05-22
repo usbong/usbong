@@ -120,7 +120,8 @@ public class SingleItemView extends YouTubeBaseActivity implements
 		mProgressDialog.setTitle("Saving trees...");
 		mProgressDialog.setIndeterminate(true);
 		mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-		mProgressDialog.setCancelable(true);
+		mProgressDialog.setCancelable(false);
+		mProgressDialog.setCanceledOnTouchOutside(false);
 		downloadTask = new DownloadTreeAsync(this,  mProgressDialog);
 		download.setOnClickListener(new OnClickListener() {
 			@Override

@@ -167,7 +167,8 @@ public class ListViewAdapter extends BaseAdapter {
             		mProgressDialog.setTitle("Saving trees...");
             		mProgressDialog.setIndeterminate(true);
             		mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            		mProgressDialog.setCancelable(true);
+            		mProgressDialog.setCancelable(false);
+            		mProgressDialog.setCanceledOnTouchOutside(false);
             		
 		            AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		            builder.setItems(items, new DialogInterface.OnClickListener() {
