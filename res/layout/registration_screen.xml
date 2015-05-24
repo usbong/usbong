@@ -31,6 +31,13 @@
         android:id="@+id/reg_password"
         android:hint="Password"
 	/>
+	<EditText
+        style="@style/UsbongLoginEditText"
+        android:inputType="textPassword"
+        android:id="@+id/reg_password_confirm"
+        android:hint="Confirm Password"
+	/>
+	
 	<Button
         style="@style/UsbongDefaultButton"
         android:text="Register"

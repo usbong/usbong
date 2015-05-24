@@ -61,6 +61,7 @@ public class RegisterActivity extends Activity {
         final EditText etEmail = (EditText)findViewById(R.id.reg_email);
         final EditText etUsername = (EditText)findViewById(R.id.reg_username);
         final EditText etPassword = (EditText)findViewById(R.id.reg_password);
+        final EditText etPasswordConfirm = (EditText)findViewById(R.id.reg_password_confirm); //added by Mike, 24 May 2015
         
 		final AlertDialog.Builder termsAlertDialog = new AlertDialog.Builder(this);
 		termsAlertDialog.setMessage(getResources().getString(R.string.terms))
@@ -81,7 +82,7 @@ public class RegisterActivity extends Activity {
 						nameValuePairs.add(new BasicNameValuePair("lastname", etLastName.getText().toString()));
 						nameValuePairs.add(new BasicNameValuePair("email", etEmail.getText().toString()));
 						nameValuePairs.add(new BasicNameValuePair("username", etUsername.getText().toString()));
-						nameValuePairs.add(new BasicNameValuePair("password", etPassword.getText().toString()));
+						nameValuePairs.add(new BasicNameValuePair("password", etPassword.getText().toString()));						
 						try {
 							httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 							try {
@@ -171,7 +172,13 @@ public class RegisterActivity extends Activity {
 						Toast.makeText(getApplicationContext(), "Password cannot be blank.", Toast.LENGTH_SHORT).show();					
 						return;
 			        }
-	
+			        //added by Mike, 24 May 2015
+			        if (!etPassword.getText().toString().equals(etPasswordConfirm.getText().toString())) 
+			        {
+						Toast.makeText(getApplicationContext(), "Password and Confirm Password do not match.", Toast.LENGTH_SHORT).show();					
+						return;
+			        }
+
 					//check if email is valid
 					if (!UsbongUtils.checkEmail(etEmail.getText().toString())) {
 						Toast.makeText(getApplicationContext(), "Invalid email.", Toast.LENGTH_SHORT).show();					

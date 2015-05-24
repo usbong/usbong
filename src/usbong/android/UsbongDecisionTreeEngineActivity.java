@@ -762,6 +762,15 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		}		
 	}
     
+	//added by Mike, 24 May 2015
+	//@param: s is the name of the .utree file
+	public void initParser(String s) {
+		isInTreeLoader=false;		
+		myTree = s;
+		UsbongUtils.clearTempFolder();
+        initParser();
+	}
+	
 	//Reference: 
 	//http://wiki.forum.nokia.com/index.php/How_to_parse_an_XML_file_in_Java_ME_with_kXML ;Last accessed on: June 2,2010
 	//http://kxml.sourceforge.net/kxml2/ ;Last accessed on: June 2,2010    
@@ -2353,6 +2362,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
                 	dataCurrentTextView.setOnClickListener(new OnClickListener() {
             			@Override
             			public void onClick(View v) {
+/*//commented out by Mike, 24 May 2015            				
             				isInTreeLoader=false;
             				
             				myTree = o.toString();
@@ -2360,6 +2370,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
             				UsbongUtils.clearTempFolder();
 //            				isr=null; //set inputStreamReader to null; i.e. new tree
             		        initParser();
+*/            		        
+            				initParser(o.toString());
             			}
                 	});
 /*                	
