@@ -155,6 +155,7 @@ public class UsbongMainActivity extends Activity
 
     	communityButton.setOnClickListener(new OnClickListener() {
 			@Override
+<<<<<<< HEAD
 			public void onClick(View v) {		
 				Intent i = new Intent(UsbongMainActivity.this, FitsListDisplay.class);
 				startActivity(i);		
@@ -175,6 +176,11 @@ public class UsbongMainActivity extends Activity
 					}
 				});
 				prompt.show();			
+=======
+			public void onClick(View v) {
+            	Intent i = new Intent(UsbongMainActivity.this, FitsListDisplay.class);
+            	startActivity(i);		
+>>>>>>> Tasks done:
 			}
 */			
     	});
