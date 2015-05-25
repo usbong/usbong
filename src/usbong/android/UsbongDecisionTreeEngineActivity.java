@@ -29,6 +29,7 @@ import java.util.Vector;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import usbong.android.community.Constants;
 import usbong.android.features.node.PaintActivity;
 import usbong.android.features.node.QRCodeReaderActivity;
 import usbong.android.multimedia.audio.AudioRecorder;
@@ -232,8 +233,11 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
         UsbongUtils.myAssetManager = getAssets();
         
         //if return is null, then currScreen=0
-        currScreen=Integer.parseInt(getIntent().getStringExtra("currScreen")); 
-
+        //modified by JPT, May 25, 2015
+        if(getIntent().getStringExtra("currScreen") != null) {
+        	currScreen=Integer.parseInt(getIntent().getStringExtra("currScreen")); 
+        }
+        
         //default..
         currLanguageBeingUsed=UsbongUtils.LANGUAGE_ENGLISH;
         
@@ -302,7 +306,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			e.printStackTrace();
 		}
         
-    	initTreeLoader();
+		//added by JPT, May 25, 2015
+		if(getIntent().getStringExtra(Constants.UTREE_KEY) != null) {
+			initParser(getIntent().getStringExtra(Constants.UTREE_KEY));
+		} else {			
+	    	initTreeLoader();
+		}
+		
     }
     
     public class MyOnItemSelectedListener implements OnItemSelectedListener {
@@ -762,6 +772,15 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		}		
 	}
     
+	//added by Mike, 24 May 2015
+	//@param: s is the name of the .utree file
+	public void initParser(String s) {
+		isInTreeLoader=false;		
+		myTree = s;
+		UsbongUtils.clearTempFolder();
+        initParser();
+	}
+	
 	//Reference: 
 	//http://wiki.forum.nokia.com/index.php/How_to_parse_an_XML_file_in_Java_ME_with_kXML ;Last accessed on: June 2,2010
 	//http://kxml.sourceforge.net/kxml2/ ;Last accessed on: June 2,2010    
@@ -2353,6 +2372,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
                 	dataCurrentTextView.setOnClickListener(new OnClickListener() {
             			@Override
             			public void onClick(View v) {
+/*//commented out by Mike, 24 May 2015            				
             				isInTreeLoader=false;
             				
             				myTree = o.toString();
@@ -2360,6 +2380,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
             				UsbongUtils.clearTempFolder();
 //            				isr=null; //set inputStreamReader to null; i.e. new tree
             		        initParser();
+*/            		        
+            				initParser(o.toString());
             			}
                 	});
 /*                	

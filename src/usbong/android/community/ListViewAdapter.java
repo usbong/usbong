@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 
 import usbong.android.R;
+import usbong.android.UsbongDecisionTreeEngineActivity;
+import usbong.android.community.DownloadTreeAsync.AsyncResponse;
 import usbong.android.utils.UsbongUtils;
 
 import android.annotation.SuppressLint;
@@ -29,7 +31,7 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 
-public class ListViewAdapter extends BaseAdapter {
+public class ListViewAdapter extends BaseAdapter implements AsyncResponse {
 	private static final String TAG = "usbong.usbongcommunitydraft.ListViewAdapter";
 	Context context;
 	LayoutInflater inflater;
@@ -176,12 +178,13 @@ public class ListViewAdapter extends BaseAdapter {
 
 		            		
 		    				if(savedTree.exists()) {
-		    	            	Intent i = new Intent(context, UsbongTreeDisplay.class);
-		    	            	i.putExtra(Constants.UTREE_KEY, savedTree.getAbsolutePath());
+		    	            	Intent i = new Intent(context, UsbongDecisionTreeEngineActivity.class);
+		    	            	i.putExtra(Constants.UTREE_KEY, UsbongUtils.removeExtension(fitObjects.get(position).getFILEPATH()));
 		    	            	context.startActivity(i);
 		    				} else {
 		    					downloadTask = new DownloadTreeAsync(context, mProgressDialog);
 		    					downloadTask.execute(fitObjects.get(position).getFILEPATH());
+		    					downloadTask.delegate = ListViewAdapter.this;
 		    				}
 
 		                }
@@ -197,14 +200,7 @@ public class ListViewAdapter extends BaseAdapter {
 
 		             AlertDialog dialog = builder.create();
 		             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//		             WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
-//			         wmlp.gravity = Gravity.TOP | Gravity.LEFT;
-////			         wmlp.x = (int) event.getX() * 10;   //x position
-////			         wmlp.y = (int) event.getY() * 10;   //y position
-//			         wmlp.x = 10;   //x position
-//			         wmlp.y = (int) event.getY() * 10;   //y position
-//			         Log.d(TAG, "x,y: " + (int) event.getX() + "," + (int) event.getY());
-			         
+      
 			         dialog.show();
 		        	return false;
 		        }
@@ -212,6 +208,11 @@ public class ListViewAdapter extends BaseAdapter {
 			}
 		});
 		return view;
+	}
+
+	@Override
+	public void processFinish(boolean output) {
+
 	}
 
 }

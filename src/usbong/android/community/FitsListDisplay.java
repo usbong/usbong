@@ -49,7 +49,6 @@ public class FitsListDisplay extends ActionBarActivity {
 	private ArrayList<FitsObject> fitObjects = new ArrayList<FitsObject>();
 	private SharedPreferences editor;
 	private TextView error;
-//	private String jsonString = "";
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -57,8 +56,13 @@ public class FitsListDisplay extends ActionBarActivity {
 		// Get the view from gridview_main.xml
 		
 		setContentView(R.layout.fitgriddisplay_main);
+        String appname = getResources().getString(R.string.app_name);
+        editor = getSharedPreferences(appname, Context.MODE_PRIVATE);
+
+		listView = (ListView) findViewById(R.id.listview);
 		error = (TextView) findViewById(R.id.errorMessage);
 		swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+		
 		swipeContainer.setOnRefreshListener(new OnRefreshListener() {
 			@Override
 			public void onRefresh() {
@@ -78,11 +82,6 @@ public class FitsListDisplay extends ActionBarActivity {
                 android.R.color.holo_orange_light, 
                 android.R.color.holo_red_light);
 
-        String appname = getResources().getString(R.string.app_name);
-        editor = getSharedPreferences(appname, Context.MODE_PRIVATE);
-
-        
-        
 		// Execute RemoteDataTask AsyncTask
         if((editor.getString(Constants.JSON_KEY, "").length() == 0) && UsbongUtils.hasNetworkConnection(this)) {
         	error.setVisibility(View.GONE);
@@ -91,7 +90,7 @@ public class FitsListDisplay extends ActionBarActivity {
         	if(editor.getString(Constants.JSON_KEY, "").length() != 0) {
         		error.setVisibility(View.VISIBLE);
         		error.setText("Warning: Currently in offline mode.");
-            	ParseJSONToFitsArray(editor.getString(Constants.JSON_KEY, ""));       		
+            	ParseJSONToFitsArray(editor.getString(Constants.JSON_KEY, ""));
         	} else {
         		error.setVisibility(View.VISIBLE);
         		error.setText("Please connect to the internet first.");
@@ -102,18 +101,22 @@ public class FitsListDisplay extends ActionBarActivity {
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 //		savedInstanceState.putString("jsonString", jsonString);
+		// save index and top position
+		int index = listView.getScrollX();
+		editor.edit().putInt("index", index).apply();
 		super.onSaveInstanceState(savedInstanceState);
 	}
 	
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-//		jsonString = savedInstanceState.getString("jsonString");
 	}
 	
 	@Override
 	public void onResume() {
 		super.onResume();
+		int index = editor.getInt("index", 0);
+		listView.setScrollX(index);
 		if(UsbongUtils.hasNetworkConnection(FitsListDisplay.this)) {
     		error.setVisibility(View.GONE);
 		} else {
@@ -213,7 +216,6 @@ public class FitsListDisplay extends ActionBarActivity {
 			}
 			fitObjects.clear();
 			fitObjects.addAll(fObjs);
-			listView = (ListView) findViewById(R.id.listview);
 			adapter = new ListViewAdapter(FitsListDisplay.this, fitObjects);
 			listView.setAdapter(adapter);
 			error.setVisibility(View.GONE);
@@ -244,5 +246,10 @@ public class FitsListDisplay extends ActionBarActivity {
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
+	}
+	
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
 	}
 }

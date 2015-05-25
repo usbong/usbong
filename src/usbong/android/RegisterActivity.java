@@ -30,9 +30,9 @@ import org.apache.http.util.EntityUtils;
 
 import usbong.android.utils.UsbongUtils;
 
-import usbong.android.R;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
@@ -45,9 +45,10 @@ public class RegisterActivity extends Activity {
 	private HttpClient httpClient;
 	private HttpPost httpPost;
 	private HttpResponse response;
+	private ProgressDialog myProgressDialog;
 
 	private static Activity myActivityInstance;
-	
+		
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +63,7 @@ public class RegisterActivity extends Activity {
         final EditText etEmail = (EditText)findViewById(R.id.reg_email);
         final EditText etUsername = (EditText)findViewById(R.id.reg_username);
         final EditText etPassword = (EditText)findViewById(R.id.reg_password);
+        final EditText etPasswordConfirm = (EditText)findViewById(R.id.reg_password_confirm); //added by Mike, 24 May 2015
         
 		final AlertDialog.Builder termsAlertDialog = new AlertDialog.Builder(this);
 		termsAlertDialog.setMessage(getResources().getString(R.string.terms))
@@ -82,10 +84,15 @@ public class RegisterActivity extends Activity {
 						nameValuePairs.add(new BasicNameValuePair("lastname", etLastName.getText().toString()));
 						nameValuePairs.add(new BasicNameValuePair("email", etEmail.getText().toString()));
 						nameValuePairs.add(new BasicNameValuePair("username", etUsername.getText().toString()));
-						nameValuePairs.add(new BasicNameValuePair("password", etPassword.getText().toString()));
+						nameValuePairs.add(new BasicNameValuePair("password", etPassword.getText().toString()));						
 						try {
 							httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 							try {
+								//as suggested by JP Talusan
+								//added by Mike, 25 May 2015
+								myProgressDialog = ProgressDialog.show(myActivityInstance, "Signing in...",
+										  "This takes only a few moments.", true);
+
 								//Reference: http://stackoverflow.com/questions/6343166/android-os-networkonmainthreadexception;
 								//last accessed: 9 Jan. 2014; answer by Dr.Luiji
 								Thread thread = new Thread(new Runnable(){
@@ -95,6 +102,8 @@ public class RegisterActivity extends Activity {
 								            //Your code goes here
 											response = httpClient.execute(httpPost);
 											if(EntityUtils.toString(response.getEntity()).equals("True")) {
+												myProgressDialog.dismiss();
+
 //												Toast.makeText(getApplicationContext(), "Registration Successful", Toast.LENGTH_SHORT).show();
 												//Reference: http://stackoverflow.com/questions/3134683/android-toast-in-a-thread;
 												//last accessed: 9 Jan. 2014; answer by Lauri Lehtinen
@@ -106,6 +115,8 @@ public class RegisterActivity extends Activity {
 												finish();
 											}
 											else {
+												myProgressDialog.dismiss();
+
 //												Toast.makeText(getApplicationContext(), "Registration Failed", Toast.LENGTH_SHORT).show();
 												//Reference: http://stackoverflow.com/questions/3134683/android-toast-in-a-thread;
 												//last accessed: 9 Jan. 2014; answer by Lauri Lehtinen
@@ -116,7 +127,14 @@ public class RegisterActivity extends Activity {
 												});
 											}				
 								        } catch (Exception e) {
+								        	//added by Mike, 25 May 2015
+											myProgressDialog.dismiss();
 								            e.printStackTrace();
+											myActivityInstance.runOnUiThread(new Runnable() {
+											    public void run() {
+										            Toast.makeText(getApplicationContext(), "No internet connection.", Toast.LENGTH_LONG).show();
+											    }
+											});
 								        }
 								    }
 								});
@@ -172,7 +190,13 @@ public class RegisterActivity extends Activity {
 						Toast.makeText(getApplicationContext(), "Password cannot be blank.", Toast.LENGTH_SHORT).show();					
 						return;
 			        }
-	
+			        //added by Mike, 24 May 2015
+			        if (!etPassword.getText().toString().equals(etPasswordConfirm.getText().toString())) 
+			        {
+						Toast.makeText(getApplicationContext(), "Password and Confirm Password do not match.", Toast.LENGTH_SHORT).show();					
+						return;
+			        }
+
 					//check if email is valid
 					if (!UsbongUtils.checkEmail(etEmail.getText().toString())) {
 						Toast.makeText(getApplicationContext(), "Invalid email.", Toast.LENGTH_SHORT).show();					

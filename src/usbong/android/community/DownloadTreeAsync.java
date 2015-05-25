@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 @SuppressLint("NewApi")
 public class DownloadTreeAsync extends AsyncTask<String, Integer, String> {
+	public AsyncResponse delegate = null;
 
     private Context context;
     private PowerManager.WakeLock mWakeLock;
@@ -84,6 +85,9 @@ public class DownloadTreeAsync extends AsyncTask<String, Integer, String> {
                     publishProgress((int) (total * 100 / fileLength));
                 output.write(data, 0, count);
             }
+            
+            new IterateDownload().execute(filePath);
+            
         } catch (Exception e) {
             return e.toString();
         } finally {
@@ -148,6 +152,7 @@ public class DownloadTreeAsync extends AsyncTask<String, Integer, String> {
             
             notificationManager.notify(0, n);
             Toast.makeText(context,"Download error: "+result, Toast.LENGTH_LONG).show();
+            delegate.processFinish(false);
         } else {
             Notification n  = new Notification.Builder(context)
 		        .setContentTitle("Usbong FITS Download")
@@ -164,6 +169,11 @@ public class DownloadTreeAsync extends AsyncTask<String, Integer, String> {
             
             notificationManager.notify(0, n);
             Toast.makeText(context,"File downloaded", Toast.LENGTH_SHORT).show();
+            delegate.processFinish(true);
         }
     }
+    
+	public interface AsyncResponse {
+	    void processFinish(boolean output);
+	}
 }

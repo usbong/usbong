@@ -195,22 +195,7 @@ public class UsbongMainActivity extends Activity
 			@Override
 			public void onClick(View v) {
             	Intent i = new Intent(UsbongMainActivity.this, FitsListDisplay.class);
-            	startActivity(i);
-//				AlertDialog.Builder prompt = new AlertDialog.Builder(UsbongMainActivity.this);
-//				prompt.setTitle("Community Hint");
-////				prompt.setView(tv);
-//				prompt.setMessage(UsbongUtils.readTextFileInAssetsFolder(UsbongMainActivity.this,"community_hint.txt")); //don't add a '/', otherwise the file would not be found
-//				prompt.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//					@Override
-//					public void onClick(DialogInterface dialog, int which) {
-//						//Reference: http://stackoverflow.com/questions/5026349/how-to-open-a-website-when-a-button-is-clicked-in-android-application;
-//						//last accessed: March 27, 2014; answer by: Alain Pannetier
-//						Uri uriUrl = Uri.parse("http://usbong.pythonanywhere.com/upload/search/");
-//				        Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl);
-//				        startActivity(launchBrowser);
-//					}
-//				});
-//				prompt.show();			
+            	startActivity(i);		
 			}
     	});
     	

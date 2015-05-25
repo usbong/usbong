@@ -10,6 +10,7 @@ public class Constants {
     //public static final String HOSTNAME = "192.168.56.1";
     public static final String HOSTNAME = "shrimptalusan.hostei.com";
     public static final String FITS_LIST_SERVER = "http://" + HOSTNAME + "/usbong/getList.php";
+    public static final String FITS_ITERATE_DOWNLOAD = "http://" + HOSTNAME + "/usbong/iterateDownload.php";
     
     //JSON constants
     public static final String FILENAME = "FILENAME";
