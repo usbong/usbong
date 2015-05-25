@@ -27,6 +27,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
@@ -36,10 +37,9 @@ import org.apache.http.util.EntityUtils;
 
 import usbong.android.utils.UsbongUtils;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -51,8 +51,10 @@ public class SignInActivity extends Activity {
     private Intent gotoUsbongMainActivityIntent;
 	private HttpClient httpClient;
 	private HttpPost httpPost;
+	private ProgressDialog myProgressDialog;
 	
 	private static Activity myActivityInstance;
+	
 /*
 	private Handler handler;
 */	
@@ -169,11 +171,17 @@ public class SignInActivity extends Activity {
 					try {
 						httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 						try {
+							
+							//as suggested by JP Talusan
+							//added by Mike, 25 May 2015
+							myProgressDialog = ProgressDialog.show(myActivityInstance, "Signing in...",
+									  "This takes only a few moments.", true);
+							
 							//Reference: http://stackoverflow.com/questions/6343166/android-os-networkonmainthreadexception;
 							//last accessed: 9 Jan. 2014; answer by Dr.Luiji
 							Thread thread = new Thread(new Runnable(){
 							    @Override
-							    public void run() {							    	
+							    public void run() {							    								    	
 /*							    	handler.post(new Runnable() { // This thread runs in the UI
 					                    @Override
 					                    public void run() {					                    
@@ -183,21 +191,32 @@ public class SignInActivity extends Activity {
 //												Toast.makeText(getApplicationContext(), EntityUtils.toString(response.getEntity()), Toast.LENGTH_LONG).show();
 												String usbongStringResponse = EntityUtils.toString(response.getEntity());
 												System.out.println("EntityUtils.toString(response.getEntity()): "+usbongStringResponse);
+																								
 												if (usbongStringResponse.equals("True")) {
+													myProgressDialog.dismiss();
 													finish();
 													startActivity(gotoUsbongMainActivityIntent);
 												}
 												else {
+													myProgressDialog.dismiss();
 													//Reference: http://stackoverflow.com/questions/3134683/android-toast-in-a-thread;
 													//last accessed: 9 Jan. 2014; answer by Lauri Lehtinen
 													myActivityInstance.runOnUiThread(new Runnable() {
 													    public void run() {
-													    	Toast.makeText(getApplicationContext(), "Incorrect username or password.", Toast.LENGTH_LONG).show();																					    }
+													    	Toast.makeText(getApplicationContext(), "Incorrect username or password.", Toast.LENGTH_LONG).show();																					    
+													    }
 													});
 //													Toast.makeText(getApplicationContext(), "Incorrect username or password.", Toast.LENGTH_LONG).show();								
 												}
 									        } catch (Exception e) {
+									        	//added by Mike, 25 May 2015
+												myProgressDialog.dismiss();
 									            e.printStackTrace();
+												myActivityInstance.runOnUiThread(new Runnable() {
+												    public void run() {
+											            Toast.makeText(getApplicationContext(), "No internet connection.", Toast.LENGTH_LONG).show();
+												    }
+												});
 									        }
 /*				                    	}
 					                });
