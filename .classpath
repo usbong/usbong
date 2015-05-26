@@ -6,5 +6,7 @@
 	<classpathentry exported="true" kind="lib" path="C:/Users/Mike/git/usbong/lib/commons-lang3-3.0.1.jar"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/Mike/git/usbong/lib/universal-image-loader-1.9.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/Mike/git/usbong/lib/YouTubeAndroidPlayerApi.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

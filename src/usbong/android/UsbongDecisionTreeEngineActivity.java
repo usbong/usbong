@@ -35,6 +35,7 @@ import usbong.android.multimedia.audio.AudioRecorder;
 import usbong.android.utils.FedorMyLocation;
 import usbong.android.utils.UsbongScreenProcessor;
 import usbong.android.utils.UsbongUtils;
+import usbong.android.community.Constants;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -232,8 +233,12 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
         UsbongUtils.myAssetManager = getAssets();
         
         //if return is null, then currScreen=0
-        currScreen=Integer.parseInt(getIntent().getStringExtra("currScreen")); 
-
+//        currScreen=Integer.parseInt(getIntent().getStringExtra("currScreen")); 
+        //modified by JPT, May 25, 2015
+        if(getIntent().getStringExtra("currScreen") != null) {
+        	currScreen=Integer.parseInt(getIntent().getStringExtra("currScreen")); 
+        }
+        
         //default..
         currLanguageBeingUsed=UsbongUtils.LANGUAGE_ENGLISH;
         
@@ -302,7 +307,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			e.printStackTrace();
 		}
         
-    	initTreeLoader();
+//    	initTreeLoader();
+		//added by JPT, May 25, 2015
+		if(getIntent().getStringExtra(Constants.UTREE_KEY) != null) {
+			initParser(getIntent().getStringExtra(Constants.UTREE_KEY));
+		} else {			
+	    	initTreeLoader();
+		}
     }
     
     public class MyOnItemSelectedListener implements OnItemSelectedListener {

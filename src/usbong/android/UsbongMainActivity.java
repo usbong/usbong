@@ -14,6 +14,7 @@
  */
 package usbong.android;
 
+import usbong.android.community.FitsListDisplay;
 import usbong.android.utils.UsbongUtils;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -155,6 +156,10 @@ public class UsbongMainActivity extends Activity
     	communityButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {		
+				Intent i = new Intent(UsbongMainActivity.this, FitsListDisplay.class);
+				startActivity(i);		
+			}
+/*				
 				AlertDialog.Builder prompt = new AlertDialog.Builder(UsbongMainActivity.this);
 				prompt.setTitle("Community Hint");
 //				prompt.setView(tv);
@@ -171,6 +176,7 @@ public class UsbongMainActivity extends Activity
 				});
 				prompt.show();			
 			}
+*/			
     	});
     	
     	settingsButton.setOnClickListener(new OnClickListener() {
