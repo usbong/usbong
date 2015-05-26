@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="usbong.android"
-<<<<<<< HEAD
       android:versionCode="48"
       android:versionName="May 26, 2015"
-=======
-      android:versionCode="46"
-      android:versionName="May 25, 2015"
->>>>>>> Tasks done:
       android:installLocation="auto"      
 >
     <uses-sdk android:minSdkVersion="8" 

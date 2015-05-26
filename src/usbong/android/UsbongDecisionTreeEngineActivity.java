@@ -29,7 +29,6 @@ import java.util.Vector;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import usbong.android.community.Constants;
 import usbong.android.features.node.PaintActivity;
 import usbong.android.features.node.QRCodeReaderActivity;
 import usbong.android.multimedia.audio.AudioRecorder;
@@ -234,10 +233,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
         UsbongUtils.myAssetManager = getAssets();
         
         //if return is null, then currScreen=0
-<<<<<<< HEAD
 //        currScreen=Integer.parseInt(getIntent().getStringExtra("currScreen")); 
-=======
->>>>>>> Tasks done:
         //modified by JPT, May 25, 2015
         if(getIntent().getStringExtra("currScreen") != null) {
         	currScreen=Integer.parseInt(getIntent().getStringExtra("currScreen")); 
@@ -311,20 +307,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			e.printStackTrace();
 		}
         
-<<<<<<< HEAD
 //    	initTreeLoader();
-=======
->>>>>>> Tasks done:
 		//added by JPT, May 25, 2015
 		if(getIntent().getStringExtra(Constants.UTREE_KEY) != null) {
 			initParser(getIntent().getStringExtra(Constants.UTREE_KEY));
 		} else {			
 	    	initTreeLoader();
 		}
-<<<<<<< HEAD
-=======
-		
->>>>>>> Tasks done:
     }
     
     public class MyOnItemSelectedListener implements OnItemSelectedListener {

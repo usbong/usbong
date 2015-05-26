@@ -2294,12 +2294,8 @@ public class UsbongUtils {
 	    }
 	    return "";
 	}
-<<<<<<< HEAD
 
     //added by JP, 26 May 2015
-=======
-	
->>>>>>> Tasks done:
     public static String removeExtension(String filePath) {
         // These first few lines the same as Justin's
         File f = new File(filePath);
