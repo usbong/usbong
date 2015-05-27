@@ -10,7 +10,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:id="@+id/layout" >
+    android:id="@+id/layout"
+	android:padding="20dp" >
     
 		<com.google.android.youtube.player.YouTubePlayerView
           android:id="@+id/youtube_view"
@@ -70,20 +71,37 @@
 	           android:layout_width="match_parent"
 	           android:layout_height="wrap_content" >
 	
-			<ImageView
-				android:id="@+id/ratings"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
+			<Button
+				android:id="@+id/upVote"
+				android:layout_width="40dp"
+				android:layout_height="40dp"
 				android:layout_alignParentLeft="true"
 				android:layout_alignParentStart="true"
-				android:src="@drawable/loading"
+				android:background="@drawable/up_selector"
 				android:contentDescription="@string/desc" />
-				
+			
+			<TextView
+				android:id="@+id/ratingCount"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="5dp"
+				android:textSize="20dp"
+				android:layout_toRightOf="@+id/upVote" />
+			
+			<Button
+				android:id="@+id/downVote"
+				android:layout_width="40dp"
+				android:layout_height="40dp"
+				android:layout_toRightOf="@+id/ratingCount"
+				android:background="@drawable/down_selector"
+				android:contentDescription="@string/desc" />
+							
 			<TextView
 				android:id="@+id/downloadcount"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_alignParentEnd="true"
+				android:textSize="20dp"
 				android:layout_alignParentRight="true" />
 	
 	       </RelativeLayout>

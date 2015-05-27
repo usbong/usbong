@@ -149,6 +149,7 @@ public class SignInActivity extends Activity {
 					e1.printStackTrace();
 				}
 				
+				
 			    if (etUsername.getText().toString().equals("")) {
 					Toast.makeText(getApplicationContext(), "Please enter a username.", Toast.LENGTH_LONG).show();											    	
 			    }

@@ -10,8 +10,7 @@ public class Constants {
     //public static final String HOSTNAME = "192.168.56.1";
     public static final String HOSTNAME = "shrimptalusan.hostei.com";
     public static final String FITS_LIST_SERVER = "http://" + HOSTNAME + "/usbong/getList.php";
-    public static final String FITS_ITERATE_DOWNLOAD = "http://" + HOSTNAME + "/usbong/iterateDownload.php";
-    
+    public static final String FITS_ITERATE_DOWNLOAD = "http://" + HOSTNAME + "/usbong/rate_download_count.php";    
     //JSON constants
     public static final String FILENAME = "FILENAME";
     public static final String FILEPATH = "FILEPATH";
@@ -23,6 +22,8 @@ public class Constants {
     public static final String DATEUPLOADED = "DATEUPLOADED";
     public static final String DOWNLOADCOUNT = "DOWNLOADCOUNT";
     
+    public static final String COLUMN = "COLUMN";
+    public static final String ACTION = "ACTION";
     //API KEY
     public static final String YOUTUBE_API_KEY = "AIzaSyCQ-Awkvj5nq5j5_9GqCKwxDzEsxjVfEIc";
     

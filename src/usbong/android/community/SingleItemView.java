@@ -31,10 +31,11 @@ import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+//http://stackoverflow.com/questions/15484126/using-the-youtube-api-within-a-fragment
 public class SingleItemView extends YouTubeBaseActivity implements 
 YouTubePlayer.OnInitializedListener,
 YouTubePlayer.OnFullscreenListener,
-AsyncResponse {
+AsyncResponse{
 
 	@SuppressWarnings("unused")
 	private final static String TAG = "usbong.usbongcommunitydraft.SingleItemView";
@@ -50,6 +51,9 @@ AsyncResponse {
 	private View otherViews;
 	private LinearLayout baseLayout;
 	private Button download;
+	private Button upVote;
+	private Button downVote;
+	private TextView ratingCount;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -67,8 +71,10 @@ AsyncResponse {
 		TextView fileName = (TextView) findViewById(R.id.filename);
 		TextView downloadCount = (TextView) findViewById(R.id.downloadcount);
 		TextView description = (TextView) findViewById(R.id.description);
-		ImageView rating = (ImageView) findViewById(R.id.ratings);
+		ratingCount = (TextView) findViewById(R.id.ratingCount);
 		download = (Button) findViewById(R.id.download);
+		upVote = (Button) findViewById(R.id.upVote);
+		downVote = (Button) findViewById(R.id.downVote);
 
 		if(fitsObject == null) {
 			Intent i = getIntent();
@@ -95,27 +101,7 @@ AsyncResponse {
 		uploader.setText("By: " + fitsObject.getUPLOADER());
 		downloadCount.setText(fitsObject.getDOWNLOADCOUNT() + "");
 		description.setText(fitsObject.getDESCRIPTION());
-
-		switch(fitsObject.getRATING()) {
-		default:
-		case 0:
-		case 1:
-			rating.setImageResource(R.drawable.one);
-			break;
-		case 2:
-			rating.setImageResource(R.drawable.two);
-			break;
-		case 3:
-			rating.setImageResource(R.drawable.three);
-			break;
-		case 4:
-			rating.setImageResource(R.drawable.four);
-			break;
-		case 5:
-			rating.setImageResource(R.drawable.five);
-			break;
-		}
-
+		ratingCount.setText(fitsObject.getRATING() + "");
 		ProgressDialog mProgressDialog;
 
 		// instantiate it within the onCreate method
@@ -158,6 +144,20 @@ AsyncResponse {
 		//http://stackoverflow.com/questions/2068344/how-do-i-get-a-youtube-video-thumbnail-from-the-youtube-api
 		String icon_url = "http://img.youtube.com/vi/" + youtubeLink + "/hqdefault.jpg";
 		ImageLoader.getInstance().displayImage(icon_url, imgphone);
+		
+		upVote.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new DatabaseAction().execute(fitsObject.getFILEPATH(), Constants.RATING, "UPVOTE");
+			}
+		});
+		
+		downVote.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new DatabaseAction().execute(fitsObject.getFILEPATH(), Constants.RATING, "DOWNVOTE");
+			}
+		});
 	}
 
 	@Override
