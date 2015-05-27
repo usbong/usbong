@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:id="@+id/sv"
     android:weightSum="10" >
 
     <LinearLayout
@@ -12,26 +11,30 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:weightSum="10" >
+        android:padding="20dp" >
 
         <fragment
             android:id="@+id/player"
             android:name="com.google.android.youtube.player.YouTubePlayerFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="4" />
+            android:layout_height="wrap_content" />
 
         <LinearLayout
             android:id="@+id/other_views"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="20"
             android:orientation="vertical" >
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/screenshotsViewPager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+            </android.support.v4.view.ViewPager>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="10"
                 android:orientation="horizontal" >
 
                 <LinearLayout
@@ -101,18 +104,10 @@
                     android:textSize="20dp" />
             </RelativeLayout>
 
-            <android.support.v4.view.ViewPager
-                android:id="@+id/screenshotsViewPager"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_weight="4" >
-            </android.support.v4.view.ViewPager>
-
             <TextView
                 android:id="@+id/description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-
         </LinearLayout>
     </LinearLayout>
 

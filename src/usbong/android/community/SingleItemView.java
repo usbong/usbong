@@ -12,7 +12,9 @@ import usbong.android.utils.UsbongUtils;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -35,7 +37,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 public class SingleItemView extends YouTubeBaseActivity implements 
 YouTubePlayer.OnInitializedListener,
 YouTubePlayer.OnFullscreenListener,
-AsyncResponse{
+AsyncResponse {
 
 	@SuppressWarnings("unused")
 	private final static String TAG = "usbong.usbongcommunitydraft.SingleItemView";
@@ -54,6 +56,9 @@ AsyncResponse{
 	private Button upVote;
 	private Button downVote;
 	private TextView ratingCount;
+	private static final int PORTRAIT_ORIENTATION = Build.VERSION.SDK_INT < 9
+			? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+					: ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -81,8 +86,6 @@ AsyncResponse{
 			// Get the intent from ListViewAdapter
 			fitsObject = i.getExtras().getParcelable(Constants.BUNDLE);
 		}
-		//String icon_url = "http://" + Constants.HOSTNAME + "/usbong/icons/" + fitsObject.getICON();
-
 		youtubeLink = UsbongUtils.parseYouTubeLink(fitsObject.getYOUTUBELINK());
 
 		File folder = new File(Environment.getExternalStorageDirectory() + "/usbong");
@@ -133,10 +136,6 @@ AsyncResponse{
 				downloadTask.cancel(true);
 			}
 		});
-
-		// Load image into the ImageView
-		//		imageLoader.DisplayImage(phone, imgphone);
-
 		//Using UIL
 		if(!ImageLoader.getInstance().isInited()) {
 			UsbongUtils.initDisplayAndConfigOfUIL(this);
@@ -144,14 +143,14 @@ AsyncResponse{
 		//http://stackoverflow.com/questions/2068344/how-do-i-get-a-youtube-video-thumbnail-from-the-youtube-api
 		String icon_url = "http://img.youtube.com/vi/" + youtubeLink + "/hqdefault.jpg";
 		ImageLoader.getInstance().displayImage(icon_url, imgphone);
-		
+
 		upVote.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				new DatabaseAction().execute(fitsObject.getFILEPATH(), Constants.RATING, "UPVOTE");
 			}
 		});
-		
+
 		downVote.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -165,7 +164,7 @@ AsyncResponse{
 		if(output)
 			download.setText("Open Tree");
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -206,13 +205,17 @@ AsyncResponse{
 	public void onInitializationSuccess(YouTubePlayer.Provider provider,
 			YouTubePlayer player, boolean wasRestored) {
 		this.mPlayer = player;
-		//		player.addFullscreenControlFlag(YouTubePlayer.FULLSCREEN_FLAG_CUSTOM_LAYOUT);
-		player.setShowFullscreenButton(false);
-		player.setOnFullscreenListener(this);
+		mPlayer.addFullscreenControlFlag(YouTubePlayer.FULLSCREEN_FLAG_CUSTOM_LAYOUT);
+		mPlayer.setOnFullscreenListener(this);
 
 		if (!wasRestored) {   	
 			player.cueVideo(youtubeLink);
 		}
+
+		int controlFlags = player.getFullscreenControlFlags();
+		setRequestedOrientation(PORTRAIT_ORIENTATION);
+		controlFlags |= YouTubePlayer.FULLSCREEN_FLAG_ALWAYS_FULLSCREEN_IN_LANDSCAPE;
+		player.setFullscreenControlFlags(controlFlags);
 	}
 
 	@Override
@@ -242,35 +245,36 @@ AsyncResponse{
 		doLayout();
 	}
 
-	//TODO: Fix this! Solved for now by removing fullscreen button on youtube video
 	private void doLayout() {
 		LinearLayout.LayoutParams playerParams =
 				(LinearLayout.LayoutParams) youTubeView.getLayoutParams();
 		if (fullScreen) {
-			// When in fullscreen, the visibility of all other views than the player should be set to
-			// GONE and the player should be laid out across the whole screen.
 			playerParams.width = LayoutParams.MATCH_PARENT;
 			playerParams.height = LayoutParams.MATCH_PARENT;
 
 			otherViews.setVisibility(View.GONE);
 		} else {
-			// This layout is up to you - this is just a simple example (vertically stacked boxes in
-			// portrait, horizontally stacked in landscape).
 			otherViews.setVisibility(View.VISIBLE);
 			ViewGroup.LayoutParams otherViewsParams = otherViews.getLayoutParams();
 			if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-				playerParams.width = otherViewsParams.width = 0;
+				playerParams.width = otherViewsParams.width = MATCH_PARENT;
 				playerParams.height = WRAP_CONTENT;
-				otherViewsParams.height = MATCH_PARENT;
-				playerParams.weight = 1;
+				otherViewsParams.height = WRAP_CONTENT;
+				playerParams.weight = 0;
 				baseLayout.setOrientation(LinearLayout.VERTICAL);
 			} else {
 				playerParams.width = otherViewsParams.width = MATCH_PARENT;
 				playerParams.height = WRAP_CONTENT;
-				//		        playerParams.weight = 0;
+				playerParams.weight = 0;
 				otherViewsParams.height = WRAP_CONTENT;
 				baseLayout.setOrientation(LinearLayout.VERTICAL);
 			}
 		}
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		doLayout();
 	}
 }

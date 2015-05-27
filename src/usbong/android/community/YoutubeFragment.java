@@ -19,6 +19,9 @@ import android.widget.Toast;
 //http://stackoverflow.com/questions/20302110/struggling-with-youtube-player-support-fragment
 //http://stackoverflow.com/questions/14115008/exception-when-using-youtubeplayerfragment-with-fragmentactivity-and-actionbarsh
 //http://stackoverflow.com/questions/19848142/how-to-load-youtubeplayer-using-youtubeplayerfragment-inside-another-fragment
+
+//Multiple youtube views (overlay
+//http://stackoverflow.com/questions/14014087/views-overlayed-above-youtubeplayerfragment-or-youtubeplayerview-in-the-layout-h
 public class YoutubeFragment extends Fragment implements
 YouTubePlayer.OnInitializedListener {
 	public static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
