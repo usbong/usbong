@@ -79,6 +79,7 @@ public class FitsListDisplay extends ActionBarActivity {
                 android.R.color.holo_red_light);
 
 		// Execute RemoteDataTask AsyncTask
+        //TODO:Add expiration of current data so that a refresh is done automatically 
         if((editor.getString(Constants.JSON_KEY, "").length() == 0) && UsbongUtils.hasNetworkConnection(this)) {
         	error.setVisibility(View.GONE);
         	new GetFitsListAsync().execute();
@@ -151,6 +152,7 @@ public class FitsListDisplay extends ActionBarActivity {
 		            throw new RuntimeException("Failed : HTTP error code : "
 		                + conn.getResponseCode());
 		        } else {
+		        	Log.d(TAG, "getsListSuccessfully");
 			        BufferedReader br = new BufferedReader(new InputStreamReader(
 			                (conn.getInputStream())));
 			        String line;

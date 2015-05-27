@@ -49,5 +49,10 @@
 	            android:name="android.support.PARENT_ACTIVITY"
 	            android:value="UsbongMainActivity" />
 		</activity>			
+		<activity android:name="usbong.android.community.SingleItemViewWithFragment" android:screenOrientation="portrait" >
+			<meta-data
+	            android:name="android.support.PARENT_ACTIVITY"
+	            android:value="UsbongMainActivity" />
+		</activity>			
 	</application>
 </manifest>
