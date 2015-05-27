@@ -5,6 +5,7 @@
       android:versionName="May 26, 2015"
       android:installLocation="auto"      
 >
+
     <uses-sdk android:minSdkVersion="8" 
               android:targetSdkVersion="22" />
 	

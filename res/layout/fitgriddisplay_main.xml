@@ -15,7 +15,7 @@
 		android:verticalSpacing="5dp"
 		android:horizontalSpacing="5dp"
 		android:numColumns="2"
-		android:padding="3dp	"
+		android:padding="3dp"
 		android:stretchMode="columnWidth"
 		android:listSelector="#FF112244" />
 	</android.support.v4.widget.SwipeRefreshLayout>
