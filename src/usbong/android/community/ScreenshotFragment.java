@@ -1,6 +1,9 @@
 package usbong.android.community;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 import usbong.android.R;
+import usbong.android.utils.UsbongUtils;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,13 +13,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ScreenshotFragment extends Fragment {
-	public static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
+	public static final String IMAGE_URL = "EXTRA_MESSAGE";
 	
-	public static final ScreenshotFragment newInstance(int resId)
+	public static final ScreenshotFragment newInstance(String imgUrl)
 	{
 		ScreenshotFragment f = new ScreenshotFragment();
 		Bundle bdl = new Bundle(1);
-	    bdl.putInt(EXTRA_MESSAGE, resId);
+	    bdl.putString(IMAGE_URL, imgUrl);
 	    f.setArguments(bdl);
 	    return f;
 	}
@@ -24,12 +27,14 @@ public class ScreenshotFragment extends Fragment {
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, 
         Bundle savedInstanceState) {
-		int message = getArguments().getInt(EXTRA_MESSAGE);
+		String imgUrl = getArguments().getString(IMAGE_URL);
 		View v = inflater.inflate(R.layout.screenshot_fragment_layout, container, false);
 		TextView messageTextView = (TextView)v.findViewById(R.id.textView);
 		ImageView iv = (ImageView)v.findViewById(R.id.imageView1);
-		messageTextView.setText(message + "");
-		iv.setImageResource(message);
+		messageTextView.setText(imgUrl + "");
+		
+//		iv.setImageResource(imgUrl);
+		ImageLoader.getInstance().displayImage(imgUrl, iv);
 		
         return v;
     }

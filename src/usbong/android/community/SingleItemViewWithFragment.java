@@ -2,36 +2,55 @@ package usbong.android.community;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import usbong.android.R;
+import usbong.android.UsbongDecisionTreeEngineActivity;
+import usbong.android.community.DownloadTreeAsync.AsyncResponse;
+import usbong.android.utils.UsbongUtils;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 @SuppressLint("NewApi")
 public class SingleItemViewWithFragment extends FragmentActivity implements
 YouTubePlayer.OnFullscreenListener,
-YouTubePlayer.OnInitializedListener {
+YouTubePlayer.OnInitializedListener,
+AsyncResponse {
+	private String youtubeLink = "";
+	private DownloadTreeAsync downloadTask;
+	private File savedTree;
+	private Button download;
+	private Button upVote;
+	private Button downVote;
+	private TextView ratingCount;
+	
 	private MyPageAdapter pageAdapter;
 	private static final int RECOVERY_DIALOG_REQUEST = 1;
 	private static final int PORTRAIT_ORIENTATION = Build.VERSION.SDK_INT < 9
@@ -40,10 +59,10 @@ YouTubePlayer.OnInitializedListener {
 
 	private LinearLayout baseLayout;
 	private View otherViews;
-	private ScrollView s;
 	private ViewPager pager;
-	
+	private YouTubePlayer player;
 	private boolean fullscreen;
+	private FitsObject fitsObject = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,72 +70,123 @@ YouTubePlayer.OnInitializedListener {
 
 		setContentView(R.layout.singleitemviewwithfragment);
 		
+		//Using UIL
+		if(!ImageLoader.getInstance().isInited()) {
+			UsbongUtils.initDisplayAndConfigOfUIL(this);
+		}
+		        
+		baseLayout = (LinearLayout) findViewById(R.id.layout);
+		otherViews = findViewById(R.id.other_views);
+		
+		//start of other views
+		TextView uploader = (TextView) findViewById(R.id.uploadername);
+		TextView fileName = (TextView) findViewById(R.id.filename);
+		TextView downloadCount = (TextView) findViewById(R.id.downloadcount);
+		TextView description = (TextView) findViewById(R.id.description);
+		ratingCount = (TextView) findViewById(R.id.ratingCount);
+		download = (Button) findViewById(R.id.download);
+		upVote = (Button) findViewById(R.id.upVote);
+		downVote = (Button) findViewById(R.id.downVote);
+
+		if(fitsObject == null) {
+			Intent i = getIntent();
+			// Get the intent from ListViewAdapter
+			fitsObject = i.getExtras().getParcelable(Constants.BUNDLE);
+		}
+		youtubeLink = UsbongUtils.parseYouTubeLink(fitsObject.getYOUTUBELINK());
+
+		File folder = new File(Environment.getExternalStorageDirectory() + "/usbong");
+		if(!folder.exists())
+			folder.mkdir();
+
+		savedTree = new File(Environment.getExternalStorageDirectory().getPath()
+				+ "/usbong/usbong_trees/"
+				+ fitsObject.getFILEPATH());
+
+		if(savedTree.exists()) {
+			download.setText("Open Tree");
+		} 
+
+		fileName.setText(fitsObject.getFILENAME());
+		uploader.setText("By: " + fitsObject.getUPLOADER());
+		downloadCount.setText(fitsObject.getDOWNLOADCOUNT() + "");
+		description.setText(fitsObject.getDESCRIPTION());
+		ratingCount.setText(fitsObject.getRATING() + "");
+		ProgressDialog mProgressDialog;
+
+		// instantiate it within the onCreate method
+		mProgressDialog = new ProgressDialog(this);
+		mProgressDialog.setMessage("Downloading: " + fitsObject.getFILEPATH());
+		mProgressDialog.setTitle("Saving trees...");
+		mProgressDialog.setIndeterminate(true);
+		mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		mProgressDialog.setCancelable(false);
+		mProgressDialog.setCanceledOnTouchOutside(false);
+		downloadTask = new DownloadTreeAsync(this,  mProgressDialog);
+		download.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(savedTree.exists()) {
+					Intent i = new Intent(SingleItemViewWithFragment.this, UsbongDecisionTreeEngineActivity.class);
+					i.putExtra(Constants.UTREE_KEY, UsbongUtils.removeExtension(fitsObject.getFILEPATH()));
+					startActivity(i);
+				} else {
+					downloadTask.execute(fitsObject.getFILEPATH());
+					downloadTask.delegate = SingleItemViewWithFragment.this;
+				}
+			}
+		});
+
+		mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				downloadTask.cancel(true);
+			}
+		});
+
+//		//http://stackoverflow.com/questions/2068344/how-do-i-get-a-youtube-video-thumbnail-from-the-youtube-api
+//		String icon_url = "http://img.youtube.com/vi/" + youtubeLink + "/hqdefault.jpg";
+//		ImageLoader.getInstance().displayImage(icon_url, imgphone);
+
+		upVote.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new DatabaseAction().execute(fitsObject.getFILEPATH(), Constants.RATING, "UPVOTE");
+			}
+		});
+
+		downVote.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new DatabaseAction().execute(fitsObject.getFILEPATH(), Constants.RATING, "DOWNVOTE");
+			}
+		});
+		//End handling of other layout views
+		
 		List<Fragment> fragments = getFragments();
         
-		s = (ScrollView) findViewById(R.id.sv);
         pageAdapter = new MyPageAdapter(getSupportFragmentManager(), fragments);
         pager = (ViewPager)findViewById(R.id.screenshotsViewPager);
         pager.setAdapter(pageAdapter);
         
-//        pager.setOnTouchListener(new View.OnTouchListener() {
-//
-//            int dragthreshold = 30;
-//            int downX;
-//            int downY;
-//
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//
-//                switch (event.getAction()) {
-//                case MotionEvent.ACTION_DOWN:
-//                    downX = (int) event.getRawX();
-//                    downY = (int) event.getRawY();
-//                    break;
-//                case MotionEvent.ACTION_MOVE:
-//                    int distanceX = Math.abs((int) event.getRawX() - downX);
-//                    int distanceY = Math.abs((int) event.getRawY() - downY);
-//
-//                    if (distanceY > distanceX && distanceY > dragthreshold) {
-//                    	pager.getParent().requestDisallowInterceptTouchEvent(false);
-//                        s.getParent().requestDisallowInterceptTouchEvent(true);
-//                    } else if (distanceX > distanceY && distanceX > dragthreshold) {
-//                    	pager.getParent().requestDisallowInterceptTouchEvent(true);
-//                        s.getParent().requestDisallowInterceptTouchEvent(false);
-//                    }
-//                    break;
-//                case MotionEvent.ACTION_UP:
-//                    s.getParent().requestDisallowInterceptTouchEvent(false);
-//                    pager.getParent().requestDisallowInterceptTouchEvent(false);
-//                    break;
-//                }
-//                return false;
-//            }
-//        });
-        
-		baseLayout = (LinearLayout) findViewById(R.id.layout);
-		otherViews = findViewById(R.id.other_views);
 		YouTubePlayerFragment youTubePlayerFragment =
 				(YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.player);
 		youTubePlayerFragment.initialize(Constants.YOUTUBE_API_KEY, this);
 		doLayout();
 	}
+	
+	@Override
+	public void processFinish(boolean output) {
+		if(output)
+			download.setText("Open Tree");
+	}
 
     private List<Fragment> getFragments(){
     	List<Fragment> fList = new ArrayList<Fragment>();
     	
-    	fList.add(ScreenshotFragment.newInstance(R.drawable.usbong_icon));
-    	fList.add(ScreenshotFragment.newInstance(R.drawable.ic_action_search));
-    	fList.add(ScreenshotFragment.newInstance(R.drawable.up));
-    	
-    	return fList;
-    }
-
-    private List<Fragment> getFragments2(){
-    	List<Fragment> fList = new ArrayList<Fragment>();
-    	
-    	fList.add(YoutubeFragment.newInstance("fragment1"));
-    	fList.add(YoutubeFragment.newInstance("fragment2"));
-    	fList.add(YoutubeFragment.newInstance("fragment3"));
+    	fList.add(ScreenshotFragment.newInstance("http://img.youtube.com/vi/" + youtubeLink + "/0.jpg"));
+    	fList.add(ScreenshotFragment.newInstance("http://img.youtube.com/vi/" + youtubeLink + "/1.jpg"));
+    	fList.add(ScreenshotFragment.newInstance("http://img.youtube.com/vi/" + youtubeLink + "/2.jpg"));
     	
     	return fList;
     }
@@ -142,10 +212,11 @@ YouTubePlayer.OnInitializedListener {
 	@Override
 	public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player,
 			boolean wasRestored) {
+		this.player = player;
 		player.addFullscreenControlFlag(YouTubePlayer.FULLSCREEN_FLAG_CUSTOM_LAYOUT);
 		player.setOnFullscreenListener(this);
 		if (!wasRestored) {
-			player.cueVideo("nCgQDjiotG0");
+			player.cueVideo(youtubeLink);
 		}
 
 		int controlFlags = player.getFullscreenControlFlags();
@@ -194,4 +265,38 @@ YouTubePlayer.OnInitializedListener {
 		}
 	}
 
+	//To handle back pressed when player is full screen/landscape
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		savedInstanceState.putParcelable("fitsObject", fitsObject);
+		savedInstanceState.putBoolean("fullscreen", fullscreen);
+		super.onSaveInstanceState(savedInstanceState);
+	}
+
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		fitsObject = savedInstanceState.getParcelable("fitsObject");
+		fullscreen = savedInstanceState.getBoolean("fullscreen");
+	}
+	
+	@Override
+	public void onBackPressed() {
+		if (fullscreen){
+			player.setFullscreen(false);
+		} else{
+			super.onBackPressed();
+		}
+	}
+	
+	//Handle the download button text
+	@Override
+	public void onResume() {
+		super.onResume();
+		if(savedTree.exists()) {
+			download.setText("Open Tree");
+		} else {
+			download.setText("Download");
+		}
+	}
 }
