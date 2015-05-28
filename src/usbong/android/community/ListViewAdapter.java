@@ -125,7 +125,8 @@ public class ListViewAdapter extends BaseAdapter implements AsyncResponse {
 			@Override
 			public void onClick(View arg0) {
 				// Send single item click data to SingleItemView Class
-				Intent intent = new Intent(context, SingleItemView.class);
+//				Intent intent = new Intent(context, SingleItemView.class);
+				Intent intent = new Intent(context, SingleItemViewWithFragment.class);
 				Bundle fitsObjectBundle = new Bundle();
 				fitsObjectBundle.putParcelable(Constants.BUNDLE, fitObjects.get(position));
 				intent.putExtras(fitsObjectBundle);

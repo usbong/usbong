@@ -10,12 +10,14 @@
 	   style="@style/UsbongLoginEditText"
        android:id="@+id/signin_username"
        android:hint="Username"
+       android:text="mike"
     />
 	<EditText
 	   style="@style/UsbongLoginEditText"
        android:inputType="textPassword"
        android:id="@+id/signin_password"
        android:hint="Password"
+       android:text="mike"
 	/>
 	<Button
 	    style="@style/UsbongDefaultButton"

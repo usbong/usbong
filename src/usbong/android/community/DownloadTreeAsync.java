@@ -1,5 +1,6 @@
 package usbong.android.community;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,7 +9,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import usbong.android.R;
-
+import usbong.android.UsbongDecisionTreeEngineActivity;
+import usbong.android.utils.UsbongUtils;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -19,37 +21,47 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.PowerManager;
+import android.util.Log;
 import android.widget.Toast;
 
 @SuppressLint("NewApi")
 public class DownloadTreeAsync extends AsyncTask<String, Integer, String> {
+	private static final String TAG = "usbong.android.community.DownloadTreeAsync";
 	public AsyncResponse delegate = null;
 
     private Context context;
     private PowerManager.WakeLock mWakeLock;
     private ProgressDialog mProgressDialog;
-
+    private String savedPathAfterDownload = "";
+    private String filePath = "";
+    
     public DownloadTreeAsync(Context context, ProgressDialog progressDialogue) {
         this.context = context;
         this.mProgressDialog = progressDialogue;
+        this.filePath = "";
     }
     
     public DownloadTreeAsync(Context context) {
         this.context = context;
         this.mProgressDialog = null;
+        this.filePath = "";
     }
 
     @SuppressWarnings("resource")
 	@Override
     protected String doInBackground(String... sUrl) {
-    	String filePath = sUrl[0];
-    	String urlToDownload = "http://" + Constants.HOSTNAME + "/usbong/trees/" + filePath;
+    	filePath = sUrl[0];
+    	Log.d(TAG, filePath);
+//    	String urlToDownload = "http://" + Constants.HOSTNAME + "/usbong/trees/" + filePath;
+    	String urlToDownload = "http://10.127.165.174/usbong/trees/" + filePath;
         InputStream input = null;
         OutputStream output = null;
         HttpURLConnection connection = null;
         try {
             URL url = new URL(urlToDownload);
             connection = (HttpURLConnection) url.openConnection();
+            connection.setReadTimeout(10000);
+			connection.setConnectTimeout(15000);
             connection.connect();
 
             // expect HTTP 200 OK, so we don't mistakenly save error report
@@ -66,9 +78,10 @@ public class DownloadTreeAsync extends AsyncTask<String, Integer, String> {
             // download the file
             input = connection.getInputStream();
              
-            output = new FileOutputStream(Environment.getExternalStorageDirectory().getPath()
+            savedPathAfterDownload = Environment.getExternalStorageDirectory().getPath()
             		+ "/usbong/usbong_trees/"
-            		+ filePath);
+            		+ filePath;
+            output = new FileOutputStream(savedPathAfterDownload);
 
             byte data[] = new byte[4096];
             long total = 0;
@@ -86,7 +99,7 @@ public class DownloadTreeAsync extends AsyncTask<String, Integer, String> {
                 output.write(data, 0, count);
             }
             
-            new IterateDownload().execute(filePath);
+            new DatabaseAction().execute(filePath, Constants.DOWNLOADCOUNT, "DOWNLOAD");
             
         } catch (Exception e) {
             return e.toString();
@@ -136,7 +149,8 @@ public class DownloadTreeAsync extends AsyncTask<String, Integer, String> {
         	mProgressDialog.dismiss();
         PendingIntent nullIntent = PendingIntent.getActivity(context, 0, new Intent(), 0);
         if (result != null) {
-        	
+        	File file = new File(savedPathAfterDownload);
+        	file.delete();
             Notification n  = new Notification.Builder(context)
 		        .setContentTitle("Usbong FITS Download")
 		        .setContentText("Download error: "+result)
@@ -154,11 +168,15 @@ public class DownloadTreeAsync extends AsyncTask<String, Integer, String> {
             Toast.makeText(context,"Download error: "+result, Toast.LENGTH_LONG).show();
             delegate.processFinish(false);
         } else {
+        	Log.d(TAG, "intent: " + filePath);
+			Intent i = new Intent(context, UsbongDecisionTreeEngineActivity.class);
+			i.putExtra(Constants.UTREE_KEY, UsbongUtils.removeExtension(filePath));
+			PendingIntent pI = PendingIntent.getActivity(context, 0, i, 0);
             Notification n  = new Notification.Builder(context)
 		        .setContentTitle("Usbong FITS Download")
 		        .setContentText("File downloaded")
 		        .setSmallIcon(R.drawable.loading)
-		        .setContentIntent(nullIntent) //TODO change this to usbong app open tree immediately
+		        .setContentIntent(pI) //TODO change this to usbong app open tree immediately
 		        .setAutoCancel(true).build();
             n.flags |= Notification.FLAG_AUTO_CANCEL;
 

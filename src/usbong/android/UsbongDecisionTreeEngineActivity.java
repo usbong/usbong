@@ -310,6 +310,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 //    	initTreeLoader();
 		//added by JPT, May 25, 2015
 		if(getIntent().getStringExtra(Constants.UTREE_KEY) != null) {
+			Log.d("DecisionTree", getIntent().getStringExtra(Constants.UTREE_KEY));
 			initParser(getIntent().getStringExtra(Constants.UTREE_KEY));
 		} else {			
 	    	initTreeLoader();

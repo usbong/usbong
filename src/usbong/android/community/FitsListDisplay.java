@@ -1,18 +1,14 @@
 package usbong.android.community;
 
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URI;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
+import javax.net.ssl.HttpsURLConnection;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,7 +37,7 @@ import android.widget.Toast;
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class FitsListDisplay extends ActionBarActivity {
-	private final String TAG = "usbong.usbongcommunitydraft.FitsGridDisplay";
+	private final String TAG = "usbong.usbongcommunitydraft.FitsListDisplay";
 	private SwipeRefreshLayout swipeContainer;
 	private ListView listView;
 	private ProgressDialog dialog;
@@ -83,6 +79,7 @@ public class FitsListDisplay extends ActionBarActivity {
                 android.R.color.holo_red_light);
 
 		// Execute RemoteDataTask AsyncTask
+        //TODO:Add expiration of current data so that a refresh is done automatically 
         if((editor.getString(Constants.JSON_KEY, "").length() == 0) && UsbongUtils.hasNetworkConnection(this)) {
         	error.setVisibility(View.GONE);
         	new GetFitsListAsync().execute();
@@ -127,9 +124,9 @@ public class FitsListDisplay extends ActionBarActivity {
 	
 	public class GetFitsListAsync extends AsyncTask<Void, Void, String> {
 		private final String TAG = "usbong.usbongcommunitydraft.GetFitsListAsync";
-	    private final DefaultHttpClient httpclient = new DefaultHttpClient();
-	    private final HttpParams params = httpclient.getParams();
-	    private String content =  null;
+		private URL url;
+		private HttpURLConnection conn;
+		private String response = "";
 	    
 	    @Override
 	    protected void onPreExecute() {
@@ -146,43 +143,34 @@ public class FitsListDisplay extends ActionBarActivity {
 		@Override
 		protected String doInBackground(Void... inputs) {
 	        try {
-	            HttpConnectionParams.setConnectionTimeout(params, Constants.REGISTRATION_TIMEOUT);
-	            HttpConnectionParams.setSoTimeout(params, Constants.WAIT_TIMEOUT);
-	            HttpGet request = new HttpGet();
-
-	            //raw HTTP post
-	            request.setHeader("Accept", "application/json");
-	            request.setHeader("Content-type", "application/json");
-	            request.setURI(new URI(Constants.FITS_LIST_SERVER));
-	            HttpResponse response = httpclient.execute(request);
-	            StatusLine statusLine = response.getStatusLine();
-
-	            if(statusLine.getStatusCode() == HttpStatus.SC_OK){
-	                ByteArrayOutputStream out = new ByteArrayOutputStream();
-	                response.getEntity().writeTo(out);
-	                out.close();
-	                content = out.toString();
-	            } else{
-	                //Closes the connection.
-	            	Log.d(TAG, "Error at status code");
-	                response.getEntity().getContent().close();
-	                throw new IOException(statusLine.getReasonPhrase());
-	            }
-	        } catch (ClientProtocolException e) {
-	        	Log.w(TAG, "HTTP2:" + e );
-	            content = e.getMessage();
-	            cancel(true);
-	        } catch (IOException e) {
-	        	Log.w(TAG, "HTTP3:" + e );
-	            content = e.getMessage();
-	            cancel(true);
-	        }catch (Exception e) {
-	        	Log.w(TAG, "HTTP4:" + e );
-	            content = e.getMessage();
-	            cancel(true);
-	        }
-	        Log.d(TAG, "Response: " + content);
-	        return content;
+				url = new URL(Constants.FITS_LIST_SERVER);
+				conn = (HttpURLConnection) url.openConnection();
+				conn.setReadTimeout(10000);
+				conn.setConnectTimeout(15000);
+	
+		        if(conn.getResponseCode() != HttpsURLConnection.HTTP_OK) {
+		            throw new RuntimeException("Failed : HTTP error code : "
+		                + conn.getResponseCode());
+		        } else {
+		        	Log.d(TAG, "getsListSuccessfully");
+			        BufferedReader br = new BufferedReader(new InputStreamReader(
+			                (conn.getInputStream())));
+			        String line;
+			        while ((line=br.readLine()) != null) {
+		                response+=line;
+		            }
+		        }
+		        conn.disconnect();        
+			}catch(IOException e) {
+				Log.w(TAG, "HTTP3:" + e );
+				response = e.getMessage();
+			}catch(Exception e) {
+				Log.w(TAG, "HTTP4:" + e );
+				response = e.getMessage();
+			}
+	        if(UsbongUtils.IS_IN_DEBUG_MODE)
+	        	Log.d(TAG, "Response: " + response);
+	        return response;
 	    }
 		
 	    @Override
@@ -202,15 +190,17 @@ public class FitsListDisplay extends ActionBarActivity {
 			JSONArray a = new JSONArray(result);
 			for(int i = 0; i < a.length(); ++i) {
 				JSONObject utree = (JSONObject) a.get(i);
-				Log.d(TAG, utree.getString(Constants.FILENAME));
-				Log.d(TAG, utree.getString(Constants.FILEPATH));
-				Log.d(TAG, utree.getString(Constants.RATING));
-				Log.d(TAG, utree.getString(Constants.UPLOADER));
-				Log.d(TAG, utree.getString(Constants.DESCRIPTION));
-				Log.d(TAG, utree.getString(Constants.ICON));
-				Log.d(TAG, utree.getString(Constants.YOUTUBELINK));
-				Log.d(TAG, utree.getString(Constants.DATEUPLOADED));
-				Log.d(TAG, utree.getString(Constants.DOWNLOADCOUNT));
+				if(UsbongUtils.IS_IN_DEBUG_MODE) {
+					Log.d(TAG, utree.getString(Constants.FILENAME));
+					Log.d(TAG, utree.getString(Constants.FILEPATH));
+					Log.d(TAG, utree.getString(Constants.RATING));
+					Log.d(TAG, utree.getString(Constants.UPLOADER));
+					Log.d(TAG, utree.getString(Constants.DESCRIPTION));
+					Log.d(TAG, utree.getString(Constants.ICON));
+					Log.d(TAG, utree.getString(Constants.YOUTUBELINK));
+					Log.d(TAG, utree.getString(Constants.DATEUPLOADED));
+					Log.d(TAG, utree.getString(Constants.DOWNLOADCOUNT));
+				}
 				FitsObject fO = new FitsObject(utree);
 				fObjs.add(fO);
 			}
