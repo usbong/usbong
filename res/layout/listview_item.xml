@@ -51,14 +51,16 @@
 	        android:layout_height="wrap_content"
 	        android:layout_below="@+id/linearLayoutchild"
 	        android:textSize="15sp"
-			android:padding="2dp" />
-	    <ImageView 
-	        android:id="@+id/ratingImage"
-	        android:layout_width="wrap_content"
-	        android:layout_height="20dp"
+			android:padding="2dp" 
+			android:textColor="#404041"/>
+        <TextView
+            android:id="@+id/downloadCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
 	        android:layout_below="@+id/uploadername"
 	        android:layout_alignLeft="@+id/uploadername"	        
-	        android:src="@drawable/one"/>
-
+            android:padding="2dp"
+            android:textSize="15sp" />
+	    
 	</RelativeLayout>
 </LinearLayout>

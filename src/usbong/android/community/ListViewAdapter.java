@@ -38,7 +38,7 @@ public class ListViewAdapter extends BaseAdapter implements AsyncResponse {
 	//NonLibraryImageLoader imageLoader;
 	private ArrayList<FitsObject> fitObjects = new ArrayList<FitsObject>();
 	private DownloadTreeAsync downloadTask;
-	
+		
 	public ListViewAdapter(Context context, ArrayList<FitsObject> fitObjects) {
 		this.context = context;
 		this.fitObjects = fitObjects;
@@ -52,6 +52,9 @@ public class ListViewAdapter extends BaseAdapter implements AsyncResponse {
 		TextView fileName;
 		Button overflow;
 		ImageView rating;
+		ImageView voteImage;
+		TextView voteCount;
+		TextView downloadCount;
 	}
 	
 	@Override
@@ -81,7 +84,13 @@ public class ListViewAdapter extends BaseAdapter implements AsyncResponse {
 			holder.uploader = (TextView) view.findViewById(R.id.uploadername);
 			holder.fileName = (TextView) view.findViewById(R.id.fileName);
 			holder.overflow = (Button) view.findViewById(R.id.overflow);
-			holder.rating = (ImageView) view.findViewById(R.id.ratingImage);
+//			holder.rating = (ImageView) view.findViewById(R.id.ratingImage);
+/*
+			holder.voteImage = (ImageView) view.findViewById(R.id.voteImage);
+			holder.voteCount = (TextView) view.findViewById(R.id.voteCount);
+*/			
+			holder.downloadCount = (TextView) view.findViewById(R.id.downloadCount);
+
 			view.setTag(holder);
 		} else {
 			holder = (ViewHolder) view.getTag();
@@ -95,10 +104,27 @@ public class ListViewAdapter extends BaseAdapter implements AsyncResponse {
 		}
 		ImageLoader.getInstance().displayImage(url, holder.icon);
 		//END TEST
-		
-		holder.uploader.setText(fitObjects.get(position).getUPLOADER());
-		holder.fileName.setText(fitObjects.get(position).getFILENAME());
-		
+
+//		holder.uploader.setText(fitObjects.get(position).getUPLOADER());
+		//added by Mike, 31 May 2015
+		if (fitObjects.get(position).getUPLOADER().length()>25) {
+			String s = fitObjects.get(position).getUPLOADER().substring(0, 25)+"...";
+			holder.uploader.setText(s);
+		}
+		else {
+			holder.uploader.setText(fitObjects.get(position).getUPLOADER());
+		}
+
+		if (fitObjects.get(position).getFILENAME().length()>18) {
+			String s = fitObjects.get(position).getFILENAME().substring(0, 18)+"...";
+			holder.fileName.setText(s);
+		}
+		else {
+			holder.fileName.setText(fitObjects.get(position).getFILENAME());
+		}
+
+
+/*		//commented out by Mike, 30 May 2015
 		switch(fitObjects.get(position).getRATING()) {
 		default:
 		case 0:
@@ -118,7 +144,10 @@ public class ListViewAdapter extends BaseAdapter implements AsyncResponse {
 			holder.rating.setImageResource(R.drawable.five);
 			break;
 		}
-		
+*/		
+		//added by Mike, 30 May 2015
+		holder.downloadCount.setText("Download Count: "+fitObjects.get(position).getDOWNLOADCOUNT());
+
 		// Capture GridView item click
 		view.setOnClickListener(new OnClickListener() {
  

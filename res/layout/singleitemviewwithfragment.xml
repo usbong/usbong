@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/sv"
-    android:weightSum="10" >
+    android:weightSum="10"
+    android:background="@drawable/bg">    
 
     <LinearLayout
         android:id="@+id/layout"
@@ -26,12 +27,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="20"
-            android:orientation="vertical" >
+            android:orientation="vertical" 
+            android:layout_marginTop="6dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="10"
                 android:orientation="horizontal" >
 
                 <LinearLayout
@@ -45,12 +46,19 @@
                     <TextView
                         android:id="@+id/filename"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content" 
+                        android:layout_marginLeft="8dp"
+                        android:textColor="#000000"
+                        android:textSize="15sp"/>
 
                     <TextView
                         android:id="@+id/uploadername"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+						android:textColor="#404041"
+                        android:textSize="15sp"/>
+                        
                 </LinearLayout>
 
                 <Button
@@ -60,7 +68,11 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_gravity="end"
-                    android:text="@string/download" />
+                    android:text="@string/download" 
+                    android:textColor="#4a452a"
+					android:textSize="20sp"		
+					android:background="@drawable/button_yellow"
+                    />
             </RelativeLayout>
 
             <RelativeLayout
@@ -74,21 +86,24 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:background="@drawable/up_selector"
-                    android:contentDescription="@string/desc" />
+                    android:contentDescription="@string/desc" 
+                    android:layout_marginLeft="8dp"/>                    
+                    />
 
                 <TextView
-                    android:id="@+id/ratingCount"
+                    android:id="@+id/voteCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/upVote"
-                    android:padding="5dp"
-                    android:textSize="20dp" />
+                    android:padding="8dp"
+                    android:textColor="#000000"
+                    android:textSize="20sp"/> 
 
                 <Button
                     android:id="@+id/downVote"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_toRightOf="@+id/ratingCount"
+                    android:layout_toRightOf="@+id/voteCount"
                     android:background="@drawable/down_selector"
                     android:contentDescription="@string/desc" />
 
@@ -98,20 +113,27 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:textSize="20dp" />
+                    android:layout_alignBaseline="@+id/voteCount"
+                    android:layout_marginRight="20dp"
+                    android:textColor="#000000"
+                    android:textSize="15sp"/> 
             </RelativeLayout>
-
+<!-- removed temporarily by Mike, 30 May 2015 
             <android.support.v4.view.ViewPager
                 android:id="@+id/screenshotsViewPager"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:layout_weight="4" >
             </android.support.v4.view.ViewPager>
-
+ -->            
             <TextView
                 android:id="@+id/description"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+				android:layout_marginRight="8dp"
+				android:layout_marginLeft="8dp"	
+                android:textColor="#000000"
+                android:textSize="15sp"/> 
 
         </LinearLayout>
     </LinearLayout>

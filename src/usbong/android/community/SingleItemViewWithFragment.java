@@ -49,7 +49,7 @@ AsyncResponse {
 	private Button download;
 	private Button upVote;
 	private Button downVote;
-	private TextView ratingCount;
+	private TextView voteCount; //changed by Mike, 30 May 2015
 	
 	private MyPageAdapter pageAdapter;
 	private static final int RECOVERY_DIALOG_REQUEST = 1;
@@ -83,7 +83,7 @@ AsyncResponse {
 		TextView fileName = (TextView) findViewById(R.id.filename);
 		TextView downloadCount = (TextView) findViewById(R.id.downloadcount);
 		TextView description = (TextView) findViewById(R.id.description);
-		ratingCount = (TextView) findViewById(R.id.ratingCount);
+		voteCount = (TextView) findViewById(R.id.voteCount);
 		download = (Button) findViewById(R.id.download);
 		upVote = (Button) findViewById(R.id.upVote);
 		downVote = (Button) findViewById(R.id.downVote);
@@ -107,17 +107,34 @@ AsyncResponse {
 			download.setText("Open Tree");
 		} 
 
-		fileName.setText(fitsObject.getFILENAME());
-		uploader.setText("By: " + fitsObject.getUPLOADER());
-		downloadCount.setText(fitsObject.getDOWNLOADCOUNT() + "");
+//		fileName.setText(fitsObject.getFILENAME());
+		
+		//added by Mike, 31 May 2015
+		if (fitsObject.getFILENAME().length()>18) {
+			String s = fitsObject.getFILENAME().substring(0, 18)+"...";
+			fileName.setText(s);
+		}
+		else {
+			fileName.setText(fitsObject.getFILENAME());
+		}
+		
+		if (fitsObject.getUPLOADER().length()>8) {
+			String s = fitsObject.getUPLOADER().substring(0, 8)+"...";
+			uploader.setText("Uploader: " + s);
+		}
+		else {
+			uploader.setText("Uploader: " + fitsObject.getUPLOADER());
+		}
+		
+		downloadCount.setText("Download Count: "+fitsObject.getDOWNLOADCOUNT() + "");
 		description.setText(fitsObject.getDESCRIPTION());
-		ratingCount.setText(fitsObject.getRATING() + "");
+		voteCount.setText(fitsObject.getRATING() + "");
 		ProgressDialog mProgressDialog;
 
 		// instantiate it within the onCreate method
 		mProgressDialog = new ProgressDialog(this);
 		mProgressDialog.setMessage("Downloading: " + fitsObject.getFILEPATH());
-		mProgressDialog.setTitle("Saving trees...");
+		mProgressDialog.setTitle("Saving tree...");
 		mProgressDialog.setIndeterminate(true);
 		mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 		mProgressDialog.setCancelable(false);
@@ -166,9 +183,11 @@ AsyncResponse {
 		List<Fragment> fragments = getFragments();
         
         pageAdapter = new MyPageAdapter(getSupportFragmentManager(), fragments);
+
+/*//commented out temporarily by Mike, 30 May 2015
         pager = (ViewPager)findViewById(R.id.screenshotsViewPager);
         pager.setAdapter(pageAdapter);
-        
+*/        
 		YouTubePlayerFragment youTubePlayerFragment =
 				(YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.player);
 		youTubePlayerFragment.initialize(Constants.YOUTUBE_API_KEY, this);
