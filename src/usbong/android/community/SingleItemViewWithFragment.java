@@ -20,14 +20,19 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -39,7 +44,7 @@ import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 @SuppressLint("NewApi")
-public class SingleItemViewWithFragment extends FragmentActivity implements
+public class SingleItemViewWithFragment extends ActionBarActivity implements
 YouTubePlayer.OnFullscreenListener,
 YouTubePlayer.OnInitializedListener,
 AsyncResponse {
@@ -66,10 +71,16 @@ AsyncResponse {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.singleitemviewwithfragment);
 		
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		View decorView = getWindow().getDecorView();
+		// Hide the status bar.
+		int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+		decorView.setSystemUiVisibility(uiOptions);
 		//Using UIL
 		if(!ImageLoader.getInstance().isInited()) {
 			UsbongUtils.initDisplayAndConfigOfUIL(this);
@@ -317,5 +328,26 @@ AsyncResponse {
 		} else {
 			download.setText("Download");
 		}
+	}
+		
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    // Inflate the menu items for use in the action bar
+//	    MenuInflater inflater = getMenuInflater();
+//	    inflater.inflate(R.menu.list_menu, menu);
+	    return super.onCreateOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle presses on the action bar items
+	    switch (item.getItemId()) {
+	        case android.R.id.home:
+//	            NavUtils.navigateUpFromSameTask(this);
+	        	onBackPressed();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
 	}
 }

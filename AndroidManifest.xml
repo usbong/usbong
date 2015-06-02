@@ -44,20 +44,26 @@
 		<activity android:name=".features.node.PaintActivity" android:screenOrientation="portrait"></activity>        		
 		<activity android:name=".features.node.QRCodeReaderActivity" android:screenOrientation="portrait"></activity>        				
 		<activity android:name="usbong.android.community.FitsListDisplay" android:screenOrientation="portrait"
-		    android:theme="@style/AppTheme"></activity>
+		    android:theme="@style/ThemeHoloWithActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="usbong.android.UsbongMainActivity" />
+		</activity>
 		<activity android:name="usbong.android.community.SingleItemView"         
 		    android:screenOrientation="portrait"
+		    android:theme="@style/ThemeHoloWithActionBar"
         	android:configChanges="keyboardHidden|orientation|screenSize">
 			<meta-data
 	            android:name="android.support.PARENT_ACTIVITY"
-	            android:value="UsbongMainActivity" />
+	            android:value="usbong.android.community.FitsListDisplay" />
 		</activity>			
 		<activity android:name="usbong.android.community.SingleItemViewWithFragment" 
 		    android:screenOrientation="portrait"
+		    android:theme="@style/ThemeHoloWithActionBar"
         	android:configChanges="keyboardHidden|orientation|screenSize" >
 			<meta-data
 	            android:name="android.support.PARENT_ACTIVITY"
-	            android:value="UsbongMainActivity" />
+	            android:value="usbong.android.community.FitsListDisplay" />
 		</activity>			
 	</application>
 </manifest>

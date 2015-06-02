@@ -23,14 +23,18 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,13 +52,20 @@ public class FitsListDisplay extends ActionBarActivity {
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+		
 		super.onCreate(savedInstanceState);
 		// Get the view from gridview_main.xml
 		
 		setContentView(R.layout.fitgriddisplay_main);
         String appname = getResources().getString(R.string.app_name);
         editor = getSharedPreferences(appname, Context.MODE_PRIVATE);
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+        
 		listView = (ListView) findViewById(R.id.listview);
 		error = (TextView) findViewById(R.id.errorMessage);
 		swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
