@@ -4,6 +4,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import usbong.android.R;
@@ -212,13 +213,18 @@ AsyncResponse {
 	}
 
     private List<Fragment> getFragments(){
-    	List<Fragment> fList = new ArrayList<Fragment>();
-    	
-    	fList.add(ScreenshotFragment.newInstance("http://img.youtube.com/vi/" + youtubeLink + "/0.jpg"));
-    	fList.add(ScreenshotFragment.newInstance("http://img.youtube.com/vi/" + youtubeLink + "/1.jpg"));
-    	fList.add(ScreenshotFragment.newInstance("http://img.youtube.com/vi/" + youtubeLink + "/2.jpg"));
-    	
-    	return fList;
+    	List<Fragment> viewPagerContentList = new ArrayList<Fragment>();
+
+    	for(int i = 0; i < fitsObject.getScreenshotArray().size(); ++i) {
+    		viewPagerContentList.add(ScreenshotFragment.newInstance(
+    				new ScreenshotsInViewPager(Constants.SCREENSHOT2, fitsObject.getScreenshotArray().get(i))));
+    	}
+    	viewPagerContentList.add(ScreenshotFragment.newInstance(
+				new ScreenshotsInViewPager(Constants.YOUTUBELINK, fitsObject.getYOUTUBELINK())));
+		viewPagerContentList.add(ScreenshotFragment.newInstance(
+				new ScreenshotsInViewPager(Constants.YOUTUBELINK, fitsObject.getYOUTUBELINK2())));
+
+    	return viewPagerContentList;
     }
     
     private class MyPageAdapter extends FragmentPagerAdapter {

@@ -1,5 +1,7 @@
 package usbong.android.community;
 
+import java.util.ArrayList;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,8 +16,10 @@ public class FitsObject implements Parcelable {
     private String DESCRIPTION;
     private String ICON;
     private String YOUTUBELINK;
+    private String YOUTUBELINK2;
     private String DATEUPLOADED;
     private int DOWNLOADCOUNT;
+    private ArrayList<String> screenshotArray = new ArrayList<String>();
     
     FitsObject(JSONObject jO) throws JSONException {
     	FILENAME = jO.getString(Constants.FILENAME);
@@ -25,8 +29,13 @@ public class FitsObject implements Parcelable {
     	DESCRIPTION = jO.getString(Constants.DESCRIPTION);
     	ICON = jO.getString(Constants.ICON);
     	YOUTUBELINK = jO.getString(Constants.YOUTUBELINK);
+    	YOUTUBELINK2 = jO.getString(Constants.YOUTUBELINK2);
     	DATEUPLOADED = jO.getString(Constants.DATEUPLOADED);
     	DOWNLOADCOUNT = jO.getInt(Constants.DOWNLOADCOUNT);
+    	
+    	screenshotArray.add(jO.getString(Constants.SCREENSHOT2));
+    	screenshotArray.add(jO.getString(Constants.SCREENSHOT2));
+    	screenshotArray.add(jO.getString(Constants.SCREENSHOT2));
     }
         
     public String getFILENAME() {
@@ -57,12 +66,20 @@ public class FitsObject implements Parcelable {
 		return YOUTUBELINK;
 	}
 
+	public String getYOUTUBELINK2() {
+		return YOUTUBELINK2;
+	}
+	
 	public String getDATEUPLOADED() {
 		return DATEUPLOADED;
 	}
 
 	public int getDOWNLOADCOUNT() {
 		return DOWNLOADCOUNT;
+	}
+	
+	public ArrayList<String> getScreenshotArray() {
+		return screenshotArray;
 	}
 
 	public static final Parcelable.Creator<FitsObject> CREATOR = new Parcelable.Creator<FitsObject>() {
