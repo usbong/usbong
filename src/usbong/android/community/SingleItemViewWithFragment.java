@@ -4,7 +4,6 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import usbong.android.R;
@@ -23,12 +22,10 @@ import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -41,7 +38,6 @@ import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
-import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 @SuppressLint("NewApi")
@@ -196,13 +192,13 @@ AsyncResponse {
         
         pageAdapter = new MyPageAdapter(getSupportFragmentManager(), fragments);
 
-/*//commented out temporarily by Mike, 30 May 2015
+//commented out temporarily by Mike, 30 May 2015
         pager = (ViewPager)findViewById(R.id.screenshotsViewPager);
         pager.setAdapter(pageAdapter);
-*/        
-		YouTubePlayerFragment youTubePlayerFragment =
-				(YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.player);
-		youTubePlayerFragment.initialize(Constants.YOUTUBE_API_KEY, this);
+        
+//		YouTubePlayerFragment youTubePlayerFragment =
+//				(YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.player);
+//		youTubePlayerFragment.initialize(Constants.YOUTUBE_API_KEY, this);
 		doLayout();
 	}
 	
@@ -213,17 +209,26 @@ AsyncResponse {
 	}
 
     private List<Fragment> getFragments(){
+    	Log.d("SingleItemViewWithFragment", "getFragments()");
     	List<Fragment> viewPagerContentList = new ArrayList<Fragment>();
 
     	for(int i = 0; i < fitsObject.getScreenshotArray().size(); ++i) {
+    		Log.d("SingleItemViewWithFragment", i + ":" + fitsObject.getScreenshotArray().get(i));
     		viewPagerContentList.add(ScreenshotFragment.newInstance(
     				new ScreenshotsInViewPager(Constants.SCREENSHOT2, fitsObject.getScreenshotArray().get(i))));
     	}
-    	viewPagerContentList.add(ScreenshotFragment.newInstance(
-				new ScreenshotsInViewPager(Constants.YOUTUBELINK, fitsObject.getYOUTUBELINK())));
-		viewPagerContentList.add(ScreenshotFragment.newInstance(
-				new ScreenshotsInViewPager(Constants.YOUTUBELINK, fitsObject.getYOUTUBELINK2())));
-
+    	
+    	//Check if youtubelink is null
+    	if(fitsObject.getYOUTUBELINK() != null) {
+    		Log.d("SingleItemViewWithFragment", "1:" + fitsObject.getYOUTUBELINK());
+    		viewPagerContentList.add(ScreenshotFragment.newInstance(
+    				new ScreenshotsInViewPager(Constants.YOUTUBELINK, fitsObject.getYOUTUBELINK())));
+    	}
+    	if(fitsObject.getYOUTUBELINK2() != null) {
+    		Log.d("SingleItemViewWithFragment", "2:" + fitsObject.getYOUTUBELINK2());
+    		viewPagerContentList.add(ScreenshotFragment.newInstance(
+    				new ScreenshotsInViewPager(Constants.YOUTUBELINK, fitsObject.getYOUTUBELINK2())));
+    	}
     	return viewPagerContentList;
     }
     

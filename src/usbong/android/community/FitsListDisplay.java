@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import usbong.android.R;
 import usbong.android.utils.UsbongUtils;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -23,10 +24,8 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -50,6 +49,7 @@ public class FitsListDisplay extends ActionBarActivity {
 	private SharedPreferences editor;
 	private TextView error;
 	
+	@SuppressLint("InlinedApi")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
@@ -63,9 +63,13 @@ public class FitsListDisplay extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         View decorView = getWindow().getDecorView();
         // Hide the status bar.
-        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        decorView.setSystemUiVisibility(uiOptions);
-        
+        if (Build.VERSION.SDK_INT < 16) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else {
+        	int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        	decorView.setSystemUiVisibility(uiOptions);
+        }
 		listView = (ListView) findViewById(R.id.listview);
 		error = (TextView) findViewById(R.id.errorMessage);
 		swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);

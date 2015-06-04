@@ -14,13 +14,20 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:weightSum="10" >
+        
+        <android.support.v4.view.ViewPager
+            android:id="@+id/screenshotsViewPager"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_weight="4" >
+        	</android.support.v4.view.ViewPager>
 
-        <fragment
+        <!-- fragment
             android:id="@+id/player"
             android:name="com.google.android.youtube.player.YouTubePlayerFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="4" />
+            android:layout_weight="4" / -->
 
         <LinearLayout
             android:id="@+id/other_views"
@@ -118,14 +125,7 @@
                     android:textColor="#000000"
                     android:textSize="15sp"/> 
             </RelativeLayout>
-<!-- removed temporarily by Mike, 30 May 2015 
-            <android.support.v4.view.ViewPager
-                android:id="@+id/screenshotsViewPager"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_weight="4" >
-            </android.support.v4.view.ViewPager>
- -->            
+
             <TextView
                 android:id="@+id/description"
                 android:layout_width="match_parent"

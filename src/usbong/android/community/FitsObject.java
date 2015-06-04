@@ -19,24 +19,61 @@ public class FitsObject implements Parcelable {
     private String YOUTUBELINK2;
     private String DATEUPLOADED;
     private int DOWNLOADCOUNT;
+    private boolean isYoutubeLink1Ok = true;
+	private boolean isYoutubeLink2Ok = true;
     private ArrayList<String> screenshotArray = new ArrayList<String>();
     
     FitsObject(JSONObject jO) throws JSONException {
-    	FILENAME = jO.getString(Constants.FILENAME);
-    	FILEPATH = jO.getString(Constants.FILEPATH);
-    	RATING = jO.getInt(Constants.RATING);
-    	UPLOADER = jO.getString(Constants.UPLOADER);
-    	DESCRIPTION = jO.getString(Constants.DESCRIPTION);
-    	ICON = jO.getString(Constants.ICON);
-    	YOUTUBELINK = jO.getString(Constants.YOUTUBELINK);
-    	YOUTUBELINK2 = jO.getString(Constants.YOUTUBELINK2);
+    	FILENAME = jO.optString(Constants.FILENAME);
+    	FILEPATH = jO.optString(Constants.FILEPATH);
+    	RATING = jO.optInt(Constants.RATING);
+    	UPLOADER = jO.optString(Constants.UPLOADER);
+    	DESCRIPTION = jO.optString(Constants.DESCRIPTION);
+    	ICON = jO.optString(Constants.ICON);
+    	
+    	//Checking if there are values in these. (non required entries)
+    	if(jO.optString(Constants.YOUTUBELINK) != null) {
+    		YOUTUBELINK = jO.optString(Constants.YOUTUBELINK);	
+    	} else {
+    		YOUTUBELINK = "";
+    		isYoutubeLink1Ok = false;
+    	}
+    	
+    	if(jO.optString(Constants.YOUTUBELINK2) != null) {
+    		YOUTUBELINK2 = jO.optString(Constants.YOUTUBELINK2);	
+    	} else {
+    		YOUTUBELINK2 = "";
+    		isYoutubeLink2Ok = false;
+    	}
+    	
     	DATEUPLOADED = jO.getString(Constants.DATEUPLOADED);
     	DOWNLOADCOUNT = jO.getInt(Constants.DOWNLOADCOUNT);
     	
-    	screenshotArray.add(jO.getString(Constants.SCREENSHOT2));
-    	screenshotArray.add(jO.getString(Constants.SCREENSHOT2));
-    	screenshotArray.add(jO.getString(Constants.SCREENSHOT2));
+    	if(jO.optString(Constants.SCREENSHOT2).length() > 0) {
+        	screenshotArray.add(jO.optString(Constants.SCREENSHOT2));    		
+    	} else {
+    		screenshotArray.add("");
+    	}
+    	if(jO.optString(Constants.SCREENSHOT3).length() > 0) {
+        	screenshotArray.add(jO.optString(Constants.SCREENSHOT3));    		
+    	} else {
+    		screenshotArray.add("");
+    	}
+    	if(jO.optString(Constants.SCREENSHOT4).length() > 0) {
+        	screenshotArray.add(jO.optString(Constants.SCREENSHOT4));    		
+    	} else {
+    		screenshotArray.add("");
+    	}
     }
+    
+    public boolean isYoutubeLink1Ok() {
+		return isYoutubeLink1Ok;
+	}
+
+	public boolean isYoutubeLink2Ok() {
+		return isYoutubeLink2Ok;
+	}
+
         
     public String getFILENAME() {
 		return FILENAME;
