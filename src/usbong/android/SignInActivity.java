@@ -175,7 +175,7 @@ public class SignInActivity extends Activity {
 							//as suggested by JP Talusan
 							//added by Mike, 25 May 2015
 							myProgressDialog = ProgressDialog.show(myActivityInstance, "Signing in...",
-									  "This takes only a few moments.", true);
+									  "This takes only a short while.", true);
 							
 							//Reference: http://stackoverflow.com/questions/6343166/android-os-networkonmainthreadexception;
 							//last accessed: 9 Jan. 2014; answer by Dr.Luiji

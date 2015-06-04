@@ -449,6 +449,15 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				selectButton.setOnClickListener(new View.OnClickListener() {					
 					public void onClick(View v) {
 						currLanguageBeingUsed = UsbongUtils.getLanguageID(UsbongUtils.getSetLanguage());
+						
+						//added by Mike, 4 June 2015
+						//remove the current element in the node container and start anew
+						//so that when end-user presses back, the previous screen will appear,
+						//and not cause the same screen to reappear.
+						if (!usbongNodeContainer.isEmpty()) {
+							usbongNodeContainer.removeElementAt(usbongNodeContainerCounter);                            
+			                usbongNodeContainerCounter--;
+						}						
 						initParser();
 						//cancel the dialog the setLanguage() method has already been called when button is checked
 				        dialog.cancel();
