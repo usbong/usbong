@@ -209,23 +209,30 @@ AsyncResponse {
 	}
 
     private List<Fragment> getFragments(){
-    	Log.d("SingleItemViewWithFragment", "getFragments()");
     	List<Fragment> viewPagerContentList = new ArrayList<Fragment>();
-
-    	for(int i = 0; i < fitsObject.getScreenshotArray().size(); ++i) {
-    		Log.d("SingleItemViewWithFragment", i + ":" + fitsObject.getScreenshotArray().get(i));
+    	if(fitsObject.getSCREENSHOT2().length() > 0) {
+    		Log.d("SingleItemViewWithFragment", "1:" + fitsObject.getSCREENSHOT2());
     		viewPagerContentList.add(ScreenshotFragment.newInstance(
-    				new ScreenshotsInViewPager(Constants.SCREENSHOT2, fitsObject.getScreenshotArray().get(i))));
+    				new ScreenshotsInViewPager(Constants.SCREENSHOT2, fitsObject.getSCREENSHOT2())));
     	}
-    	
+    	if(fitsObject.getSCREENSHOT3().length() > 0) {
+    		Log.d("SingleItemViewWithFragment", "2:" + fitsObject.getSCREENSHOT3());
+    		viewPagerContentList.add(ScreenshotFragment.newInstance(
+    				new ScreenshotsInViewPager(Constants.SCREENSHOT2, fitsObject.getSCREENSHOT3())));
+    	} 
+    	if(fitsObject.getSCREENSHOT4().length() > 0) {
+    		Log.d("SingleItemViewWithFragment", "3:" + fitsObject.getSCREENSHOT4());
+    		viewPagerContentList.add(ScreenshotFragment.newInstance(
+    				new ScreenshotsInViewPager(Constants.SCREENSHOT2, fitsObject.getSCREENSHOT4())));
+    	}    	
     	//Check if youtubelink is null
-    	if(fitsObject.getYOUTUBELINK() != null) {
-    		Log.d("SingleItemViewWithFragment", "1:" + fitsObject.getYOUTUBELINK());
+    	if(fitsObject.getYOUTUBELINK().length() > 0) {
+    		Log.d("SingleItemViewWithFragment", "4:" + fitsObject.getYOUTUBELINK());
     		viewPagerContentList.add(ScreenshotFragment.newInstance(
     				new ScreenshotsInViewPager(Constants.YOUTUBELINK, fitsObject.getYOUTUBELINK())));
     	}
-    	if(fitsObject.getYOUTUBELINK2() != null) {
-    		Log.d("SingleItemViewWithFragment", "2:" + fitsObject.getYOUTUBELINK2());
+    	if(fitsObject.getYOUTUBELINK2().length() > 0) {
+    		Log.d("SingleItemViewWithFragment", "5:" + fitsObject.getYOUTUBELINK2());
     		viewPagerContentList.add(ScreenshotFragment.newInstance(
     				new ScreenshotsInViewPager(Constants.YOUTUBELINK, fitsObject.getYOUTUBELINK2())));
     	}

@@ -205,6 +205,16 @@ public class FitsListDisplay extends ActionBarActivity {
 			JSONArray a = new JSONArray(result);
 			for(int i = 0; i < a.length(); ++i) {
 				JSONObject utree = (JSONObject) a.get(i);
+				Log.d(TAG, utree.getString(Constants.FILENAME));
+				Log.d(TAG, utree.getString(Constants.FILEPATH));
+				Log.d(TAG, utree.getString(Constants.RATING));
+				Log.d(TAG, utree.getString(Constants.UPLOADER));
+				Log.d(TAG, utree.getString(Constants.DESCRIPTION));
+				Log.d(TAG, utree.getString(Constants.ICON));
+				Log.d(TAG, utree.getString(Constants.YOUTUBELINK));
+				Log.d(TAG, utree.optString(Constants.SCREENSHOT2) + "");
+				Log.d(TAG, utree.getString(Constants.DATEUPLOADED));
+				Log.d(TAG, utree.getString(Constants.DOWNLOADCOUNT));
 				if(UsbongUtils.IS_IN_DEBUG_MODE) {
 					Log.d(TAG, utree.getString(Constants.FILENAME));
 					Log.d(TAG, utree.getString(Constants.FILEPATH));

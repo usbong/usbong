@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 public class FitsObject implements Parcelable {
 	private String FILENAME;
@@ -17,61 +18,72 @@ public class FitsObject implements Parcelable {
     private String ICON;
     private String YOUTUBELINK;
     private String YOUTUBELINK2;
+    private String SCREENSHOT2;
+	private String SCREENSHOT3;
+    private String SCREENSHOT4;
     private String DATEUPLOADED;
     private int DOWNLOADCOUNT;
     private boolean isYoutubeLink1Ok = true;
 	private boolean isYoutubeLink2Ok = true;
     private ArrayList<String> screenshotArray = new ArrayList<String>();
+
     
     FitsObject(JSONObject jO) throws JSONException {
+    	Log.d("FitsObject", "Enter constr");
     	FILENAME = jO.optString(Constants.FILENAME);
     	FILEPATH = jO.optString(Constants.FILEPATH);
     	RATING = jO.optInt(Constants.RATING);
     	UPLOADER = jO.optString(Constants.UPLOADER);
     	DESCRIPTION = jO.optString(Constants.DESCRIPTION);
     	ICON = jO.optString(Constants.ICON);
-    	
+//    	YOUTUBELINK = jO.optString(Constants.YOUTUBELINK);
+//    	YOUTUBELINK2 = jO.optString(Constants.YOUTUBELINK2);
     	//Checking if there are values in these. (non required entries)
-    	if(jO.optString(Constants.YOUTUBELINK) != null) {
+    	if(!jO.optString(Constants.YOUTUBELINK).equals("null")) {
     		YOUTUBELINK = jO.optString(Constants.YOUTUBELINK);	
     	} else {
     		YOUTUBELINK = "";
-    		isYoutubeLink1Ok = false;
     	}
     	
-    	if(jO.optString(Constants.YOUTUBELINK2) != null) {
+    	if(!jO.optString(Constants.YOUTUBELINK2).equals("null")) {
     		YOUTUBELINK2 = jO.optString(Constants.YOUTUBELINK2);	
     	} else {
     		YOUTUBELINK2 = "";
-    		isYoutubeLink2Ok = false;
     	}
     	
     	DATEUPLOADED = jO.getString(Constants.DATEUPLOADED);
     	DOWNLOADCOUNT = jO.getInt(Constants.DOWNLOADCOUNT);
     	
-    	if(jO.optString(Constants.SCREENSHOT2).length() > 0) {
-        	screenshotArray.add(jO.optString(Constants.SCREENSHOT2));    		
+    	if(!jO.optString(Constants.SCREENSHOT2).equals("null")) {
+    		Log.d("FitsObject", "not null 2");
+    		SCREENSHOT2 = jO.optString(Constants.SCREENSHOT2);
     	} else {
-    		screenshotArray.add("");
+    		SCREENSHOT2 = "";
     	}
-    	if(jO.optString(Constants.SCREENSHOT3).length() > 0) {
-        	screenshotArray.add(jO.optString(Constants.SCREENSHOT3));    		
+    	if(!jO.optString(Constants.SCREENSHOT3).equals("null")) {
+    		Log.d("FitsObject", "not null 3");
+    		SCREENSHOT3 = jO.optString(Constants.SCREENSHOT3);
     	} else {
-    		screenshotArray.add("");
+    		SCREENSHOT3 = "";
     	}
-    	if(jO.optString(Constants.SCREENSHOT4).length() > 0) {
-        	screenshotArray.add(jO.optString(Constants.SCREENSHOT4));    		
+    	if(!jO.optString(Constants.SCREENSHOT4).equals("null")) {
+    		Log.d("FitsObject", "not null 4");
+    		SCREENSHOT4 = jO.optString(Constants.SCREENSHOT4);
     	} else {
-    		screenshotArray.add("");
+    		SCREENSHOT4 = "";
     	}
     }
     
-    public boolean isYoutubeLink1Ok() {
-		return isYoutubeLink1Ok;
+    public String getSCREENSHOT2() {
+		return SCREENSHOT2;
 	}
 
-	public boolean isYoutubeLink2Ok() {
-		return isYoutubeLink2Ok;
+	public String getSCREENSHOT3() {
+		return SCREENSHOT3;
+	}
+
+	public String getSCREENSHOT4() {
+		return SCREENSHOT4;
 	}
 
         
@@ -114,10 +126,6 @@ public class FitsObject implements Parcelable {
 	public int getDOWNLOADCOUNT() {
 		return DOWNLOADCOUNT;
 	}
-	
-	public ArrayList<String> getScreenshotArray() {
-		return screenshotArray;
-	}
 
 	public static final Parcelable.Creator<FitsObject> CREATOR = new Parcelable.Creator<FitsObject>() {
 		public FitsObject createFromParcel(Parcel in) {
@@ -142,6 +150,10 @@ public class FitsObject implements Parcelable {
 		dest.writeString(DESCRIPTION);
 		dest.writeString(ICON);
 		dest.writeString(YOUTUBELINK);
+		dest.writeString(YOUTUBELINK2);
+		dest.writeString(SCREENSHOT2);
+		dest.writeString(SCREENSHOT3);
+		dest.writeString(SCREENSHOT4);
 		dest.writeString(DATEUPLOADED);
 		dest.writeInt(DOWNLOADCOUNT);
 	}
@@ -154,6 +166,10 @@ public class FitsObject implements Parcelable {
 		DESCRIPTION = in.readString();
 		ICON = in.readString();
 		YOUTUBELINK = in.readString();
+		YOUTUBELINK2 = in.readString();
+		SCREENSHOT2 = in.readString();
+		SCREENSHOT3 = in.readString();
+		SCREENSHOT4 = in.readString();
 		DATEUPLOADED = in.readString();
 		DOWNLOADCOUNT = in.readInt();
 	}
