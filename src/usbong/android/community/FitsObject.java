@@ -1,13 +1,10 @@
 package usbong.android.community;
 
-import java.util.ArrayList;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 public class FitsObject implements Parcelable {
 	private String FILENAME;
@@ -23,13 +20,7 @@ public class FitsObject implements Parcelable {
     private String SCREENSHOT4;
     private String DATEUPLOADED;
     private int DOWNLOADCOUNT;
-    private boolean isYoutubeLink1Ok = true;
-	private boolean isYoutubeLink2Ok = true;
-    private ArrayList<String> screenshotArray = new ArrayList<String>();
-
-    
     FitsObject(JSONObject jO) throws JSONException {
-    	Log.d("FitsObject", "Enter constr");
     	FILENAME = jO.optString(Constants.FILENAME);
     	FILEPATH = jO.optString(Constants.FILEPATH);
     	RATING = jO.optInt(Constants.RATING);
@@ -55,19 +46,16 @@ public class FitsObject implements Parcelable {
     	DOWNLOADCOUNT = jO.getInt(Constants.DOWNLOADCOUNT);
     	
     	if(!jO.optString(Constants.SCREENSHOT2).equals("null")) {
-    		Log.d("FitsObject", "not null 2");
     		SCREENSHOT2 = jO.optString(Constants.SCREENSHOT2);
     	} else {
     		SCREENSHOT2 = "";
     	}
     	if(!jO.optString(Constants.SCREENSHOT3).equals("null")) {
-    		Log.d("FitsObject", "not null 3");
     		SCREENSHOT3 = jO.optString(Constants.SCREENSHOT3);
     	} else {
     		SCREENSHOT3 = "";
     	}
     	if(!jO.optString(Constants.SCREENSHOT4).equals("null")) {
-    		Log.d("FitsObject", "not null 4");
     		SCREENSHOT4 = jO.optString(Constants.SCREENSHOT4);
     	} else {
     		SCREENSHOT4 = "";

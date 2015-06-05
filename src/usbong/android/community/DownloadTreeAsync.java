@@ -51,10 +51,9 @@ public class DownloadTreeAsync extends AsyncTask<String, Integer, String> {
 	@Override
     protected String doInBackground(String... sUrl) {
     	filePath = sUrl[0];
-    	Log.d(TAG, filePath);
-//    	String urlToDownload = "http://" + Constants.HOSTNAME + "/usbong/trees/" + filePath;
-    	String urlToDownload = "http://10.127.165.174/usbong/trees/" + filePath;
-        InputStream input = null;
+    	String urlToDownload = "http://" + Constants.HOSTNAME + "/usbong/trees/" + filePath;
+    	Log.d(TAG, urlToDownload);
+    	InputStream input = null;
         OutputStream output = null;
         HttpURLConnection connection = null;
         try {
@@ -102,6 +101,7 @@ public class DownloadTreeAsync extends AsyncTask<String, Integer, String> {
             new DatabaseAction().execute(filePath, Constants.DOWNLOADCOUNT, "DOWNLOAD");
             
         } catch (Exception e) {
+        	cancel(true);
             return e.toString();
         } finally {
             try {
@@ -110,6 +110,7 @@ public class DownloadTreeAsync extends AsyncTask<String, Integer, String> {
                 if (input != null)
                     input.close();
             } catch (IOException ignored) {
+            	cancel(true);
             }
 
             if (connection != null)

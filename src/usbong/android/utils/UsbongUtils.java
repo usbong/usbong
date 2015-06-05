@@ -99,7 +99,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 public class UsbongUtils {		
-	public static boolean IS_IN_DEBUG_MODE=true;
+	public static boolean IS_IN_DEBUG_MODE=false;
 	public static boolean STORE_OUTPUT=true;
 
 	public static String BASE_FILE_PATH = Environment.getExternalStorageDirectory()+"/usbong/";
