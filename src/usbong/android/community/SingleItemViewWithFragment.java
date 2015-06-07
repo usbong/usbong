@@ -14,6 +14,7 @@ import android.app.DownloadManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -52,7 +53,7 @@ YouTubePlayer.OnFullscreenListener,
 YouTubePlayer.OnInitializedListener,
 usbong.android.community.DownloadTreeAsync.AsyncResponse {
 	private String youtubeLink = "";
-//	private DownloadTreeAsync downloadTask;
+	private DownloadTreeAsync downloadTask;
 	private File savedTree;
 	private Button download;
 	private Button upVote;
@@ -81,13 +82,13 @@ usbong.android.community.DownloadTreeAsync.AsyncResponse {
 
 		setContentView(R.layout.singleitemviewwithfragment);
 		
-		//For download manager
-		@SuppressWarnings("unused")
-		DownloadManager mgr = (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
-	    registerReceiver(onComplete,
-	                     new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-	    registerReceiver(onNotificationClick,
-	                     new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));		
+//		//For download manager
+//		@SuppressWarnings("unused")
+//		DownloadManager mgr = (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
+//	    registerReceiver(onComplete,
+//	                     new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+//	    registerReceiver(onNotificationClick,
+//	                     new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));		
 		
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		View decorView = getWindow().getDecorView();
@@ -156,17 +157,17 @@ usbong.android.community.DownloadTreeAsync.AsyncResponse {
 		downloadCount.setText("Download Count: "+fitsObject.getDOWNLOADCOUNT() + "");
 		description.setText(fitsObject.getDESCRIPTION());
 		voteCount.setText(fitsObject.getRATING() + "");
-//		ProgressDialog mProgressDialog;
-//
-//		// instantiate it within the onCreate method
-//		mProgressDialog = new ProgressDialog(this);
-//		mProgressDialog.setMessage("Downloading: " + fitsObject.getFILEPATH());
-//		mProgressDialog.setTitle("Saving tree...");
-//		mProgressDialog.setIndeterminate(true);
-//		mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-//		mProgressDialog.setCancelable(false);
-//		mProgressDialog.setCanceledOnTouchOutside(false);
-//		downloadTask = new DownloadTreeAsync(this,  mProgressDialog);
+		ProgressDialog mProgressDialog;
+
+		// instantiate it within the onCreate method
+		mProgressDialog = new ProgressDialog(this);
+		mProgressDialog.setMessage("Downloading: " + fitsObject.getFILEPATH());
+		mProgressDialog.setTitle("Saving tree...");
+		mProgressDialog.setIndeterminate(true);
+		mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		mProgressDialog.setCancelable(false);
+		mProgressDialog.setCanceledOnTouchOutside(false);
+		downloadTask = new DownloadTreeAsync(this,  mProgressDialog);
 		download.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -175,12 +176,12 @@ usbong.android.community.DownloadTreeAsync.AsyncResponse {
 					i.putExtra(Constants.UTREE_KEY, UsbongUtils.removeExtension(fitsObject.getFILEPATH()));
 					startActivity(i);
 				} else {
-//					downloadTask.execute(fitsObject.getFILEPATH());
-//					downloadTask.delegate = SingleItemViewWithFragment.this;
+					downloadTask.execute(fitsObject.getFILEPATH());
+					downloadTask.delegate = SingleItemViewWithFragment.this;
 					
 					//For Download manager
-					download.setText("Downloading...");
-				    startDownload(fitsObject.getFILEPATH());
+//					download.setText("Downloading...");
+//				    startDownload(fitsObject.getFILEPATH());
 				}
 			}
 		});
@@ -226,10 +227,10 @@ usbong.android.community.DownloadTreeAsync.AsyncResponse {
 	public void onDestroy() {
 		super.onDestroy();
 
-		if (onComplete != null && onNotificationClick != null) {
-			unregisterReceiver(onComplete);
-			unregisterReceiver(onNotificationClick);
-		}
+//		if (onComplete != null && onNotificationClick != null) {
+//			unregisterReceiver(onComplete);
+//			unregisterReceiver(onNotificationClick);
+//		}
 	}
 
 	@Override
@@ -438,7 +439,7 @@ usbong.android.community.DownloadTreeAsync.AsyncResponse {
 				Notification n  = new Notification.Builder(SingleItemViewWithFragment.this)
 				.setContentTitle("Usbong FITS Download")
 				.setContentText("File downloaded")
-				.setSmallIcon(R.drawable.loading)
+				.setSmallIcon(R.drawable.usbong_icon)
 				.setContentIntent(pI) //TODO change this to usbong app open tree immediately
 				.setAutoCancel(true).build();
 				n.flags |= Notification.FLAG_AUTO_CANCEL;

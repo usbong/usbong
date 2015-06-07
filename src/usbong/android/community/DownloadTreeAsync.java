@@ -155,7 +155,7 @@ public class DownloadTreeAsync extends AsyncTask<String, Integer, String> {
             Notification n  = new Notification.Builder(context)
 		        .setContentTitle("Usbong FITS Download")
 		        .setContentText("Download error: "+result)
-		        .setSmallIcon(R.drawable.loading)
+		        .setSmallIcon(R.drawable.usbong_icon)
 		        .setContentIntent(nullIntent) //TODO change this to usbong app open tree immediately
 		        .setAutoCancel(true).build();
             n.flags |= Notification.FLAG_AUTO_CANCEL;
@@ -176,7 +176,7 @@ public class DownloadTreeAsync extends AsyncTask<String, Integer, String> {
             Notification n  = new Notification.Builder(context)
 		        .setContentTitle("Usbong FITS Download")
 		        .setContentText("File downloaded")
-		        .setSmallIcon(R.drawable.loading)
+		        .setSmallIcon(R.drawable.usbong_icon)
 		        .setContentIntent(pI) //TODO change this to usbong app open tree immediately
 		        .setAutoCancel(true).build();
             n.flags |= Notification.FLAG_AUTO_CANCEL;

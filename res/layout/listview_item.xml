@@ -31,6 +31,7 @@
 	        android:layout_height="wrap_content"
 	        android:padding="2dp"
 	        android:textSize="20sp"
+	        android:textColor="@android:color/black"
 	        android:text="Testing" />
 
    	    <Button
@@ -58,7 +59,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 	        android:layout_below="@+id/uploadername"
-	        android:layout_alignLeft="@+id/uploadername"	        
+	        android:layout_alignLeft="@+id/uploadername"
+	        android:textColor="@android:color/black"    
             android:padding="2dp"
             android:textSize="15sp" />
 	    
