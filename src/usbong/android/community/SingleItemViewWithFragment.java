@@ -33,6 +33,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -90,9 +91,14 @@ usbong.android.community.DownloadTreeAsync.AsyncResponse {
 		
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		View decorView = getWindow().getDecorView();
-		// Hide the status bar.
-		int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-		decorView.setSystemUiVisibility(uiOptions);
+        // Hide the status bar.
+        if (Build.VERSION.SDK_INT < 16) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else {
+        	int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        	decorView.setSystemUiVisibility(uiOptions);
+        }
 		//Using UIL
 		if(!ImageLoader.getInstance().isInited()) {
 			UsbongUtils.initDisplayAndConfigOfUIL(this);

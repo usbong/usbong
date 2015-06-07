@@ -17,16 +17,16 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
-    <style name="ThemeHoloWithActionBar" parent="Theme.AppCompat.Light">
-        <item name="android:actionBarTabStyle">@style/Base.Widget.AppCompat.ActionBar</item>
-        <item name="android:actionBarSize">40dp</item>
+    <style name="ThemeHoloWithActionBar" parent="Theme.AppCompat">
+        <item name="actionBarTabStyle">@style/Base.Widget.AppCompat.ActionBar</item>
+        <item name="actionBarSize">40dp</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:padding">0px</item>
     </style>
 
-    <style name="ActionBarTabStyle" parent="@android:style/Widget.ActionBar">
+    <style name="ActionBarTabStyle" parent="@style/Widget.AppCompat.ActionBar">
         <item name="android:minHeight">40dp</item>
         <item name="android:height">40dp</item>
     </style>
