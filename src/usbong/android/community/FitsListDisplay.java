@@ -36,7 +36,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class FitsListDisplay extends ActionBarActivity {
@@ -55,7 +54,6 @@ public class FitsListDisplay extends ActionBarActivity {
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 		
 		super.onCreate(savedInstanceState);
-		// Get the view from gridview_main.xml
 		
 		setContentView(R.layout.fitgriddisplay_main);
         String appname = getResources().getString(R.string.app_name);
@@ -87,19 +85,16 @@ public class FitsListDisplay extends ActionBarActivity {
 			}
 		});
 		
-		// Configure the refreshing colors
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright, 
                 android.R.color.holo_green_light, 
                 android.R.color.holo_orange_light, 
                 android.R.color.holo_red_light);
 
-		// Execute RemoteDataTask AsyncTask
-        //TODO:Add expiration of current data so that a refresh is done automatically 
-        if((editor.getString(Constants.JSON_KEY, "").length() == 0) && UsbongUtils.hasNetworkConnection(this)) {
+        if(UsbongUtils.hasNetworkConnection(this)) {
         	error.setVisibility(View.GONE);
         	new GetFitsListAsync().execute();
         } else {
-        	if(editor.getString(Constants.JSON_KEY, "").length() != 0) {
+        	if(editor.contains(Constants.JSON_KEY)) {
         		error.setVisibility(View.VISIBLE);
         		error.setText("Warning: Currently in offline mode.");
             	ParseJSONToFitsArray(editor.getString(Constants.JSON_KEY, ""));
@@ -112,10 +107,8 @@ public class FitsListDisplay extends ActionBarActivity {
 	
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-//		savedInstanceState.putString("jsonString", jsonString);
-		// save index and top position
-		int index = listView.getScrollX();
-		editor.edit().putInt("index", index).apply();
+		int currentListViewPosition = listView.getScrollX();
+		editor.edit().putInt("index", currentListViewPosition).apply();
 		super.onSaveInstanceState(savedInstanceState);
 	}
 	
@@ -129,12 +122,12 @@ public class FitsListDisplay extends ActionBarActivity {
 		super.onResume();
 		int index = editor.getInt("index", 0);
 		listView.setScrollX(index);
-		if(UsbongUtils.hasNetworkConnection(FitsListDisplay.this)) {
-    		error.setVisibility(View.GONE);
-		} else {
-    		error.setVisibility(View.VISIBLE);
-    		error.setText("Warning: Currently in offline mode.");
-		}
+		if(UsbongUtils.hasNetworkConnection(this)) {
+        	error.setVisibility(View.GONE);
+        } else {
+        	error.setText("Warning: Currently in offline mode.");
+        	ParseJSONToFitsArray(editor.getString(Constants.JSON_KEY, ""));
+        }
 	}
 	
 	public class GetFitsListAsync extends AsyncTask<Void, Void, String> {
@@ -232,7 +225,6 @@ public class FitsListDisplay extends ActionBarActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-	    // Inflate the menu items for use in the action bar
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.list_menu, menu);
 	    return super.onCreateOptionsMenu(menu);
@@ -240,13 +232,12 @@ public class FitsListDisplay extends ActionBarActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    // Handle presses on the action bar items
 	    switch (item.getItemId()) {
 	        case R.id.action_search:
-	            Toast.makeText(this, "Pressed search", Toast.LENGTH_SHORT).show();
+	            //Toast.makeText(this, "Pressed search", Toast.LENGTH_SHORT).show();
 	            return true;
 	        case R.id.action_settings:
-	        	Toast.makeText(this, "Pressed settings", Toast.LENGTH_SHORT).show();
+	        	//Toast.makeText(this, "Pressed settings", Toast.LENGTH_SHORT).show();
 	            return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
