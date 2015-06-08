@@ -30,7 +30,8 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-
+//ODO: Add a way to display (callback) if download has been completed.
+//http://stackoverflow.com/questions/8937817/downloadmanager-action-download-complete-broadcast-receiver-receiving-same-downl
 public class ListViewAdapter extends BaseAdapter implements AsyncResponse {
 	private static final String TAG = "usbong.usbongcommunitydraft.ListViewAdapter";
 	Context context;

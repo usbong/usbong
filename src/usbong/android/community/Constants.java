@@ -19,6 +19,10 @@ public class Constants {
     public static final String DESCRIPTION = "DESCRIPTION";
     public static final String ICON = "ICON";
     public static final String YOUTUBELINK = "YOUTUBELINK";
+    public static final String YOUTUBELINK2 = "YOUTUBELINK2";
+    public static final String SCREENSHOT2 = "SCREENSHOT2";
+    public static final String SCREENSHOT3 = "SCREENSHOT3";
+    public static final String SCREENSHOT4 = "SCREENSHOT4";
     public static final String DATEUPLOADED = "DATEUPLOADED";
     public static final String DOWNLOADCOUNT = "DOWNLOADCOUNT";
     

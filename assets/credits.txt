@@ -1,5 +1,5 @@
 --Usbong (beta)--
-ver: May 31, 2015
+ver: June 8, 2015
 
 Usbong's mission is to defeat poverty by uplifting human lives. Our vision is a community where there is lasting peace. We provide training and workshops on Android Development, Software Engineering, and Social Entrepreneurship. We also offer software development services. Our flagship open source product is also called, "Usbong". Together with its companion app, Usbong Builder, even non-technical people can build their own Android apps.
 

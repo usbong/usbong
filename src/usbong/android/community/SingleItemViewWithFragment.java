@@ -8,26 +8,36 @@ import java.util.List;
 
 import usbong.android.R;
 import usbong.android.UsbongDecisionTreeEngineActivity;
-import usbong.android.community.DownloadTreeAsync.AsyncResponse;
 import usbong.android.utils.UsbongUtils;
 import android.annotation.SuppressLint;
+import android.app.DownloadManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,14 +45,13 @@ import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
-import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 @SuppressLint("NewApi")
-public class SingleItemViewWithFragment extends FragmentActivity implements
+public class SingleItemViewWithFragment extends ActionBarActivity implements
 YouTubePlayer.OnFullscreenListener,
 YouTubePlayer.OnInitializedListener,
-AsyncResponse {
+usbong.android.community.DownloadTreeAsync.AsyncResponse {
 	private String youtubeLink = "";
 	private DownloadTreeAsync downloadTask;
 	private File savedTree;
@@ -63,13 +72,34 @@ AsyncResponse {
 	private YouTubePlayer player;
 	private boolean fullscreen;
 	private FitsObject fitsObject = null;
-
+	//For download manager
+	private boolean isFileDownloaded = false;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.singleitemviewwithfragment);
 		
+//		//For download manager
+//		@SuppressWarnings("unused")
+//		DownloadManager mgr = (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
+//	    registerReceiver(onComplete,
+//	                     new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+//	    registerReceiver(onNotificationClick,
+//	                     new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));		
+		
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        if (Build.VERSION.SDK_INT < 16) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else {
+        	int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        	decorView.setSystemUiVisibility(uiOptions);
+        }
 		//Using UIL
 		if(!ImageLoader.getInstance().isInited()) {
 			UsbongUtils.initDisplayAndConfigOfUIL(this);
@@ -107,8 +137,6 @@ AsyncResponse {
 			download.setText("Open Tree");
 		} 
 
-//		fileName.setText(fitsObject.getFILENAME());
-		
 		//added by Mike, 31 May 2015
 		if (fitsObject.getFILENAME().length()>18) {
 			String s = fitsObject.getFILENAME().substring(0, 18)+"...";
@@ -118,8 +146,8 @@ AsyncResponse {
 			fileName.setText(fitsObject.getFILENAME());
 		}
 		
-		if (fitsObject.getUPLOADER().length()>8) {
-			String s = fitsObject.getUPLOADER().substring(0, 8)+"...";
+		if (fitsObject.getUPLOADER().length()>7) {
+			String s = fitsObject.getUPLOADER().substring(0, 7)+"...";
 			uploader.setText("Uploader: " + s);
 		}
 		else {
@@ -150,21 +178,21 @@ AsyncResponse {
 				} else {
 					downloadTask.execute(fitsObject.getFILEPATH());
 					downloadTask.delegate = SingleItemViewWithFragment.this;
+					
+					//For Download manager
+//					download.setText("Downloading...");
+//				    startDownload(fitsObject.getFILEPATH());
 				}
 			}
 		});
 
-		mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-			@Override
-			public void onCancel(DialogInterface dialog) {
-				downloadTask.cancel(true);
-			}
-		});
-
-//		//http://stackoverflow.com/questions/2068344/how-do-i-get-a-youtube-video-thumbnail-from-the-youtube-api
-//		String icon_url = "http://img.youtube.com/vi/" + youtubeLink + "/hqdefault.jpg";
-//		ImageLoader.getInstance().displayImage(icon_url, imgphone);
-
+//		mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+//			@Override
+//			public void onCancel(DialogInterface dialog) {
+////				downloadTask.cancel(true);
+//			}
+//		});
+		
 		upVote.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -184,16 +212,27 @@ AsyncResponse {
         
         pageAdapter = new MyPageAdapter(getSupportFragmentManager(), fragments);
 
-/*//commented out temporarily by Mike, 30 May 2015
+
         pager = (ViewPager)findViewById(R.id.screenshotsViewPager);
         pager.setAdapter(pageAdapter);
-*/        
-		YouTubePlayerFragment youTubePlayerFragment =
-				(YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.player);
-		youTubePlayerFragment.initialize(Constants.YOUTUBE_API_KEY, this);
+        
+      //commented out temporarily by JP, 5 June 2015
+//		YouTubePlayerFragment youTubePlayerFragment =
+//				(YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.player);
+//		youTubePlayerFragment.initialize(Constants.YOUTUBE_API_KEY, this);
 		doLayout();
 	}
-	
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+//		if (onComplete != null && onNotificationClick != null) {
+//			unregisterReceiver(onComplete);
+//			unregisterReceiver(onNotificationClick);
+//		}
+	}
+
 	@Override
 	public void processFinish(boolean output) {
 		if(output)
@@ -201,13 +240,34 @@ AsyncResponse {
 	}
 
     private List<Fragment> getFragments(){
-    	List<Fragment> fList = new ArrayList<Fragment>();
-    	
-    	fList.add(ScreenshotFragment.newInstance("http://img.youtube.com/vi/" + youtubeLink + "/0.jpg"));
-    	fList.add(ScreenshotFragment.newInstance("http://img.youtube.com/vi/" + youtubeLink + "/1.jpg"));
-    	fList.add(ScreenshotFragment.newInstance("http://img.youtube.com/vi/" + youtubeLink + "/2.jpg"));
-    	
-    	return fList;
+    	List<Fragment> viewPagerContentList = new ArrayList<Fragment>();
+    	if(fitsObject.getSCREENSHOT2().length() > 0) {
+    		Log.d("SingleItemViewWithFragment", "1:" + fitsObject.getSCREENSHOT2());
+    		viewPagerContentList.add(ScreenshotFragment.newInstance(
+    				new ScreenshotsInViewPager(Constants.SCREENSHOT2, fitsObject.getSCREENSHOT2())));
+    	}
+    	if(fitsObject.getSCREENSHOT3().length() > 0) {
+    		Log.d("SingleItemViewWithFragment", "2:" + fitsObject.getSCREENSHOT3());
+    		viewPagerContentList.add(ScreenshotFragment.newInstance(
+    				new ScreenshotsInViewPager(Constants.SCREENSHOT2, fitsObject.getSCREENSHOT3())));
+    	} 
+    	if(fitsObject.getSCREENSHOT4().length() > 0) {
+    		Log.d("SingleItemViewWithFragment", "3:" + fitsObject.getSCREENSHOT4());
+    		viewPagerContentList.add(ScreenshotFragment.newInstance(
+    				new ScreenshotsInViewPager(Constants.SCREENSHOT2, fitsObject.getSCREENSHOT4())));
+    	}    	
+    	//Check if youtubelink is null
+    	if(fitsObject.getYOUTUBELINK().length() > 0) {
+    		Log.d("SingleItemViewWithFragment", "4:" + fitsObject.getYOUTUBELINK());
+    		viewPagerContentList.add(ScreenshotFragment.newInstance(
+    				new ScreenshotsInViewPager(Constants.YOUTUBELINK, fitsObject.getYOUTUBELINK())));
+    	}
+    	if(fitsObject.getYOUTUBELINK2().length() > 0) {
+    		Log.d("SingleItemViewWithFragment", "5:" + fitsObject.getYOUTUBELINK2());
+    		viewPagerContentList.add(ScreenshotFragment.newInstance(
+    				new ScreenshotsInViewPager(Constants.YOUTUBELINK, fitsObject.getYOUTUBELINK2())));
+    	}
+    	return viewPagerContentList;
     }
     
     private class MyPageAdapter extends FragmentPagerAdapter {
@@ -318,4 +378,79 @@ AsyncResponse {
 			download.setText("Download");
 		}
 	}
+		
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    // Inflate the menu items for use in the action bar
+//	    MenuInflater inflater = getMenuInflater();
+//	    inflater.inflate(R.menu.list_menu, menu);
+	    return super.onCreateOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle presses on the action bar items
+	    switch (item.getItemId()) {
+	        case android.R.id.home:
+//	            NavUtils.navigateUpFromSameTask(this);
+	        	onBackPressed();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
+	
+	//For Download Manager
+	//TODO: how to handle failure to connect (probably none)
+	public void startDownload(String filePath) {
+		String urlToDownload = "http://" + Constants.HOSTNAME + "/usbong/trees/" + filePath;	    	
+		final DownloadManager.Request request = new DownloadManager.Request(Uri.parse(urlToDownload));
+		request.setDescription("Downloading: " + filePath);
+		request.setTitle("Downloading: " + filePath);
+		// in order for this if to run, you must use the android 3.2 to compile your app
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			request.allowScanningByMediaScanner();
+			request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+		}
+
+		request.setDestinationInExternalPublicDir("/usbong/usbong_trees/", filePath);
+
+		// get download service and enqueue file
+		final DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+		manager.enqueue(request); //Download file
+
+	}
+
+
+	BroadcastReceiver onComplete = new BroadcastReceiver() {
+		public void onReceive(Context ctxt, Intent intent) {
+			download.setText("Open Tree");
+			isFileDownloaded = true;
+			Toast.makeText(ctxt, "Done", Toast.LENGTH_LONG).show();
+		}
+	};
+
+	BroadcastReceiver onNotificationClick = new BroadcastReceiver() {
+		public void onReceive(Context ctxt, Intent intent) {
+			if(isFileDownloaded) {
+				Intent i = new Intent(SingleItemViewWithFragment.this, UsbongDecisionTreeEngineActivity.class);
+				i.putExtra(Constants.UTREE_KEY, UsbongUtils.removeExtension(fitsObject.getFILEPATH()));
+				PendingIntent pI = PendingIntent.getActivity(SingleItemViewWithFragment.this, 0, i, 0);
+				Notification n  = new Notification.Builder(SingleItemViewWithFragment.this)
+				.setContentTitle("Usbong FITS Download")
+				.setContentText("File downloaded")
+				.setSmallIcon(R.drawable.usbong_icon)
+				.setContentIntent(pI) //TODO change this to usbong app open tree immediately
+				.setAutoCancel(true).build();
+				n.flags |= Notification.FLAG_AUTO_CANCEL;
+
+				NotificationManager notificationManager =
+						(NotificationManager) SingleItemViewWithFragment.this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+				notificationManager.cancel(0);
+
+				notificationManager.notify(0, n);
+			}
+		}
+	};
 }
