@@ -27,7 +27,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
@@ -39,6 +38,7 @@ import usbong.android.utils.UsbongUtils;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -54,7 +54,10 @@ public class SignInActivity extends Activity {
 	private ProgressDialog myProgressDialog;
 	
 	private static Activity myActivityInstance;
-	
+
+	//added by Mike, 9 June 2015
+    public static final String MY_SAVED_USERNAME_AND_PASSWORD= "MySavedUsernameAndPassword";
+
 /*
 	private Handler handler;
 */	
@@ -108,10 +111,32 @@ public class SignInActivity extends Activity {
         }
         
 		gotoUsbongMainActivityIntent = new Intent().setClass(this, UsbongMainActivity.class);
-        
+
+/*		//commented out by Mike, 9 June 2015
         //EditText declarations
         final EditText etUsername = (EditText)findViewById(R.id.signin_username);
         final EditText etPassword = (EditText)findViewById(R.id.signin_password);
+*/
+
+        //EditText declarations
+        EditText etUsernameNonFinal = (EditText)findViewById(R.id.signin_username);
+        EditText etPasswordNonFinal = (EditText)findViewById(R.id.signin_password);
+
+        //Reference: http://stackoverflow.com/questions/23024831/android-shared-preferences-example
+        //; last accessed: 9 June 2015
+        //answer by Elenasys
+        //added by Mike, 9 June 2015
+        SharedPreferences prefs = getSharedPreferences(MY_SAVED_USERNAME_AND_PASSWORD, MODE_PRIVATE);
+          if (prefs!=null) {
+        	System.out.println(">>>>inside!");
+        	System.out.println(">>>>prefs.getString: "+prefs.getString("username",""));
+
+          etUsernameNonFinal.setText(prefs.getString("username", ""));//"" is the default value.
+          etPasswordNonFinal.setText(prefs.getString("password", "")); //"" is the default value.
+        }
+
+        final EditText etUsername = etUsernameNonFinal;
+        final EditText etPassword = etPasswordNonFinal;
         
         //Button declarations
         Button btnSubmit = (Button)findViewById(R.id.signin_button);
@@ -193,6 +218,16 @@ public class SignInActivity extends Activity {
 												System.out.println("EntityUtils.toString(response.getEntity()): "+usbongStringResponse);
 																								
 												if (usbongStringResponse.equals("True")) {
+											        //Reference: http://stackoverflow.com/questions/23024831/android-shared-preferences-example
+											        //; last accessed: 9 June 2015
+											        //answer by Elenasys
+											        //added by Mike, 9 June 2015
+											        SharedPreferences.Editor editor = getSharedPreferences(MY_SAVED_USERNAME_AND_PASSWORD, MODE_PRIVATE).edit();
+											        editor.putString("username", etUsername.getText().toString());
+											        editor.putString("password", etPassword.getText().toString());
+											        editor.commit();
+										        	System.out.println(">>>>Dito!");
+													
 													myProgressDialog.dismiss();
 													finish();
 													startActivity(gotoUsbongMainActivityIntent);
