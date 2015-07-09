@@ -238,7 +238,7 @@ public class SignInActivity extends Activity {
 													//last accessed: 9 Jan. 2014; answer by Lauri Lehtinen
 													myActivityInstance.runOnUiThread(new Runnable() {
 													    public void run() {
-													    	Toast.makeText(getApplicationContext(), "Incorrect username or password.", Toast.LENGTH_LONG).show();																					    
+													    	Toast.makeText(getApplicationContext(), "Incorrect username or password.", Toast.LENGTH_LONG).show();
 													    }
 													});
 //													Toast.makeText(getApplicationContext(), "Incorrect username or password.", Toast.LENGTH_LONG).show();								
