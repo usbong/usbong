@@ -92,14 +92,18 @@ public class FitsListDisplay extends ActionBarActivity {
                 android.R.color.holo_green_light, 
                 android.R.color.holo_orange_light, 
                 android.R.color.holo_red_light);
-
+/*
 		// Execute RemoteDataTask AsyncTask
         //TODO:Add expiration of current data so that a refresh is done automatically 
         if((editor.getString(Constants.JSON_KEY, "").length() == 0) && UsbongUtils.hasNetworkConnection(this)) {
+*/
+        if(UsbongUtils.hasNetworkConnection(this)) {
         	error.setVisibility(View.GONE);
         	new GetFitsListAsync().execute();
         } else {
-        	if(editor.getString(Constants.JSON_KEY, "").length() != 0) {
+/*        	if(editor.getString(Constants.JSON_KEY, "").length() != 0) {
+ */
+        	if(editor.contains(Constants.JSON_KEY)) {
         		error.setVisibility(View.VISIBLE);
         		error.setText("Warning: Currently in offline mode.");
             	ParseJSONToFitsArray(editor.getString(Constants.JSON_KEY, ""));
@@ -114,8 +118,12 @@ public class FitsListDisplay extends ActionBarActivity {
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 //		savedInstanceState.putString("jsonString", jsonString);
 		// save index and top position
+/*		
 		int index = listView.getScrollX();
 		editor.edit().putInt("index", index).apply();
+*/		
+		int currentListViewPosition = listView.getScrollX();
+		editor.edit().putInt("index", currentListViewPosition).apply();
 		super.onSaveInstanceState(savedInstanceState);
 	}
 	
@@ -129,12 +137,20 @@ public class FitsListDisplay extends ActionBarActivity {
 		super.onResume();
 		int index = editor.getInt("index", 0);
 		listView.setScrollX(index);
+/*		
 		if(UsbongUtils.hasNetworkConnection(FitsListDisplay.this)) {
     		error.setVisibility(View.GONE);
 		} else {
     		error.setVisibility(View.VISIBLE);
     		error.setText("Warning: Currently in offline mode.");
 		}
+*/
+		if(UsbongUtils.hasNetworkConnection(this)) {
+        	error.setVisibility(View.GONE);
+        } else {
+        	error.setText("Warning: Currently in offline mode.");
+        	ParseJSONToFitsArray(editor.getString(Constants.JSON_KEY, ""));
+        }
 	}
 	
 	public class GetFitsListAsync extends AsyncTask<Void, Void, String> {
@@ -148,7 +164,8 @@ public class FitsListDisplay extends ActionBarActivity {
 	        super.onPreExecute();
 	        dialog = new ProgressDialog(FitsListDisplay.this);
 	        dialog.setTitle("Planting trees...");
-	        dialog.setMessage("Please wait...");
+//	        dialog.setMessage("Please wait..."); //edited by Mike, 9 July 2015
+	        dialog.setMessage("This takes only a short while.");
 	        dialog.setIndeterminate(true);
 	        dialog.setCancelable(false);
 	        dialog.setCanceledOnTouchOutside(false);

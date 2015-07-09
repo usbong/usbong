@@ -226,4 +226,13 @@ public class UsbongMainActivity extends Activity
 		prompt.show();
 	}
 */	
+    //added by Mike, July 2, 2015
+    @Override
+	public void onBackPressed() {
+    	//Reference: http://stackoverflow.com/questions/11495188/how-to-put-application-to-background
+    	//; last accessed: 14 April 2015, answer by: JavaCoderEx
+    	Intent i = new Intent(Intent.ACTION_MAIN);
+        i.addCategory(Intent.CATEGORY_HOME);
+        startActivity(i);    
+    }
 }

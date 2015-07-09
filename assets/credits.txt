@@ -1,19 +1,21 @@
 --Usbong (beta)--
-ver: June 9, 2015
+ver: July 9, 2015
 
 Usbong's mission is to defeat poverty by uplifting human lives. Our vision is a community where there is lasting peace. We provide training and workshops on Android Development, Software Engineering, and Social Entrepreneurship. We also offer software development services. Our flagship open source product is also called, "Usbong". Together with its companion app, Usbong Builder, even non-technical people can build their own Android apps.
 
 Usbong Social Systems, Inc.
 --Core Developer--
-Michael B. Syson
+Michael Syson
 
 --Community Integration--
 JP Talusan
 
 --Acknowledgment--
-Diane Jayne C. Gonzales
+Diane Gonzales
 Rocky Camacho
 Jomel Araniego
+Ranel Mafe
+Jaime Lopez
 
 Contact:
 Website: www.usbong.ph
