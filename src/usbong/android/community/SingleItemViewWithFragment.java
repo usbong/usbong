@@ -426,7 +426,11 @@ usbong.android.community.DownloadTreeAsync.AsyncResponse {
 		public void onReceive(Context ctxt, Intent intent) {
 			download.setText("Open Tree");
 			isFileDownloaded = true;
-			Toast.makeText(ctxt, "Done", Toast.LENGTH_LONG).show();
+			Toast toast = Toast.makeText(ctxt, "Done", Toast.LENGTH_LONG);
+            View view = toast.getView();
+            view.setBackgroundResource(R.drawable.alternatetoastbox);
+            toast.setView(view);
+			toast.show();
 		}
 	};
 

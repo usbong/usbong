@@ -240,13 +240,23 @@ public class FitsListDisplay extends ActionBarActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Toast toast;
+		View view;
 	    // Handle presses on the action bar items
 	    switch (item.getItemId()) {
 	        case R.id.action_search:
-	            Toast.makeText(this, "Pressed search", Toast.LENGTH_SHORT).show();
+	            toast = Toast.makeText(this, "Pressed search", Toast.LENGTH_SHORT);
+                view = toast.getView();
+                view.setBackgroundResource(R.drawable.alternatetoastbox);
+                toast.setView(view);
+				toast.show();
 	            return true;
 	        case R.id.action_settings:
-	        	Toast.makeText(this, "Pressed settings", Toast.LENGTH_SHORT).show();
+	        	toast = Toast.makeText(this, "Pressed settings", Toast.LENGTH_SHORT);
+                view = toast.getView();
+                view.setBackgroundResource(R.drawable.alternatetoastbox);
+                toast.setView(view);
+				toast.show();
 	            return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
