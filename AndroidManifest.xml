@@ -8,12 +8,15 @@
 
     <uses-sdk android:minSdkVersion="8" 
               android:targetSdkVersion="22" />
-	
-    <supports-screens android:smallScreens="true"
-              android:normalScreens="true"
-              android:largeScreens="true"
-              android:xlargeScreens="true" />
     
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:resizeable="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
+
     <uses-permission android:name="android.permission.CAMERA"></uses-permission>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
     <uses-permission android:name="android.permission.RECORD_AUDIO"></uses-permission>
@@ -36,7 +39,13 @@
             </intent-filter>
         </activity>
         <activity android:name="UsbongMainActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name="UsbongDecisionTreeEngineActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name="UsbongDecisionTreeEngineActivity" android:screenOrientation="portrait">
+            <intent-filter>
+	        <action android:name="android.intent.action.SEND" />
+	        <category android:name="android.intent.category.DEFAULT" />
+	        <data android:mimeType="application/utree" />
+	    </intent-filter>
+        </activity>
         <activity android:name="CameraActivity" android:permission="android.permission.CAMERA" android:screenOrientation="nosensor"></activity>
 		<activity android:name="SettingsActivity" android:screenOrientation="portrait"></activity>
 		<activity android:name="RegisterActivity" android:screenOrientation="portrait"></activity>        
@@ -64,6 +73,6 @@
 			<meta-data
 	            android:name="android.support.PARENT_ACTIVITY"
 	            android:value="usbong.android.community.FitsListDisplay" />
-		</activity>			
+		</activity>
 	</application>
 </manifest>
