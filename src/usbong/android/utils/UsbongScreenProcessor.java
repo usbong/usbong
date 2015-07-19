@@ -123,7 +123,7 @@ public class UsbongScreenProcessor
     				myStringToken="";
     			}	    			
     		}
-
+	    	
 		if (udtea.currScreen == udtea.MULTIPLE_RADIO_BUTTONS_SCREEN) {
 			udtea.setContentView(R.layout.multiple_radio_buttons_screen);
 			udtea.initBackNextButtons();
@@ -1013,8 +1013,17 @@ public class UsbongScreenProcessor
 			udtea.initBackNextButtons();
 		}
 		View myLayout= udtea.findViewById(R.id.parent_layout_id);
-        if (!UsbongUtils.setBackgroundImage(myLayout, udtea.myTree, "bg")) {
-    		myLayout.setBackgroundResource(R.drawable.bg);//default bg
+
+		//added by Mike, 19 July 2015    	
+        String bgStringName = UsbongUtils.getSpecificBGImageStringForThisScreenIfAvailable(udtea.currUsbongNode);
+//        Log.d(">>>>bgStringName",bgStringName);
+        if (bgStringName !=null) {
+        	UsbongUtils.setBackgroundImage(myLayout, udtea.myTree, bgStringName);
+        }
+        else {
+	        if (!UsbongUtils.setBackgroundImage(myLayout, udtea.myTree, "bg")) {
+	    		myLayout.setBackgroundResource(R.drawable.bg);//default bg
+	        }
         }
         
 		if ((!udtea.usedBackButton) && (!udtea.hasReturnedFromAnotherActivity)){

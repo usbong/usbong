@@ -491,6 +491,28 @@ public class UsbongUtils {
 		return false;
     }
 
+    //added by Mike, 19 July 2015
+    public static String getSpecificBGImageStringForThisScreenIfAvailable(String currUsbongNode) {
+		StringTokenizer st = new StringTokenizer(currUsbongNode, "~");
+		int totalTokens = st.countTokens();
+		int counter = 0;		
+		String myStringToken = "";
+		
+		while (counter<totalTokens-1) { //up to second to the last only
+			myStringToken = st.nextToken(); 
+			counter++;
+			
+			//Reference: http://stackoverflow.com/questions/9700115/difference-between-matches-and-equalsignorecase-or-equals-in-string-class;
+			//last accessed: 19 July 2015; answer by MByD 
+			if (myStringToken.matches("bg=.*")) {
+		        Log.d(">>>>myStringToken.substring(3)",myStringToken.substring(3));
+				return myStringToken.substring(3); //why 3? to remove "bg="
+			}
+		}
+		return null;
+    }
+
+    
     //This methods gets the name of the next node
     //example: <task-node name="textDisplay~You get a full rest.~I choose to go to sleep.">
     //becomes "textDisplay~You get a full rest."
@@ -1139,7 +1161,8 @@ public class UsbongUtils {
     	else {
         	path = UsbongUtils.USBONG_TREES_FILE_PATH+myTree+".utree/res/"+resFileName;
     	}
-    	
+ 
+    	Log.d(">>>>>path", path);
     	File imageFile = new File(path+".png");
 
 		if(!imageFile.exists()) {
@@ -1150,8 +1173,9 @@ public class UsbongUtils {
 				imageFile = new File(path+".jpeg");
 				path = path+".jpeg";					
 			}
-			else {
+			else {				
 				path = path+".jpg";					
+		    	Log.d(">>>>>path .jpg", path);
 			}
 		}
 		else {
@@ -1159,6 +1183,8 @@ public class UsbongUtils {
 		}
 
     	if (imageFile.exists()) {    		
+        	Log.d(">>>>>imageFile.exists!", "exists!");
+
     		return path;		    		
     	}
     	return "null";
