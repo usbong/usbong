@@ -870,7 +870,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				  if ((currUsbongNode.equals("")) && (parser.getName().equals("process-definition"))) {
 					  currLanguageBeingUsed=UsbongUtils.getLanguageID(parser.getAttributeValue(null, "lang"));
 					  UsbongUtils.setDefaultLanguage(UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed));
-					  
+
+//					  System.out.println("currLanguageBeingUsed: "+currLanguageBeingUsed);
+					  	
 					  //added by Mike, Feb. 2, 2013
 					  decisionTrackerContainer.removeAllElements();					  
 				  }
@@ -909,6 +911,10 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				      else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
 				    	noStringValue = (String) getResources().getText(R.string.noStringValueJapanese); //noStringValue
 				    	yesStringValue = (String) getResources().getText(R.string.yesStringValueJapanese); //yesStringValue    		
+					  }						  
+				      else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_MANDARIN) {
+				    	noStringValue = (String) getResources().getText(R.string.noStringValueMandarin); //noStringValue
+				    	yesStringValue = (String) getResources().getText(R.string.yesStringValueMandarin); //yesStringValue    		
 					  }						  
 				      else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
 				    	noStringValue = (String) getResources().getText(R.string.noStringValueEnglish); //noStringValue

@@ -111,6 +111,10 @@ public class UsbongUtils {
 	public static final int LANGUAGE_ENGLISH=0; 
 	public static final int LANGUAGE_FILIPINO=1;
 	public static final int LANGUAGE_JAPANESE=2;
+	public static final int LANGUAGE_MANDARIN=3; 
+	public static final int LANGUAGE_BISAYA=4;
+	public static final int LANGUAGE_ILONGGO=5;
+	public static final int LANGUAGE_KAPAMPANGAN=6;
 	
 	private static String destinationServerURL;
 	
@@ -910,6 +914,18 @@ public class UsbongUtils {
 	    	else if (s.equals("Japanese")) {
 	    		return LANGUAGE_JAPANESE;
 	    	}
+	    	else if (s.equals("Mandarin")) {
+	    		return LANGUAGE_MANDARIN;
+	    	}
+	    	if (s.equals("Bisaya")) {
+	    		return LANGUAGE_BISAYA;
+	    	}
+	    	if (s.equals("Ilonggo")) {
+	    		return LANGUAGE_ILONGGO;
+	    	}
+	    	if (s.equals("Kapampangan")) {
+	    		return LANGUAGE_KAPAMPANGAN;
+	    	}
     	}
     	return LANGUAGE_ENGLISH;
     }
@@ -920,6 +936,14 @@ public class UsbongUtils {
     			return "Filipino";
     		case LANGUAGE_JAPANESE:
     			return "Japanese";
+    		case LANGUAGE_MANDARIN:
+    			return "Mandarin";
+    		case LANGUAGE_BISAYA:
+    			return "Bisaya";
+    		case LANGUAGE_ILONGGO:
+    			return "Ilonggo";
+    		case LANGUAGE_KAPAMPANGAN:
+    			return "Kapampangan";
     		default:
     			return "English";
     	}
@@ -1120,7 +1144,15 @@ public class UsbongUtils {
 
 		if(!imageFile.exists()) {
 			imageFile = new File(path+".jpg");
-			path = path+".jpg";					
+
+			//added by Mike, 19 July 2015
+			if(!imageFile.exists()) {
+				imageFile = new File(path+".jpeg");
+				path = path+".jpeg";					
+			}
+			else {
+				path = path+".jpg";					
+			}
 		}
 		else {
 			path = path+".png";
@@ -1133,7 +1165,7 @@ public class UsbongUtils {
 //		return imageFile;
     }
     
-    //supports .png and .jpg
+    //supports .png, .jpg and .jpeg
     public static boolean setImageDisplay(ImageView myImageView, String myTree, String resFileName) {
     	/*
     	File file = new File(path);

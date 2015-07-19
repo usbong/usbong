@@ -761,7 +761,7 @@ public class UsbongScreenProcessor
 			    	if (tv.toString().equals("")) {
 			    		tv.setText("No message.");
 			    	}
-	    	    	tv.setTextSize((UsbongDecisionTreeEngineActivity.getInstance().getResources().getDimension(R.dimen.textsize)));
+	    	    	tv.setTextSize((UsbongDecisionTreeEngineActivity.getInstance().getResources().getDimension(R.dimen.textsize)));	    	    	
 
 			    	new AlertDialog.Builder(udtea).setTitle("Hey!")
 //	            		.setMessage(myMessage)
@@ -1003,9 +1003,13 @@ public class UsbongScreenProcessor
 			else if (udtea.currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
 				endStateTextView.setText((String) udtea.getResources().getText(R.string.UsbongEndStateTextViewJAPANESE));				    						    		
 			}
+			else if (udtea.currLanguageBeingUsed==UsbongUtils.LANGUAGE_MANDARIN) {
+				endStateTextView.setText((String) udtea.getResources().getText(R.string.UsbongEndStateTextViewMANDARIN));				    						    		
+			}
 			else { //if (udtea.currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
 				endStateTextView.setText((String) udtea.getResources().getText(R.string.UsbongEndStateTextViewENGLISH));				    						    		
 			}
+			//add Bisaya, Ilonggo, and Kapampangan
 			udtea.initBackNextButtons();
 		}
 		View myLayout= udtea.findViewById(R.id.parent_layout_id);

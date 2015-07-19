@@ -17,11 +17,13 @@
 	<string name="pleaseChooseAnAnswerStringValue">Please choose an answer.</string>
 	<string name="pleaseChooseAnAnswerStringValueJapanese">答えを選んでください。</string>
 	<string name="pleaseChooseAnAnswerStringValueFilipino">Mangyaring pumili ng isang sagot.</string>
-
+	<string name="pleaseChooseAnAnswerStringValueMandarin">请选择一个答案</string>
+	
 	<string name="pleaseAnswerFieldStringValue">Please input an answer.</string>
 	<string name="pleaseAnswerFieldStringValueJapanese">答えを入力してください。.</string>
 	<string name="pleaseAnswerFieldStringValueFilipino">Mangyaring maglagay ng sagot.</string>
-			
+	<string name="pleaseAnswerFieldStringValueMandarin">请录入一个答案</string>
+				
 	<string name="pressTheMenuButtonToSaveStringValue">Please press the Menu button on your device to open the Save option.</string>
 
 	<string name="signup"><u>Sign Up</u></string>
@@ -32,25 +34,29 @@
 	<string name="alertStringValueEnglish">Alert!</string>
 	<string name="alertStringValueFilipino">Alerto!</string>
 	<string name="alertStringValueJapanese">ご注意下さい！</string>	
-	
+	<string name="alertStringValueMandarin">请注意一下！</string>	
+		
 	<string name="areYouSureYouWantToReturnToMainMenuEnglish">Are you sure you want to return to Main Menu?</string>
 	<string name="areYouSureYouWantToReturnToMainMenuFilipino">Sigurado ka bang nais mong bumalik sa Main Menu?</string>
 	<string name="areYouSureYouWantToReturnToMainMenuJapanese">メイン・メニューへ本当に戻りたいですか？</string>
-	
-		
+	<string name="areYouSureYouWantToReturnToMainMenuMandarin">你肯定回去选单吗？</string>
+				
 	<string name="noStringValueEnglish">No</string>
 	<string name="yesStringValueEnglish">Yes</string>  
 	<string name="noStringValueFilipino">Hindi</string>
 	<string name="yesStringValueFilipino">Oo</string>  
 	<string name="noStringValueJapanese">いいえ</string>
 	<string name="yesStringValueJapanese">はい</string>  
-	
-	<string name="noStringValue">No [いいえ] [不要]</string>
-	<string name="yesStringValue">Yes [はい] [要]</string>  
+	<string name="noStringValueMandarin">是</string>
+	<string name="yesStringValueMandarin">不是</string>  
+		
+	<string name="noStringValue">No [いいえ]</string>
+	<string name="yesStringValue">Yes [はい]</string>  
 
     <string name="UsbongEndStateTextViewFILIPINO">Narating mo na ang dulo.</string>        
     <string name="UsbongEndStateTextViewENGLISH">You\'ve now reached the end.</string>        
     <string name="UsbongEndStateTextViewJAPANESE">終点に着いた。</string>       
+    <string name="UsbongEndStateTextViewMANDARIN">终点到了。</string>       
     
     <string name="UsbongPaintScreenTextViewFILIPINO">Paint Iskrin</string>        
     <string name="UsbongPaintScreenTextViewENGLISH">Paint Screen</string>        
