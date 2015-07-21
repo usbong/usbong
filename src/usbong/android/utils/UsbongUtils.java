@@ -363,6 +363,82 @@ public class UsbongUtils {
         }       
 
     }
+
+    //added by Mike, 21 July 2015
+    public static Uri getAudioUriFromUTree(String filename, String language) {
+/*    	
+    	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/audio/"+language+filename+".mp3";
+		File file = new File(filePath);
+		if(!file.exists())
+		{
+			file = new File(UsbongUtils.USBONG_TREES_FILE_PATH+"temp/"+myTreeFileName+".utree/audio/"+language+filename+".mp3");
+
+			if(!file.exists()) {						
+				return null;
+			}
+		}
+		//if this point is reached, this means that trans file exists		  
+		return Uri.fromFile(file);
+*/
+		return Uri.fromFile(new File(getAudioFilePathFromUTree(filename, language)));
+    }
+
+    //added by Mike, 21 July 2015
+    public static String getAudioFilePathFromUTree(String filename, String language) {
+/*    	
+    	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/audio/"+language+"/"+filename+".mp3";    	    	
+		File file = new File(filePath);
+		if(!file.exists())
+		{
+			file = new File(UsbongUtils.USBONG_TREES_FILE_PATH+"temp/"+myTreeFileName+".utree/audio/"+"/"+language+filename+".mp3");
+
+			if(!file.exists()) {						
+				return null;
+			}
+		}
+		//if this point is reached, this means that trans file exists
+		return file.getAbsolutePath();
+*/
+    	String[] fileExtensions = {".mp3",".wav",".mp4"};
+    	for (int i=0; i<fileExtensions.length; i++) {
+        	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/audio/"+language+"/"+filename+fileExtensions[i];    	    	
+    		File file = new File(filePath);
+    		if(file.exists()) {
+    			return file.getAbsolutePath();
+    		}
+    	}
+    	for (int i=0; i<fileExtensions.length; i++) {
+        	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/audio/"+language+"/"+filename+fileExtensions[i];
+    		File file = new File(filePath);
+    		if(file.exists()) {
+    			return file.getAbsolutePath();
+    		}
+    	}    	
+		return null;    	
+    }
+    
+    //added by Mike, 21 July 2015
+    public static String getAudioFilePathForThisScreenIfAvailable(String currUsbongNode) {
+		StringTokenizer st = new StringTokenizer(currUsbongNode, "~");
+		int totalTokens = st.countTokens();
+		int counter = 0;		
+		String myStringToken = "";
+		
+		while (counter<totalTokens-1) { //up to second to the last only
+			myStringToken = st.nextToken(); 
+			counter++;
+			
+			//Reference: http://stackoverflow.com/questions/9700115/difference-between-matches-and-equalsignorecase-or-equals-in-string-class;
+			//last accessed: 19 July 2015; answer by MByD 
+			if (myStringToken.matches("audioName=.*")) {
+		        Log.d(">>>>myStringToken.substring(10)",myStringToken.substring(10));
+				return myStringToken.substring(10); //why 10? to remove "audioName="
+			}
+		}
+		return null;
+    }
+
+    
 /*    
     //from rohith (stackoverflow); 
     //Reference: http://stackoverflow.com/questions/4447477/android-how-to-copy-files-in-assets-to-sdcard;

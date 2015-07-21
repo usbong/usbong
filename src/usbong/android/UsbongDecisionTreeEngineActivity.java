@@ -29,13 +29,13 @@ import java.util.Vector;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import usbong.android.community.Constants;
 import usbong.android.features.node.PaintActivity;
 import usbong.android.features.node.QRCodeReaderActivity;
 import usbong.android.multimedia.audio.AudioRecorder;
 import usbong.android.utils.FedorMyLocation;
 import usbong.android.utils.UsbongScreenProcessor;
 import usbong.android.utils.UsbongUtils;
-import usbong.android.community.Constants;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -44,6 +44,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
@@ -62,7 +63,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -123,7 +123,6 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	public static final int PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE=0;
 	public static final int PLEASE_ANSWER_FIELD_ALERT_TYPE=1;
 
-	
 	private Button backButton;
 	private Button nextButton;	
 	
@@ -132,7 +131,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	private Button playButton;
 	
 	private static AudioRecorder currAudioRecorder;
-
+	private static MediaPlayer myMediaPlayer;
+	
 	private Button paintButton;
 	private Button photoCaptureButton;
 	private ImageView myImageView;
@@ -157,6 +157,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	public boolean performedGetQRCode;
 	
 	public String currUsbongNode="";
+	public String currUsbongAudioString=""; //added by Mike, 21 July 2015
 	private String nextUsbongNodeIfYes;
 	private String nextUsbongNodeIfNo;
 
@@ -252,6 +253,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		mTts.setLanguage(new Locale("eng", "EN"));//default
         //==================================================================
         
+		myMediaPlayer = new MediaPlayer();
+		myMediaPlayer.setVolume(1.0f, 1.0f);
+	
     	usbongNodeContainer = new Vector<String>();
     	classificationContainer = new Vector<String>();
     	radioButtonsContainer = new Vector<String>();
@@ -433,10 +437,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		            	radioButton.setChecked(true);
 		            }
 		        
-		            radioButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+		            radioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 						@Override
-						public void onCheckedChanged(CompoundButton myRadioButton,
-								boolean isChecked) {
+		            	public void onCheckedChanged(CompoundButton myRadioButton, boolean isChecked) {
 							if (isChecked) {
 								UsbongUtils.setLanguage(myRadioButton.getText().toString());
 							}
@@ -601,27 +604,51 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				    	}
 				    	break;    		
 				}
-	        	//it's either com.svox.pico (default) or com.svox.classic (Japanese, etc)        				
-				mTts.setEngineByPackageName("com.svox.pico"); //note: this method is already deprecated
-				switch (currLanguageBeingUsed) {
-					case UsbongUtils.LANGUAGE_FILIPINO:				    
-						mTts.setLanguage(new Locale("spa", "ESP"));
-						mTts.speak(UsbongUtils.convertFilipinoToSpanishAccentFriendlyText(sb.toString()), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
-						break;
-					case UsbongUtils.LANGUAGE_JAPANESE:
-				        mTts.setEngineByPackageName("com.svox.classic"); //note: this method is already deprecated
-						mTts.setLanguage(new Locale("ja", "ja_JP"));
-						mTts.speak(sb.toString(), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
-						break;
-					case UsbongUtils.LANGUAGE_ENGLISH:
-						mTts.setLanguage(new Locale("eng", "EN"));
-						mTts.speak(sb.toString(), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
-						break;
-					default:
-						mTts.setLanguage(new Locale("eng", "EN"));
-						mTts.speak(sb.toString(), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
-						break;
+				//edited by Mike, 21 July 2015
+				try {
+					Log.d(">>>>currUsbongAudioName: ",""+currUsbongAudioString);
+					Log.d(">>>>currLanguageBeingUsed: ",UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed));
+					
+					String filePath=UsbongUtils.getAudioFilePathFromUTree(currUsbongAudioString, UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed));
+//					Log.d(">>>>filePath: ",filePath);
+					if (filePath!=null) {
+						Log.d(">>>>", "inside filePath!=null");
+						myMediaPlayer.reset();
+						myMediaPlayer.setDataSource(filePath);
+						if (myMediaPlayer.isPlaying()) {
+							myMediaPlayer.stop();
+						}
+						myMediaPlayer.prepare();
+//						myMediaPlayer.setVolume(1.0f, 1.0f);
+						myMediaPlayer.start();
+					}
+					else {
+			        	//it's either com.svox.pico (default) or com.svox.classic (Japanese, etc)        				
+						mTts.setEngineByPackageName("com.svox.pico"); //note: this method is already deprecated
+						switch (currLanguageBeingUsed) {
+							case UsbongUtils.LANGUAGE_FILIPINO:				    
+								mTts.setLanguage(new Locale("spa", "ESP"));
+								mTts.speak(UsbongUtils.convertFilipinoToSpanishAccentFriendlyText(sb.toString()), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
+								break;
+							case UsbongUtils.LANGUAGE_JAPANESE:
+						        mTts.setEngineByPackageName("com.svox.classic"); //note: this method is already deprecated
+								mTts.setLanguage(new Locale("ja", "ja_JP"));
+								mTts.speak(sb.toString(), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
+								break;
+							case UsbongUtils.LANGUAGE_ENGLISH:
+								mTts.setLanguage(new Locale("eng", "EN"));
+								mTts.speak(sb.toString(), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
+								break;
+							default:
+								mTts.setLanguage(new Locale("eng", "EN"));
+								mTts.speak(sb.toString(), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
+								break;
+						}
+					}
 				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}					
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
@@ -866,7 +893,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				  continue;
 			  }
 			  //if this is the first process-definition tag
-			  else if (parser.getAttributeCount()>1) { 
+			  else if (parser.getAttributeCount()>1){ 
 				  if ((currUsbongNode.equals("")) && (parser.getName().equals("process-definition"))) {
 					  currLanguageBeingUsed=UsbongUtils.getLanguageID(parser.getAttributeValue(null, "lang"));
 					  UsbongUtils.setDefaultLanguage(UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed));
@@ -902,8 +929,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 					  myQRCodeContent="";
 					  continue;
 				  }
-				  if ((!currUsbongNode.equals("")) && (parser.getAttributeValue(0).toString().equals(currUsbongNode)) &&
-						  !(parser.getName().equals("transition"))) { //make sure that the tag is not a transition node 
+				  //edited by Mike, 21 July 2015
+				  if ((!currUsbongNode.equals("")) && /*(parser.getAttributeValue(null,"name")!=null) && ((parser.getAttributeValue(null,"name").toString().equals(currUsbongNode))*/(parser.getAttributeValue(0).toString().equals(currUsbongNode))
+						  && !(parser.getName().equals("transition"))) { //make sure that the tag is not a transition node 
 				      if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
 				    	noStringValue = (String) getResources().getText(R.string.noStringValueFilipino);
 				    	yesStringValue = (String) getResources().getText(R.string.yesStringValueFilipino);
@@ -937,7 +965,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 						  currScreen=END_STATE_SCREEN;
 					  }
 					  else if (parser.getName().equals("task-node")) { 
-						  	StringTokenizer st = new StringTokenizer(currUsbongNode, "~");
+						    StringTokenizer st = new StringTokenizer(currUsbongNode, "~");
 							String myStringToken = st.nextToken();							
 
 							if (myStringToken.equals(currUsbongNode)) {//if this is the task-node for classification and treatment/management plan								
@@ -1328,6 +1356,10 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				if (mTts.isSpeaking()) {
 					mTts.stop();
 				}
+				//added by Mike, 21 July 2015
+				if (myMediaPlayer.isPlaying()) {
+					myMediaPlayer.stop();
+				}
 
 				usedBackButton=true;
 				
@@ -1378,6 +1410,11 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				if (mTts.isSpeaking()) {
 					mTts.stop();
 				}
+				//added by Mike, 21 July 2015
+				if (myMediaPlayer.isPlaying()) {
+					myMediaPlayer.stop();
+				}
+
 				if (currAudioRecorder!=null) {
 					try {					
 						//if stop button is pressable
@@ -2351,6 +2388,10 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		    		//added by Mike, Sept. 10, 2014
 		    		UsbongUtils.clearTempFolder();
 
+		    		//added by Mike, 21 July 2015
+		    		if (myMediaPlayer!=null) {myMediaPlayer.stop();}
+		    		if (mTts!=null) {mTts.stop();}
+		    		
 		    		//return to main activity
 		    		finish();    
 					Intent toUsbongMainActivityIntent = new Intent(UsbongDecisionTreeEngineActivity.this, UsbongMainActivity.class);
