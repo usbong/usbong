@@ -399,7 +399,7 @@ public class UsbongUtils {
 		//if this point is reached, this means that trans file exists
 		return file.getAbsolutePath();
 */
-    	String[] fileExtensions = {".mp3",".wav",".mp4"};
+    	String[] fileExtensions = {".mp3",".wav",".mp4",".ogg"};
     	for (int i=0; i<fileExtensions.length; i++) {
         	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/audio/"+language+"/"+filename+fileExtensions[i];    	    	
     		File file = new File(filePath);
@@ -430,12 +430,18 @@ public class UsbongUtils {
 			
 			//Reference: http://stackoverflow.com/questions/9700115/difference-between-matches-and-equalsignorecase-or-equals-in-string-class;
 			//last accessed: 19 July 2015; answer by MByD 
+/*
 			if (myStringToken.matches("audioName=.*")) {
 		        Log.d(">>>>myStringToken.substring(10)",myStringToken.substring(10));
 				return myStringToken.substring(10); //why 10? to remove "audioName="
 			}
+*/			
+			if (myStringToken.matches("@audioName=.*")) {
+		        Log.d(">>>>myStringToken.substring(11)",myStringToken.substring(11));
+				return myStringToken.substring(11); //why 11? to remove "@audioName="
+			}			
 		}
-		return null;
+		return "";
     }
 
     
@@ -580,9 +586,9 @@ public class UsbongUtils {
 			
 			//Reference: http://stackoverflow.com/questions/9700115/difference-between-matches-and-equalsignorecase-or-equals-in-string-class;
 			//last accessed: 19 July 2015; answer by MByD 
-			if (myStringToken.matches("bg=.*")) {
-		        Log.d(">>>>myStringToken.substring(3)",myStringToken.substring(3));
-				return myStringToken.substring(3); //why 3? to remove "bg="
+			if (myStringToken.matches("@bg=.*")) {
+		        Log.d(">>>>myStringToken.substring(4)",myStringToken.substring(4));
+				return myStringToken.substring(4); //why 3? to remove "bg="
 			}
 		}
 		return null;

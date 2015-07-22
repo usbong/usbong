@@ -44,6 +44,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -254,8 +255,13 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
         //==================================================================
         
 		myMediaPlayer = new MediaPlayer();
+		myMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC); //added by Mike, 22 July 2015
 		myMediaPlayer.setVolume(1.0f, 1.0f);
 	
+		//added by Mike, 22 July 2015
+		AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+		am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+		
     	usbongNodeContainer = new Vector<String>();
     	classificationContainer = new Vector<String>();
     	radioButtonsContainer = new Vector<String>();
@@ -606,21 +612,26 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				}
 				//edited by Mike, 21 July 2015
 				try {
-					Log.d(">>>>currUsbongAudioName: ",""+currUsbongAudioString);
+/*					
+					currUsbongAudioString = UsbongUtils.getAudioFilePathForThisScreenIfAvailable(currUsbongNode);
+*/					
+					Log.d(">>>>currUsbongAudioString: ",""+currUsbongAudioString);
 					Log.d(">>>>currLanguageBeingUsed: ",UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed));
-					
+
 					String filePath=UsbongUtils.getAudioFilePathFromUTree(currUsbongAudioString, UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed));
 //					Log.d(">>>>filePath: ",filePath);
 					if (filePath!=null) {
 						Log.d(">>>>", "inside filePath!=null");
-						myMediaPlayer.reset();
-						myMediaPlayer.setDataSource(filePath);
+						Log.d(">>>>filePath: ",filePath);
 						if (myMediaPlayer.isPlaying()) {
 							myMediaPlayer.stop();
 						}
+						myMediaPlayer.reset();
+						myMediaPlayer.setDataSource(filePath);
 						myMediaPlayer.prepare();
 //						myMediaPlayer.setVolume(1.0f, 1.0f);
 						myMediaPlayer.start();
+//						myMediaPlayer.seekTo(0);
 					}
 					else {
 			        	//it's either com.svox.pico (default) or com.svox.classic (Japanese, etc)        				
@@ -704,13 +715,17 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     		}
         }
     }
-/*    
+
+    @Override
 	public void onDestroy() {
 		if (mTts!=null) {
 			mTts.shutdown();
 		}
+		if (myMediaPlayer!=null) {
+			myMediaPlayer.release();			
+		}
 	}
-*/	
+	
     public static UsbongDecisionTreeEngineActivity getInstance() {
     	return instance;
     }
