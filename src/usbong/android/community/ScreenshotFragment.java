@@ -38,7 +38,8 @@ public class ScreenshotFragment extends Fragment {
 		ImageButton ib = (ImageButton)v.findViewById(R.id.playVideoButton);
 		if(ss.getKEY() == Constants.SCREENSHOT2) {
 			ib.setVisibility(View.GONE);
-			ImageLoader.getInstance().displayImage(ss.getVAL(), iv);			
+			String ssCompleteUrl = "http://shrimptalusan.hostei.com/usbong/icons/" + ss.getVAL();
+			ImageLoader.getInstance().displayImage(ssCompleteUrl, iv);			
 		} else {
 			if(ss.getVAL() != null) {
 				final String videoId = UsbongUtils.parseYouTubeLink(ss.getVAL());
