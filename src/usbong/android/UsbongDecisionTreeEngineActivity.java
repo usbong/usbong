@@ -718,6 +718,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 
     @Override
 	public void onDestroy() {
+    	super.onDestroy(); //added by Mike, 7 Aug. 2015
 		if (mTts!=null) {
 			mTts.shutdown();
 		}
