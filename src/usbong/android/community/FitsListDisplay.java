@@ -131,6 +131,7 @@ public class FitsListDisplay extends ActionBarActivity {
 		listView.setScrollX(index);
 		if(UsbongUtils.hasNetworkConnection(FitsListDisplay.this)) {
     		error.setVisibility(View.GONE);
+    		new GetFitsListAsync().execute();
 		} else {
     		error.setVisibility(View.VISIBLE);
     		error.setText("Warning: Currently in offline mode.");
