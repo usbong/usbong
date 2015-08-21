@@ -15,7 +15,6 @@ import org.json.JSONObject;
 
 import usbong.android.R;
 import usbong.android.utils.UsbongUtils;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
@@ -27,6 +26,7 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,6 +37,7 @@ import android.view.WindowManager;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.util.regex.*;
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class FitsListDisplay extends ActionBarActivity {
@@ -129,13 +130,6 @@ public class FitsListDisplay extends ActionBarActivity {
 		super.onResume();
 		int index = editor.getInt("index", 0);
 		listView.setScrollX(index);
-		if(UsbongUtils.hasNetworkConnection(FitsListDisplay.this)) {
-    		error.setVisibility(View.GONE);
-    		new GetFitsListAsync().execute();
-		} else {
-    		error.setVisibility(View.VISIBLE);
-    		error.setText("Warning: Currently in offline mode.");
-		}
 	}
 	
 	public class GetFitsListAsync extends AsyncTask<Void, Void, String> {
@@ -191,6 +185,9 @@ public class FitsListDisplay extends ActionBarActivity {
 		
 	    @Override
 	    protected void onPostExecute(String result){
+	    	result = Html.fromHtml(result).toString();
+	    	result = result.replaceAll("^[^\\[]*_", "");
+//	    	Log.d(TAG, "Removed HTML:" + result);
 	    	SharedPreferenceEditor.getInstance().save(editor.edit().putString(Constants.JSON_KEY, result));
 	    	ParseJSONToFitsArray(result);
 	    	dialog.dismiss();
