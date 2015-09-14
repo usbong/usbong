@@ -194,4 +194,11 @@
     <string name="action_search">Search</string>
     <string name="action_settings">Settings</string>
     <string name="error_player">There was an error initializing the YouTubePlayer (%1$s)</string>    
+
+    <string name="profile_picture_desc">Profile picture</string>
+    <string name="welcome">Welcome to the Usbong App</string>    
+    <string name="sign_in_label">Sign-in</string>
+    <string name="manage_account_label">Manage account</string>
+    <string name="sign_out_label">Sign-out</string>
+    
 </resources>

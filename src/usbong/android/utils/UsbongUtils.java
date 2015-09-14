@@ -401,12 +401,14 @@ public class UsbongUtils {
 */
     	String[] fileExtensions = {".mp3",".wav",".mp4",".ogg"};
     	for (int i=0; i<fileExtensions.length; i++) {
-        	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/audio/"+language+"/"+filename+fileExtensions[i];    	    	
+        	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + "temp/" + myTreeFileName+".utree/audio/"+language+"/"+filename+fileExtensions[i];    	    	
+        	Log.d(">>>>filePath",filePath);
     		File file = new File(filePath);
     		if(file.exists()) {
     			return file.getAbsolutePath();
     		}
     	}
+/*    	
     	for (int i=0; i<fileExtensions.length; i++) {
         	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/audio/"+language+"/"+filename+fileExtensions[i];
     		File file = new File(filePath);
@@ -414,6 +416,7 @@ public class UsbongUtils {
     			return file.getAbsolutePath();
     		}
     	}    	
+*/    	
 		return null;    	
     }
     

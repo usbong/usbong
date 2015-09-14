@@ -612,9 +612,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				}
 				//edited by Mike, 21 July 2015
 				try {
-/*					
+					
 					currUsbongAudioString = UsbongUtils.getAudioFilePathForThisScreenIfAvailable(currUsbongNode);
-*/					
+					
 					Log.d(">>>>currUsbongAudioString: ",""+currUsbongAudioString);
 					Log.d(">>>>currLanguageBeingUsed: ",UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed));
 
