@@ -115,6 +115,7 @@ public class UsbongUtils {
 	public static final int LANGUAGE_BISAYA=4;
 	public static final int LANGUAGE_ILONGGO=5;
 	public static final int LANGUAGE_KAPAMPANGAN=6;
+	public static final int LANGUAGE_FRENCH=7;
 	
 	private static String destinationServerURL;
 	
@@ -166,6 +167,8 @@ public class UsbongUtils {
         							 	 'k','l','m','n','o','p','q','r','s','t',
         							 	 'u','v','w','x','y','z','0','1','2','3',
         							 	 '4','5','6','7','8','9'};
+	
+//	private static final Pattern hintStringTokenizerPattern = Pattern.compile("\W*");
 	
 	public static boolean checkEmail(String email) {
         return EMAIL_ADDRESS_PATTERN.matcher(email).matches();
@@ -399,7 +402,7 @@ public class UsbongUtils {
 		//if this point is reached, this means that trans file exists
 		return file.getAbsolutePath();
 */
-    	String[] fileExtensions = {".mp3",".wav",".mp4",".ogg"};
+    	String[] fileExtensions = {".mp3",".wav",".mp4",".ogg",".m4a"};
     	for (int i=0; i<fileExtensions.length; i++) {
         	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + "temp/" + myTreeFileName+".utree/audio/"+language+"/"+filename+fileExtensions[i];    	    	
         	Log.d(">>>>filePath",filePath);
@@ -926,6 +929,7 @@ public class UsbongUtils {
 			
 			for(int i=0; i<totalTrans; i++) {
 				ret.add(listOfTrans[i].replace(".xml", "")); //remove the ".xml" at the end
+				Log.d(">>>>>>listOfTrans[i]:",listOfTrans[i]);
 			}			
     	}
     	catch(Exception e) {
@@ -1033,6 +1037,9 @@ public class UsbongUtils {
 	    	if (s.equals("Kapampangan")) {
 	    		return LANGUAGE_KAPAMPANGAN;
 	    	}
+	    	if (s.equals("French")) {
+	    		return LANGUAGE_FRENCH;
+	    	}
     	}
     	return LANGUAGE_ENGLISH;
     }
@@ -1051,6 +1058,8 @@ public class UsbongUtils {
     			return "Ilonggo";
     		case LANGUAGE_KAPAMPANGAN:
     			return "Kapampangan";
+    		case LANGUAGE_FRENCH:
+    			return "French";
     		default:
     			return "English";
     	}
@@ -1612,7 +1621,7 @@ public class UsbongUtils {
     //added by Mike, Oct. 3, 2014
     public static View applyHintsInView(Activity a, View myView, int type) {
     	Log.d(">>>>>>","1");
-    	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/hints/hints.xml";
+    	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/hints/hints.xml"; //@todo: change hints.xml to the setLanguage 
 		File file = new File(filePath);
 		if(!file.exists())
 		{
@@ -1660,6 +1669,7 @@ public class UsbongUtils {
 			case IS_CHECKBOX:
 		    	sc = new Scanner(((CheckBox)myView).getText().toString());
 				((CheckBox)myView).setText("");
+				
 		    	break;				
 		    default: //case IS_TEXTVIEW:
 		    	sc = new Scanner(((TextView)myView).getText().toString());
@@ -1737,7 +1747,8 @@ public class UsbongUtils {
 	    			}
 	    		}	    		
 	    		
-	    		tokenizedStringList.add(temp.toString()+" ");
+//	    		tokenizedStringList.add(temp.toString()+" "); //commented out by Mike, 19 Sept. 2015
+	    		tokenizedStringList.add(temp.toString());
 	    		temp.delete(0, temp.length());//reset
 	    	}		    	    	
 	    }
@@ -1782,7 +1793,10 @@ public class UsbongUtils {
 						  Log.d(">>>>>parser.getAttributeValue(null, 'name'): ",parser.getAttributeValue(null, "name"));
 						  Log.d(">>>>>tokenizedStringList.get("+i+"): ",tokenizedStringList.get(i));
 	
-						  if (parser.getAttributeValue(null, "name").equals(tokenizedStringList.get(i).trim())) {
+						  //pattern taken from stackoverflow
+						  //http://stackoverflow.com/questions/7552253/how-to-remove-special-characters-from-a-string;
+						  //last accessed: 19 Sept. 2015
+						  if (parser.getAttributeValue(null, "name").equals(tokenizedStringList.get(i).trim().toLowerCase().replaceAll("[^\\w\\s]", ""))) {
 							  if (parser.next() == XmlPullParser.TEXT) {
 //								  Log.d(">>>>>parser.getText();: ",parser.getText());
 //								  return parser.getText();
@@ -1793,7 +1807,7 @@ public class UsbongUtils {
 							      SpannableString link = makeLinkSpan(tokenizedStringList.get(i), new View.OnClickListener() {          
 							            @Override
 							            public void onClick(View v) {
-									    	new AlertDialog.Builder(finalUdtea).setTitle("Phrase Hint!")
+									    	new AlertDialog.Builder(finalUdtea).setTitle("Word Hint!")
 						            		.setMessage(hintText)
 											.setPositiveButton("OK", new DialogInterface.OnClickListener() {					
 												@Override
@@ -1856,6 +1870,7 @@ public class UsbongUtils {
 		catch(Exception e) {
 			e.printStackTrace();
 		}
+		sc.close(); //added by Mike, 19 Sept. 2015
 		return myView;
     }
     
