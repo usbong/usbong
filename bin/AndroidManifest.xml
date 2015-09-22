@@ -1,59 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="usbong.android"
-      android:versionCode="25"
-      android:versionName="June 28, 2013"
-      android:installLocation="preferExternal"      
+      android:versionCode="60"
+      android:versionName="Sept. 20, 2015"
+      android:installLocation="auto"      
 >
-    <uses-sdk android:minSdkVersion="8" />
 
-    <!-- Reference: answer of Dixit Patel from stackoverflow; http://stackoverflow.com/questions/14562738/why-my-app-is-not-compatible-with-nexus-7-in-google-play-->    	
-    <supports-screens
-        android:anyDensity="true"
-        android:largeScreens="true"
-        android:normalScreens="true"
-        android:smallScreens="true" />
-
-	<compatible-screens>
-    <!-- small size screens -->
-     <screen android:screenSize="small" android:screenDensity="ldpi" />
-    <screen android:screenSize="small" android:screenDensity="mdpi" />
-    <screen android:screenSize="small" android:screenDensity="hdpi" />
-    <screen android:screenSize="small" android:screenDensity="xhdpi" />
-
-    <!--Only hdpi and xhdpi for normal size screens -->
-    <screen android:screenSize="normal" android:screenDensity="ldpi" />
-    <screen android:screenSize="normal" android:screenDensity="mdpi" />
-    <screen android:screenSize="normal" android:screenDensity="hdpi" />
-    <screen android:screenSize="normal" android:screenDensity="xhdpi" />
-
-    <!-- all large size screens -->
-    <screen android:screenSize="large" android:screenDensity="ldpi" />
-    <screen android:screenSize="large" android:screenDensity="mdpi" />
-    <screen android:screenSize="large" android:screenDensity="hdpi" />
-    <screen android:screenSize="large" android:screenDensity="xhdpi" />
-
-    <!-- all xlarge size screens -->
-    <screen android:screenSize="xlarge" android:screenDensity="ldpi" />
-    <screen android:screenSize="xlarge" android:screenDensity="mdpi" />
-    <screen android:screenSize="xlarge" android:screenDensity="hdpi" />
-    <screen android:screenSize="xlarge" android:screenDensity="xhdpi" />
-
-    <!-- Special case for Nexus 7 -->
-    <screen android:screenSize="large" android:screenDensity="213" />
-
-    </compatible-screens>
+    <uses-sdk android:minSdkVersion="10" 
+              android:targetSdkVersion="22" />
 	
+    <supports-screens android:smallScreens="true"
+              android:normalScreens="true"
+              android:largeScreens="true"
+              android:xlargeScreens="true" 
+              android:resizeable="true"
+              android:anyDensity="true"/>
+    
     <uses-permission android:name="android.permission.CAMERA"></uses-permission>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
     <uses-permission android:name="android.permission.RECORD_AUDIO"></uses-permission>
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-feature android:name="android.hardware.camera" />
  	<uses-feature android:name="android.hardware.camera.autofocus" />
  
     <application android:label="@string/app_name" android:icon="@drawable/usbong_icon"
-        android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
+        android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+        android:allowBackup="false">
+        <!-- <activity android:name="com.google.identitytoolkit.demo.GitkitDemo"
+                  android:label="@string/app_name" android:screenOrientation="portrait" android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="gitkit"
+                    android:scheme="com.googleusercontent.apps.1001323041020-ssbpc4tgsigfhbfcaab67t5vda0sfr3d" />
+            </intent-filter>
+        </activity>-->
+        
         <activity android:name="SignInActivity"
                   android:label="@string/app_name" android:screenOrientation="portrait">
             <intent-filter>
@@ -69,5 +62,43 @@
 		<activity android:name="TitleActivity" android:screenOrientation="portrait"></activity>        
 		<activity android:name=".features.node.PaintActivity" android:screenOrientation="portrait"></activity>        		
 		<activity android:name=".features.node.QRCodeReaderActivity" android:screenOrientation="portrait"></activity>        				
+		<activity android:name="usbong.android.community.FitsListDisplay" android:screenOrientation="portrait"
+		    android:theme="@style/ThemeHoloWithActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="usbong.android.UsbongMainActivity" />
+		</activity>
+		<activity android:name="usbong.android.community.SingleItemView"         
+		    android:screenOrientation="portrait"
+		    android:theme="@style/ThemeHoloWithActionBar"
+        	android:configChanges="keyboardHidden|orientation|screenSize">
+			<meta-data
+	            android:name="android.support.PARENT_ACTIVITY"
+	            android:value="usbong.android.community.FitsListDisplay" />
+		</activity>			
+		<activity android:name="usbong.android.community.SingleItemViewWithFragment" 
+		    android:screenOrientation="portrait"
+		    android:theme="@style/ThemeHoloWithActionBar"
+        	android:configChanges="keyboardHidden|orientation|screenSize" >
+			<meta-data
+	            android:name="android.support.PARENT_ACTIVITY"
+	            android:value="usbong.android.community.FitsListDisplay" />
+		</activity>
+		
+		<meta-data
+            android:name="identitytoolkit.show_providers"
+            android:value="Google" />
+        <meta-data
+            android:name="identitytoolkit.use_google_plus"
+            android:value="false" />
+        <meta-data
+            android:name="identitytoolkit.api_key"
+            android:value="AIzaSyB5mM_lk_bbdT5nUWQTO6S5FyZ9IgaxqX" />
+        <meta-data
+            android:name="identitytoolkit.server_client_id"
+            android:value="com.googleusercontent.apps.1001323041020-ssbpc4tgsigfhbfcaab67t5vda0sfr3d" />
+        <meta-data
+            android:name="identitytoolkit.server_widget_url"
+            android:value="https://localhost/callback" />			
 	</application>
 </manifest>

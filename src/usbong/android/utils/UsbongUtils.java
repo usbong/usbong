@@ -117,6 +117,8 @@ public class UsbongUtils {
 	public static final int LANGUAGE_KAPAMPANGAN=6;
 	public static final int LANGUAGE_FRENCH=7;
 	
+	private static String currLanguage;
+	
 	private static String destinationServerURL;
 	
 	public static final String debug_username="usbong";
@@ -138,6 +140,16 @@ public class UsbongUtils {
 	public static final boolean USE_UNESCAPE=true; //allows the use of \n (new line) in the decision tree	
 
 	public static ArrayList<String> tokenizedStringList;
+	
+	//added by Mike, 22 Sept. 2015
+	public static String getCurrLanguage(){
+		return currLanguage;
+	}
+	
+	//added by Mike, 22 Sept. 2015	
+	public static void setCurrLanguage(String s) {
+		currLanguage = s;
+	}
 	
 	//added by Mike, Feb. 11, 2013
 	public static void setDebugMode(boolean b) {
@@ -1621,12 +1633,14 @@ public class UsbongUtils {
     //added by Mike, Oct. 3, 2014
     public static View applyHintsInView(Activity a, View myView, int type) {
     	Log.d(">>>>>>","1");
-    	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/hints/hints.xml"; //@todo: change hints.xml to the setLanguage 
-		File file = new File(filePath);
+//    	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/hints/hints.xml"; //@todo: change hints.xml to the setLanguage 
+    	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/hints/" + getCurrLanguage() +".xml";
+    	
+    	File file = new File(filePath);
 		if(!file.exists())
 		{
 	    	Log.d(">>>>>>","2.1");
-			file = new File(UsbongUtils.USBONG_TREES_FILE_PATH+"temp/"+myTreeFileName+".utree/hints/hints.xml");
+			file = new File(UsbongUtils.USBONG_TREES_FILE_PATH+"temp/"+myTreeFileName+".utree/hints/" + getCurrLanguage() +".xml");
 
 			if(!file.exists()) 
 			{						

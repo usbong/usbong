@@ -243,7 +243,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
         
         //default..
         currLanguageBeingUsed=UsbongUtils.LANGUAGE_ENGLISH;
-        
+		UsbongUtils.setCurrLanguage("English"); //added by Mike, 22 Sept. 2015
+
         //==================================================================
         //text-to-speech stuff
         Intent checkIntent = new Intent();
@@ -458,6 +459,7 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 				selectButton.setOnClickListener(new View.OnClickListener() {					
 					public void onClick(View v) {
 						currLanguageBeingUsed = UsbongUtils.getLanguageID(UsbongUtils.getSetLanguage());
+						UsbongUtils.setCurrLanguage(UsbongUtils.getSetLanguage()); //added by Mike, 22 Sept. 2015
 						
 						//added by Mike, 4 June 2015
 						//remove the current element in the node container and start anew
@@ -911,9 +913,11 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 			  //if this is the first process-definition tag
 			  else if (parser.getAttributeCount()>1){ 
 				  if ((currUsbongNode.equals("")) && (parser.getName().equals("process-definition"))) {
+					  //@todo: remove this id thing, immediately use the String; otherwise it'll be cumbersome to keep on adding language ids
 					  currLanguageBeingUsed=UsbongUtils.getLanguageID(parser.getAttributeValue(null, "lang"));
 					  UsbongUtils.setDefaultLanguage(UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed));
-
+					  UsbongUtils.setCurrLanguage(parser.getAttributeValue(null, "lang")); //added by Mike, 22 Sept. 2015
+					  
 //					  System.out.println("currLanguageBeingUsed: "+currLanguageBeingUsed);
 					  	
 					  //added by Mike, Feb. 2, 2013
