@@ -36,7 +36,6 @@ import usbong.android.multimedia.audio.AudioRecorder;
 import usbong.android.utils.FedorMyLocation;
 import usbong.android.utils.UsbongScreenProcessor;
 import usbong.android.utils.UsbongUtils;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -48,6 +47,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -74,7 +74,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class UsbongDecisionTreeEngineActivity extends Activity implements TextToSpeech.OnInitListener{
+//@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/ActionBarActivity implements TextToSpeech.OnInitListener{
 //	private static final boolean UsbongUtils.USE_UNESCAPE=true; //allows the use of \n (new line) in the decision tree
 
 //	private static boolean USE_ENG_ONLY=true; //uses English only	
@@ -226,14 +227,42 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
     
 	protected InputStreamReader isr;
 	
+//	@SuppressLint("InlinedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+
         super.onCreate(savedInstanceState);        
                 
         instance=this;
 
         UsbongUtils.myAssetManager = getAssets();
         
+        //added by Mike, 22 Sept. 2015
+/*        
+        try {
+            ViewConfiguration config = ViewConfiguration.get(this);
+            Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
+            if(menuKeyField != null) {
+                menuKeyField.setAccessible(true);
+                menuKeyField.setBoolean(config, false);
+            }
+        } catch (Exception ex) {
+            // Ignore
+        }
+*/        
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);        
+/*        
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        if (Build.VERSION.SDK_INT < 16) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else {
+        	int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        	decorView.setSystemUiVisibility(uiOptions);
+        }
+*/
         //if return is null, then currScreen=0
 //        currScreen=Integer.parseInt(getIntent().getStringExtra("currScreen")); 
         //modified by JPT, May 25, 2015
@@ -327,7 +356,12 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 	    	initTreeLoader();
 		}
     }
-    
+/*    
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+	}
+*/
     public class MyOnItemSelectedListener implements OnItemSelectedListener {
         public void onItemSelected(AdapterView<?> parent,
             View view, int pos, long id) {
@@ -388,7 +422,8 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 		if (!isInTreeLoader) {
 			MenuInflater inflater = getMenuInflater();
 			inflater.inflate(R.menu.speak_and_set_language_menu, menu);
-			return true;
+			return super.onCreateOptionsMenu(menu); //added by Mike, 22 Sept. 2015
+//			return true;
 		}
 		return false;
 	}
@@ -663,6 +698,9 @@ public class UsbongDecisionTreeEngineActivity extends Activity implements TextTo
 					e.printStackTrace();
 				}					
 				return true;
+			case android.R.id.home: //added by Mike, 22 Sept. 2015
+	        	processReturnToMainMenuActivity();
+		        return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
