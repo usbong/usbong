@@ -464,7 +464,39 @@ public class UsbongUtils {
 		return "";
     }
 
+    //added by Mike, 21 July 2015
+    public static String getBGAudioFilePathFromUTree(String filename) {
+    	String[] fileExtensions = {".mp3",".wav",".mp4",".ogg",".m4a"};
+    	for (int i=0; i<fileExtensions.length; i++) {
+        	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + "temp/" + myTreeFileName+".utree/audio/"+filename+fileExtensions[i];    	    	
+        	Log.d(">>>>filePath",filePath);
+    		File file = new File(filePath);
+    		if(file.exists()) {
+    			return file.getAbsolutePath();
+    		}
+    	}
+		return null;    	
+    }
     
+    //added by Mike, 21 July 2015
+    public static String getBGAudioFilePathForThisScreenIfAvailable(String currUsbongNode) {
+		StringTokenizer st = new StringTokenizer(currUsbongNode, "~");
+		int totalTokens = st.countTokens();
+		int counter = 0;		
+		String myStringToken = "";
+		
+		while (counter<totalTokens-1) { //up to second to the last only
+			myStringToken = st.nextToken(); 
+			counter++;
+			
+			if (myStringToken.matches("@bgAudioName=.*")) {
+		        Log.d(">>>>myStringToken.substring(13)",myStringToken.substring(11));
+				return myStringToken.substring(13); //why 13? to remove "@bgAudioName="
+			}			
+		}
+		return "";
+    }
+
 /*    
     //from rohith (stackoverflow); 
     //Reference: http://stackoverflow.com/questions/4447477/android-how-to-copy-files-in-assets-to-sdcard;
@@ -1806,8 +1838,8 @@ public class UsbongUtils {
 					  
 					  if (parser.getName().equals("string")) {
 	
-						  Log.d(">>>>>parser.getAttributeValue(null, 'name'): ",parser.getAttributeValue(null, "name"));
-						  Log.d(">>>>>tokenizedStringList.get("+i+"): ",tokenizedStringList.get(i));
+//						  Log.d(">>>>>parser.getAttributeValue(null, 'name'): ",parser.getAttributeValue(null, "name"));
+//						  Log.d(">>>>>tokenizedStringList.get("+i+"): ",tokenizedStringList.get(i));
 	
 						  //pattern taken from stackoverflow
 						  //http://stackoverflow.com/questions/7552253/how-to-remove-special-characters-from-a-string;
@@ -1832,7 +1864,7 @@ public class UsbongUtils {
 											}).show();
 							            }
 							      });					
-							      Log.d(">>>","has match: "+tokenizedStringList.get(i));
+//							      Log.d(">>>","has match: "+tokenizedStringList.get(i));
 							      foundMatch=true;
 
 							      switch(type) {

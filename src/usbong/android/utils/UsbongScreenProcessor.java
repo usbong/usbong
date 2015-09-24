@@ -1028,6 +1028,9 @@ public class UsbongScreenProcessor
         
         String audioFileName = UsbongUtils.getAudioFilePathForThisScreenIfAvailable(udtea.currUsbongNode);
         udtea.currUsbongAudioString=audioFileName;
+
+        String bgAudioFileName = UsbongUtils.getBGAudioFilePathForThisScreenIfAvailable(udtea.currUsbongNode);
+        udtea.currUsbongBGAudioString=bgAudioFileName;
         
 		if ((!udtea.usedBackButton) && (!udtea.hasReturnedFromAnotherActivity)){
 			udtea.usbongNodeContainer.addElement(udtea.currUsbongNode);

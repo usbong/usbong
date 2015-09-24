@@ -134,6 +134,7 @@ public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/Actio
 	
 	private static AudioRecorder currAudioRecorder;
 	private static MediaPlayer myMediaPlayer;
+	private static MediaPlayer myBGMediaPlayer; //added by Mike, 25 Sept. 2015
 	
 	private Button paintButton;
 	private Button photoCaptureButton;
@@ -160,6 +161,7 @@ public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/Actio
 	
 	public String currUsbongNode="";
 	public String currUsbongAudioString=""; //added by Mike, 21 July 2015
+	public String currUsbongBGAudioString=""; //added by Mike, 25 Sept. 2015
 	private String nextUsbongNodeIfYes;
 	private String nextUsbongNodeIfNo;
 
@@ -226,6 +228,8 @@ public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/Actio
 	private Map<String, String> myUsbongVariableMemory;
     
 	protected InputStreamReader isr;
+	
+	public boolean isInAutoVoiceOverNarration=true;
 		
 //	@SuppressLint("InlinedApi")
     @Override
@@ -259,13 +263,18 @@ public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/Actio
         startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
 
         mTts = new TextToSpeech(this,this);
-		mTts.setLanguage(new Locale("eng", "EN"));//default
+		mTts.setLanguage(new Locale("en", "US"));//default
         //==================================================================
         
 		myMediaPlayer = new MediaPlayer();
 		myMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC); //added by Mike, 22 July 2015
 		myMediaPlayer.setVolume(1.0f, 1.0f);
-	
+
+		//added by Mike, 25 Sept. 2015
+		myBGMediaPlayer = new MediaPlayer();
+		myBGMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+		myBGMediaPlayer.setVolume(1.0f, 1.0f);
+		
 		//added by Mike, 22 July 2015
 		AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
@@ -517,171 +526,24 @@ public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/Actio
 				dialog.show();
 				return true;
 			case(R.id.speak):
-//				Log.d(">>>>currScreen",currScreen+"");
-				switch(currScreen) {
-					//edit later, Mike, Sept. 26, 2013
-					case SIMPLE_ENCRYPT_SCREEN:
-						break;
-					//edit later, Mike, May 23, 2013
-					case DCAT_SUMMARY_SCREEN:
-						break;
-						
-			    	case LINK_SCREEN:
-			    	case MULTIPLE_RADIO_BUTTONS_SCREEN:
-			    	case MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN:
-				        sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
-
-				        int totalRadioButtonsInContainer = radioButtonsContainer.size();
-				        for (int i=0; i<totalRadioButtonsInContainer; i++) {
-					        sb.append(((RadioButton) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new RadioButton(this), UsbongUtils.IS_RADIOBUTTON, radioButtonsContainer.elementAt(i))).getText().toString()+". ");
-				        }		     		        
-						break;
-			    	case MULTIPLE_CHECKBOXES_SCREEN:
-				        sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
-
-				        int totalCheckBoxesInContainer = checkBoxesContainer.size();
-				        for (int i=0; i<totalCheckBoxesInContainer; i++) {
-					        sb.append(((CheckBox) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new CheckBox(this), UsbongUtils.IS_CHECKBOX, checkBoxesContainer.elementAt(i))).getText().toString()+". ");
-				        }		     		        
-				        break;
-			    	case AUDIO_RECORD_SCREEN:
-				        sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
-
-				        Button recordButton = (Button)findViewById(R.id.record_button);
-				        Button stopButton = (Button)findViewById(R.id.stop_button);
-				        Button playButton = (Button)findViewById(R.id.play_button);
-
-				        sb.append(recordButton.getText()+". ");
-				        sb.append(stopButton.getText()+". ");
-				        sb.append(playButton.getText()+". ");
-				        break;
-					case PAINT_SCREEN:
-			    		sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
-
-			    		Button paintButton = (Button)findViewById(R.id.paint_button);
-				        sb.append(paintButton.getText()+". ");
-			    		break;
-					case PHOTO_CAPTURE_SCREEN:
-			    		sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
-
-			    		Button photoCaptureButton = (Button)findViewById(R.id.photo_capture_button);
-				        sb.append(photoCaptureButton.getText()+". ");
-			    		break;
-					case TEXTFIELD_SCREEN:
-					case TEXTFIELD_WITH_ANSWER_SCREEN:						
-					case TEXTFIELD_WITH_UNIT_SCREEN:
-					case TEXTFIELD_NUMERICAL_SCREEN:
-					case TEXTAREA_SCREEN:
-					case TEXTAREA_WITH_ANSWER_SCREEN:						
-						sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
-				        break;    	
-					case CLASSIFICATION_SCREEN:
-				        sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
-
-				        int totalClassificationsInContainer = classificationContainer.size();
-				        for (int i=0; i<totalClassificationsInContainer; i++) {
-					        sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, classificationContainer.elementAt(i))).getText().toString()+". ");
-				        }		     		        
-				        break;    	
-					case DATE_SCREEN:				       
-					case TEXT_DISPLAY_SCREEN:
-					case TEXT_IMAGE_DISPLAY_SCREEN:
-					case IMAGE_TEXT_DISPLAY_SCREEN:
-					case CLICKABLE_IMAGE_TEXT_DISPLAY_SCREEN:				       
-					case TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN:				       
-					case GPS_LOCATION_SCREEN:
-					case QR_CODE_READER_SCREEN:
-					case TIMESTAMP_DISPLAY_SCREEN:						
-					case VIDEO_FROM_FILE_WITH_TEXT_SCREEN:							
-						sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
-//				        Log.d(">>>>sb",sb.toString());
-				        break;
-					case CLICKABLE_IMAGE_DISPLAY_SCREEN:				       
-					case IMAGE_DISPLAY_SCREEN:
-					case VIDEO_FROM_FILE_SCREEN:							
-				        break;    	
-					case YES_NO_DECISION_SCREEN:
-					case SEND_TO_WEBSERVER_SCREEN:
-					case SEND_TO_CLOUD_BASED_SERVICE_SCREEN:
-				        sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
-				        sb.append(yesStringValue+". ");
-				        sb.append(noStringValue+". ");
-				        break;    	
-/*						
-					case PAINT_SCREEN:
-				    	if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
-							sb.append((String) getResources().getText(R.string.UsbongPaintScreenTextViewFILIPINO));
-				    	}
-				    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
-							sb.append((String) getResources().getText(R.string.UsbongPaintScreenTextViewJAPANESE));				    						    		
-				    	}
-				    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
-							sb.append((String) getResources().getText(R.string.UsbongPaintScreenTextViewENGLISH));				    						    		
-				    	}
-				    	break;    		
-*/				    	
-					case END_STATE_SCREEN:
-				    	if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
-							sb.append((String) getResources().getText(R.string.UsbongEndStateTextViewFILIPINO));				    		
-				    	}
-				    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
-							sb.append((String) getResources().getText(R.string.UsbongEndStateTextViewJAPANESE));				    						    		
-				    	}
-				    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
-							sb.append((String) getResources().getText(R.string.UsbongEndStateTextViewENGLISH));				    						    		
-				    	}
-				    	break;    		
-				}
-				//edited by Mike, 21 July 2015
-				try {
-					
-					currUsbongAudioString = UsbongUtils.getAudioFilePathForThisScreenIfAvailable(currUsbongNode);
-					
-					Log.d(">>>>currUsbongAudioString: ",""+currUsbongAudioString);
-					Log.d(">>>>currLanguageBeingUsed: ",UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed));
-
-					String filePath=UsbongUtils.getAudioFilePathFromUTree(currUsbongAudioString, UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed));
-//					Log.d(">>>>filePath: ",filePath);
-					if (filePath!=null) {
-						Log.d(">>>>", "inside filePath!=null");
-						Log.d(">>>>filePath: ",filePath);
-						if (myMediaPlayer.isPlaying()) {
-							myMediaPlayer.stop();
-						}
-						myMediaPlayer.reset();
-						myMediaPlayer.setDataSource(filePath);
-						myMediaPlayer.prepare();
-//						myMediaPlayer.setVolume(1.0f, 1.0f);
-						myMediaPlayer.start();
-//						myMediaPlayer.seekTo(0);
+				processSpeak(sb);
+				return true;
+			case(R.id.settings):
+		    	new AlertDialog.Builder(UsbongDecisionTreeEngineActivity.this).setTitle("Settings")
+				.setMessage("Automatic voice-over narration:")
+//				.setView(requiredFieldAlertStringTextView)
+		    	.setPositiveButton("Turn On", new DialogInterface.OnClickListener() {					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						isInAutoVoiceOverNarration=true;
 					}
-					else {
-			        	//it's either com.svox.pico (default) or com.svox.classic (Japanese, etc)        				
-						mTts.setEngineByPackageName("com.svox.pico"); //note: this method is already deprecated
-						switch (currLanguageBeingUsed) {
-							case UsbongUtils.LANGUAGE_FILIPINO:				    
-								mTts.setLanguage(new Locale("spa", "ESP"));
-								mTts.speak(UsbongUtils.convertFilipinoToSpanishAccentFriendlyText(sb.toString()), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
-								break;
-							case UsbongUtils.LANGUAGE_JAPANESE:
-						        mTts.setEngineByPackageName("com.svox.classic"); //note: this method is already deprecated
-								mTts.setLanguage(new Locale("ja", "ja_JP"));
-								mTts.speak(sb.toString(), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
-								break;
-							case UsbongUtils.LANGUAGE_ENGLISH:
-								mTts.setLanguage(new Locale("eng", "EN"));
-								mTts.speak(sb.toString(), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
-								break;
-							default:
-								mTts.setLanguage(new Locale("eng", "EN"));
-								mTts.speak(sb.toString(), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
-								break;
-						}
+		    	})
+			    .setNegativeButton("Turn Off", new DialogInterface.OnClickListener() {					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						isInAutoVoiceOverNarration=false;
 					}
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}					
+				}).show();
 				return true;
 			case android.R.id.home: //added by Mike, 22 Sept. 2015
 	        	processReturnToMainMenuActivity();
@@ -691,6 +553,227 @@ public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/Actio
 		}
 	}
 
+	//added by Mike, 24 Sept. 2015
+	@Override
+	public void onStop() {
+	    if (mTts != null) {
+	        mTts.stop();
+	    }
+	    super.onStop();
+	}
+	
+	//added by Mike, 25 Sept. 2015
+	public void processPlayBGMusic() {
+		try {
+			String newCurrUsbongBGAudioString = UsbongUtils.getBGAudioFilePathForThisScreenIfAvailable(currUsbongNode);
+			Log.d(">>>>newCurrUsbongBGAudioString: ",""+newCurrUsbongBGAudioString);
+			Log.d(">>>>currUsbongBGAudioString: ",""+currUsbongBGAudioString);
+
+			if (currUsbongBGAudioString==newCurrUsbongBGAudioString) {
+				return;
+			}
+			else {
+				Log.d(">>>>", "inside currUsbongBGAudioString!=newCurrUsbongBGAudioString");
+				currUsbongBGAudioString = newCurrUsbongBGAudioString;
+//				myBGMediaPlayer.stop();
+
+				String filePath=UsbongUtils.getBGAudioFilePathFromUTree(currUsbongBGAudioString);
+		//			Log.d(">>>>filePath: ",filePath);
+				if (filePath!=null) {
+					Log.d(">>>>", "inside filePath!=null");
+					Log.d(">>>>filePath: ",filePath);
+					if (myBGMediaPlayer.isPlaying()) {
+						myBGMediaPlayer.stop();
+					}
+					myBGMediaPlayer.reset();
+					myBGMediaPlayer.setDataSource(filePath);
+					myBGMediaPlayer.prepare();
+		//				myMediaPlayer.setVolume(1.0f, 1.0f);
+					myBGMediaPlayer.setLooping(true);
+					myBGMediaPlayer.start();
+		//				myMediaPlayer.seekTo(0);
+				}			
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	public void processSpeak(StringBuffer sb) {
+		if (mTts.isSpeaking()) { //commented out by Mike, 24 Sept. 2015
+			mTts.stop();
+		}
+
+//		Log.d(">>>>currScreen",currScreen+"");
+		switch(currScreen) {
+			//edit later, Mike, Sept. 26, 2013
+			case SIMPLE_ENCRYPT_SCREEN:
+				break;
+			//edit later, Mike, May 23, 2013
+			case DCAT_SUMMARY_SCREEN:
+				break;
+				
+	    	case LINK_SCREEN:
+	    	case MULTIPLE_RADIO_BUTTONS_SCREEN:
+	    	case MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN:
+		        sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
+
+		        int totalRadioButtonsInContainer = radioButtonsContainer.size();
+		        for (int i=0; i<totalRadioButtonsInContainer; i++) {
+			        sb.append(((RadioButton) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new RadioButton(this), UsbongUtils.IS_RADIOBUTTON, radioButtonsContainer.elementAt(i))).getText().toString()+". ");
+		        }		     		        
+				break;
+	    	case MULTIPLE_CHECKBOXES_SCREEN:
+		        sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
+
+		        int totalCheckBoxesInContainer = checkBoxesContainer.size();
+		        for (int i=0; i<totalCheckBoxesInContainer; i++) {
+			        sb.append(((CheckBox) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new CheckBox(this), UsbongUtils.IS_CHECKBOX, checkBoxesContainer.elementAt(i))).getText().toString()+". ");
+		        }		     		        
+		        break;
+	    	case AUDIO_RECORD_SCREEN:
+		        sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
+
+		        Button recordButton = (Button)findViewById(R.id.record_button);
+		        Button stopButton = (Button)findViewById(R.id.stop_button);
+		        Button playButton = (Button)findViewById(R.id.play_button);
+
+		        sb.append(recordButton.getText()+". ");
+		        sb.append(stopButton.getText()+". ");
+		        sb.append(playButton.getText()+". ");
+		        break;
+			case PAINT_SCREEN:
+	    		sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
+
+	    		Button paintButton = (Button)findViewById(R.id.paint_button);
+		        sb.append(paintButton.getText()+". ");
+	    		break;
+			case PHOTO_CAPTURE_SCREEN:
+	    		sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
+
+	    		Button photoCaptureButton = (Button)findViewById(R.id.photo_capture_button);
+		        sb.append(photoCaptureButton.getText()+". ");
+	    		break;
+			case TEXTFIELD_SCREEN:
+			case TEXTFIELD_WITH_ANSWER_SCREEN:						
+			case TEXTFIELD_WITH_UNIT_SCREEN:
+			case TEXTFIELD_NUMERICAL_SCREEN:
+			case TEXTAREA_SCREEN:
+			case TEXTAREA_WITH_ANSWER_SCREEN:						
+				sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
+		        break;    	
+			case CLASSIFICATION_SCREEN:
+		        sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
+
+		        int totalClassificationsInContainer = classificationContainer.size();
+		        for (int i=0; i<totalClassificationsInContainer; i++) {
+			        sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, classificationContainer.elementAt(i))).getText().toString()+". ");
+		        }		     		        
+		        break;    	
+			case DATE_SCREEN:				       
+			case TEXT_DISPLAY_SCREEN:
+			case TEXT_IMAGE_DISPLAY_SCREEN:
+			case IMAGE_TEXT_DISPLAY_SCREEN:
+			case CLICKABLE_IMAGE_TEXT_DISPLAY_SCREEN:				       
+			case TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN:				       
+			case GPS_LOCATION_SCREEN:
+			case QR_CODE_READER_SCREEN:
+			case TIMESTAMP_DISPLAY_SCREEN:						
+			case VIDEO_FROM_FILE_WITH_TEXT_SCREEN:							
+				sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
+//		        Log.d(">>>>sb",sb.toString());
+		        break;
+			case CLICKABLE_IMAGE_DISPLAY_SCREEN:				       
+			case IMAGE_DISPLAY_SCREEN:
+			case VIDEO_FROM_FILE_SCREEN:							
+		        break;    	
+			case YES_NO_DECISION_SCREEN:
+			case SEND_TO_WEBSERVER_SCREEN:
+			case SEND_TO_CLOUD_BASED_SERVICE_SCREEN:
+		        sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
+		        sb.append(yesStringValue+". ");
+		        sb.append(noStringValue+". ");
+		        break;    	
+/*						
+			case PAINT_SCREEN:
+		    	if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
+					sb.append((String) getResources().getText(R.string.UsbongPaintScreenTextViewFILIPINO));
+		    	}
+		    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
+					sb.append((String) getResources().getText(R.string.UsbongPaintScreenTextViewJAPANESE));				    						    		
+		    	}
+		    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
+					sb.append((String) getResources().getText(R.string.UsbongPaintScreenTextViewENGLISH));				    						    		
+		    	}
+		    	break;    		
+*/				    	
+			case END_STATE_SCREEN:
+		    	if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
+					sb.append((String) getResources().getText(R.string.UsbongEndStateTextViewFILIPINO));				    		
+		    	}
+		    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
+					sb.append((String) getResources().getText(R.string.UsbongEndStateTextViewJAPANESE));				    						    		
+		    	}
+		    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
+					sb.append((String) getResources().getText(R.string.UsbongEndStateTextViewENGLISH));				    						    		
+		    	}
+		    	break;    		
+		}
+		//edited by Mike, 21 July 2015
+		try {
+			
+			currUsbongAudioString = UsbongUtils.getAudioFilePathForThisScreenIfAvailable(currUsbongNode);
+			
+			Log.d(">>>>currUsbongAudioString: ",""+currUsbongAudioString);
+			Log.d(">>>>currLanguageBeingUsed: ",UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed));
+
+			String filePath=UsbongUtils.getAudioFilePathFromUTree(currUsbongAudioString, UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed));
+//			Log.d(">>>>filePath: ",filePath);
+			if (filePath!=null) {
+				Log.d(">>>>", "inside filePath!=null");
+				Log.d(">>>>filePath: ",filePath);
+				if (myMediaPlayer.isPlaying()) {
+					myMediaPlayer.stop();
+				}
+				myMediaPlayer.reset();
+				myMediaPlayer.setDataSource(filePath);
+				myMediaPlayer.prepare();
+//				myMediaPlayer.setVolume(1.0f, 1.0f);
+				myMediaPlayer.start();
+//				myMediaPlayer.seekTo(0);
+			}
+			else {
+				//it's either com.svox.pico (default) or com.svox.classic (Japanese, etc)        				
+				mTts.setEngineByPackageName("com.svox.pico"); //note: this method is already deprecated
+				
+				switch (currLanguageBeingUsed) {
+					case UsbongUtils.LANGUAGE_FILIPINO:				    
+						mTts.setLanguage(new Locale("spa", "ESP"));
+						mTts.speak(UsbongUtils.convertFilipinoToSpanishAccentFriendlyText(sb.toString()), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
+						break;
+					case UsbongUtils.LANGUAGE_JAPANESE:
+				        mTts.setEngineByPackageName("com.svox.classic"); //note: this method is already deprecated
+						mTts.setLanguage(new Locale("ja", "JP"));
+						mTts.speak(sb.toString(), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
+						break;
+					case UsbongUtils.LANGUAGE_ENGLISH:
+						mTts.setLanguage(new Locale("en", "US"));
+						mTts.speak(sb.toString(), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
+						break;
+					default:
+						mTts.setLanguage(new Locale("en", "US"));
+						mTts.speak(sb.toString(), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
+						break;
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}					
+	}
+	
 	@Override
 	public void onInit(int status) {
 		//answer from Eternal Learner, stackoverflow
@@ -749,6 +832,9 @@ public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/Actio
 		}
 		if (myMediaPlayer!=null) {
 			myMediaPlayer.release();			
+		}
+		if (myBGMediaPlayer!=null) {
+			myBGMediaPlayer.release();			
 		}
 	}
 	
@@ -1383,6 +1469,10 @@ public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/Actio
 
 	public void initUsbongScreen() {		
 		myUsbongScreenProcessor.init();
+		if (isInAutoVoiceOverNarration) { //added by Mike, 24 Sept. 2015
+			processSpeak(new StringBuffer());
+		}
+		processPlayBGMusic(); //added by Mike, 25 Sept. 2015
 	}
    
     public void initBackNextButtons()
@@ -2435,6 +2525,7 @@ public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/Actio
 		    		//added by Mike, 21 July 2015
 		    		if (myMediaPlayer!=null) {myMediaPlayer.stop();}
 		    		if (mTts!=null) {mTts.stop();}
+		    		if (myBGMediaPlayer!=null) {myBGMediaPlayer.stop();} //added by Mike, 25 Sept. 2015
 		    		
 		    		//return to main activity
 		    		finish();    
