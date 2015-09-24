@@ -226,7 +226,7 @@ public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/Actio
 	private Map<String, String> myUsbongVariableMemory;
     
 	protected InputStreamReader isr;
-	
+		
 //	@SuppressLint("InlinedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -239,30 +239,8 @@ public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/Actio
         UsbongUtils.myAssetManager = getAssets();
         
         //added by Mike, 22 Sept. 2015
-/*        
-        try {
-            ViewConfiguration config = ViewConfiguration.get(this);
-            Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
-            if(menuKeyField != null) {
-                menuKeyField.setAccessible(true);
-                menuKeyField.setBoolean(config, false);
-            }
-        } catch (Exception ex) {
-            // Ignore
-        }
-*/        
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);        
-/*        
-        View decorView = getWindow().getDecorView();
-        // Hide the status bar.
-        if (Build.VERSION.SDK_INT < 16) {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        } else {
-        	int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        	decorView.setSystemUiVisibility(uiOptions);
-        }
-*/
+
         //if return is null, then currScreen=0
 //        currScreen=Integer.parseInt(getIntent().getStringExtra("currScreen")); 
         //modified by JPT, May 25, 2015
@@ -419,12 +397,19 @@ public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/Actio
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
+		Log.d(">>>>", "onCreateOptionsMenu");
+		
 		if (!isInTreeLoader) {
+			Log.d(">>>>", "inside !inInTreeLoader");
 			MenuInflater inflater = getMenuInflater();
 			inflater.inflate(R.menu.speak_and_set_language_menu, menu);
 			return super.onCreateOptionsMenu(menu); //added by Mike, 22 Sept. 2015
 //			return true;
-		}
+		}/*
+		else {
+			Log.d(">>>>", "this.menu=menu;");
+			UsbongDecisionTreeEngineActivity.menu = menu;
+		}*/
 		return false;
 	}
 	
@@ -870,6 +855,7 @@ public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/Actio
 	//@param: s is the name of the .utree file
 	public void initParser(String s) {
 		isInTreeLoader=false;		
+		invalidateOptionsMenu(); //should be after isInTreeLoader=false; added by Mike, 24 Sept. 2015
 		myTree = s;
 		UsbongUtils.clearTempFolder();
         initParser();

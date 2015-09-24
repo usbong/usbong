@@ -160,7 +160,7 @@ public class UsbongUtils {
 	public static void setStoreOutput(boolean b) {
 		STORE_OUTPUT=b;
 	}
-
+/*//commented out by Mike, 24 Sept. 2015; now using: android.util.Patterns.EMAIL_ADDRESS
 	//Reference: Andrei Buneyeu's answer in http://stackoverflow.com/questions/1819142/how-should-i-validate-an-e-mail-address-on-android;
 	//last accessed: 21 Aug. 2012
 	public static final Pattern EMAIL_ADDRESS_PATTERN = Pattern.compile(
@@ -172,7 +172,7 @@ public class UsbongUtils {
 	          "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
 	          ")+"
 	      );	
-	
+*/	
 	public static boolean is_a_utree=false;
 	
 	public static char[] alphanumeric = {'a','b','c','d','e','f','g','h','i','j',
@@ -183,7 +183,9 @@ public class UsbongUtils {
 //	private static final Pattern hintStringTokenizerPattern = Pattern.compile("\W*");
 	
 	public static boolean checkEmail(String email) {
-        return EMAIL_ADDRESS_PATTERN.matcher(email).matches();
+/*        return EMAIL_ADDRESS_PATTERN.matcher(email).matches();
+ */
+		return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches(); //updated by Mike, 24 Sept. 2015
 	}
 	
 	public static boolean checkIfInDebugMode() {

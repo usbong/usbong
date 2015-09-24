@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="usbong.android"
-      android:versionCode="60"
-      android:versionName="Sept. 22, 2015"
+      android:versionCode="61"
+      android:versionName="Sept. 24, 2015"
       android:installLocation="auto"      
 >
 
@@ -64,7 +64,8 @@
         </activity>
         <activity android:name="CameraActivity" android:permission="android.permission.CAMERA" android:screenOrientation="nosensor"></activity>
 		<activity android:name="SettingsActivity" android:screenOrientation="portrait"></activity>
-		<activity android:name="RegisterActivity" android:screenOrientation="portrait"></activity>        
+		<activity android:name="RegisterActivity" android:screenOrientation="portrait"
+		    android:theme="@style/ThemeHoloWithActionBar"></activity>        
 		<activity android:name="TitleActivity" android:screenOrientation="portrait"></activity>        
 		<activity android:name=".features.node.PaintActivity" android:screenOrientation="portrait"></activity>        		
 		<activity android:name=".features.node.QRCodeReaderActivity" android:screenOrientation="portrait"></activity>        				
