@@ -228,9 +228,7 @@ public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/Actio
 	private Map<String, String> myUsbongVariableMemory;
     
 	protected InputStreamReader isr;
-	
-	public boolean isInAutoVoiceOverNarration=true;
-		
+			
 //	@SuppressLint("InlinedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -535,13 +533,13 @@ public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/Actio
 		    	.setPositiveButton("Turn On", new DialogInterface.OnClickListener() {					
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						isInAutoVoiceOverNarration=true;
+						UsbongUtils.isInAutoVoiceOverNarration=true;
 					}
 		    	})
 			    .setNegativeButton("Turn Off", new DialogInterface.OnClickListener() {					
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						isInAutoVoiceOverNarration=false;
+						UsbongUtils.isInAutoVoiceOverNarration=false;
 					}
 				}).show();
 				return true;
@@ -1469,7 +1467,7 @@ public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/Actio
 
 	public void initUsbongScreen() {		
 		myUsbongScreenProcessor.init();
-		if (isInAutoVoiceOverNarration) { //added by Mike, 24 Sept. 2015
+		if (UsbongUtils.isInAutoVoiceOverNarration) { //added by Mike, 24 Sept. 2015
 			processSpeak(new StringBuffer());
 		}
 		processPlayBGMusic(); //added by Mike, 25 Sept. 2015

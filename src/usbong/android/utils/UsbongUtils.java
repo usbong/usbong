@@ -107,6 +107,8 @@ public class UsbongUtils {
 	//	public static String BASE_FILE_PATH = "/sdcard/usbong/";
 	private static String timeStamp;
 	private static String dateTimeStamp;
+	
+	public static boolean isInAutoVoiceOverNarration=true;
     	
 	public static final int LANGUAGE_ENGLISH=0; 
 	public static final int LANGUAGE_FILIPINO=1;
