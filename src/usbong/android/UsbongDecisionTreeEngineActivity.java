@@ -292,7 +292,7 @@ public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/Actio
     	try{    		
     		UsbongUtils.createUsbongFileStructure();
     		//create the usbong_demo_tree and store it in sdcard/usbong/usbong_trees
-    		UsbongUtils.storeAssetsFileIntoSDCard(this,"usbong_demo_tree.xml");
+    		UsbongUtils.storeUsbongAppAssetsFileIntoSDCard(this,"usbong_demo_tree.xml");
     	}
     	catch(IOException ioe) {
     		ioe.printStackTrace();

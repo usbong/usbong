@@ -332,6 +332,43 @@ public class UsbongUtils {
     }
 */    
     public static void storeAssetsFileIntoSDCard(Activity a, String filename) throws IOException {
+    	String destination = USBONG_TREES_FILE_PATH;//+"dash.utree";
+
+    	//delete usbong_demo_tree.xml
+    	File file = new File(destination);
+    	if (file.exists()) {
+        	file.delete();    		
+    	}
+
+//    	destination = USBONG_TREES_FILE_PATH+"dash.utree"; //commented out by Mike, 23 April 2015
+
+/* //commented out by Mike, 24 April 2015
+    	//replace usbong_demo_tree.xml with usbong_demo_tree.utree
+    	file = new File(destination);
+    	file.delete();
+    	//start anew
+//    	if(!file.exists()) {
+*/
+			
+//			System.out.println(">>>>>> File " + destination + " doesn't exist. Creating file.");
+			file.mkdirs();
+
+	    	//arg#1 is the destination, arg#2 is the string 
+//			storeOutputInSDCard(destination+"/dash.utree", readTextFileInAssetsFolder(a,filename));		
+//		storeOutputInSDCard(destination, readTextFileInAssetsFolder(a,filename));		
+		copyAssetToSDCard(filename, destination); //added by Mike, 30 April 2015
+
+/*	//commented out by Mike, 24 April 2015		
+			file = new File(destination+"/res/");
+			file.mkdirs();
+			
+			copyAssetToSDCard("sample_image.png", destination+"/res/");
+			copyAssetToSDCard("bg.png", destination+"/res/");
+		//    	}
+*/
+    }
+
+    public static void storeUsbongAppAssetsFileIntoSDCard(Activity a, String filename) throws IOException {
     	String destination = USBONG_TREES_FILE_PATH+"usbong_demo_tree.xml";
 
     	//delete usbong_demo_tree.xml
