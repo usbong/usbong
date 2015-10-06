@@ -47,7 +47,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -75,7 +75,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 //@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/ActionBarActivity implements TextToSpeech.OnInitListener{
+public class UsbongDecisionTreeEngineActivity extends AppCompatActivity/*ActionBarActivity*/ implements TextToSpeech.OnInitListener{
 //	private static final boolean UsbongUtils.USE_UNESCAPE=true; //allows the use of \n (new line) in the decision tree
 
 //	private static boolean USE_ENG_ONLY=true; //uses English only	
@@ -228,7 +228,9 @@ public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/Actio
 	private Map<String, String> myUsbongVariableMemory;
     
 	protected InputStreamReader isr;
-			
+
+	private int currSelectedItemForSetLanguage=0;
+	
 //	@SuppressLint("InlinedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -431,96 +433,65 @@ public class UsbongDecisionTreeEngineActivity extends /*AppCompatActivity*/Actio
 		switch(item.getItemId())
 		{
 			case(R.id.set_language):
-				final Dialog dialog = new Dialog(this);
-			
+				
+//				final Dialog dialog = new Dialog(this);
+				final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+				// Get the layout inflater
+//		    	LayoutInflater inflater = this.getLayoutInflater();
+		    	dialog.setTitle("Select Language");
+/*			
 				dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 				dialog.setContentView(R.layout.set_language_dialog);
-
-				Button selectButton = (Button)dialog.findViewById(R.id.select_button);
-
-		        RadioGroup radioGroup = (RadioGroup)dialog.findViewById(R.id.multiple_radio_buttons_radiogroup);
-		        ArrayList<String> myTransArrayList = UsbongUtils.getAvailableTranslationsArrayList(myTree);
-/*		        
-		        if ((myTransArrayList==null) || (myTransArrayList.size()==0)) {
-					TextView myTextView = (TextView)dialog.findViewById(R.id.set_language_textview);
-		        	myTextView.setText("No language available to select from.");
-		        	selectButton.setText("OK");
-					selectButton.setOnClickListener(new View.OnClickListener() {					
-						public void onClick(View v) {
-							dialog.cancel();
-						}					
-					});
-		        }
 */
+//				dialog.setView(inflater.inflate(R.layout.set_language_dialog, null));
+
+				final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+				        this,
+				        android.R.layout.simple_list_item_single_choice);
+				
+		        ArrayList<String> myTransArrayList = UsbongUtils.getAvailableTranslationsArrayList(myTree);
+
 		        if (myTransArrayList==null) {
 		        	myTransArrayList = new ArrayList<String>();
 		        }
 		        //add the language setting of the xml tree to the list
 		        myTransArrayList.add(0, UsbongUtils.getDefaultLanguage());
+		        final int myTransArrayListSize = myTransArrayList.size();
 		        
-		        final int totalTrans = myTransArrayList.size();
-		        for (int i=0; i<totalTrans; i++) {
-		        	RadioButton radioButton = new RadioButton(getBaseContext());		        	
-		        	radioButton.setText(myTransArrayList.get(i));
-		            radioButton.setChecked(false);
-		            radioButton.setTextSize(20);
-		            radioButton.setId(i);
-//		            radioButton.setTextColor(Color.parseColor("#4a452a"));	
-
-		            if (radioButton.getText().toString().equals(UsbongUtils.getSetLanguage())) {
-		            	radioButton.setChecked(true);
-		            }
-		        
-		            radioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-						@Override
-		            	public void onCheckedChanged(CompoundButton myRadioButton, boolean isChecked) {
-							if (isChecked) {
-								UsbongUtils.setLanguage(myRadioButton.getText().toString());
-							}
-						}		            	
-		            });		            
-		            
-		            radioGroup.addView(radioButton);
-		        }		     		        
-
-				selectButton.setOnClickListener(new View.OnClickListener() {					
-					public void onClick(View v) {
-						currLanguageBeingUsed = UsbongUtils.getLanguageID(UsbongUtils.getSetLanguage());
-						UsbongUtils.setCurrLanguage(UsbongUtils.getSetLanguage()); //added by Mike, 22 Sept. 2015
-						
-						//added by Mike, 4 June 2015
-						//remove the current element in the node container and start anew
-						//so that when end-user presses back, the previous screen will appear,
-						//and not cause the same screen to reappear.
-						if (!usbongNodeContainer.isEmpty()) {
-							usbongNodeContainer.removeElementAt(usbongNodeContainerCounter);                            
-			                usbongNodeContainerCounter--;
-						}						
-						initParser();
-						//cancel the dialog the setLanguage() method has already been called when button is checked
-				        dialog.cancel();
-					}					
-				});
-
+				for (int i = 0; i < myTransArrayListSize; i++) {
+				    arrayAdapter.add(myTransArrayList.get(i));
+				}
 				
-				Button cancelButton = (Button)dialog.findViewById(R.id.cancel_button);
-				cancelButton.setOnClickListener(new View.OnClickListener() {					
-					public void onClick(View v) {
-						dialog.cancel();
-					}					
-				});
-				
-				//Reference: http://stackoverflow.com/questions/6204972/override-dialog-onbackpressed; last accessed: 18 Aug. 2012
-				dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-		            @Override
-		            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-		                if (keyCode == KeyEvent.KEYCODE_BACK) {
-		                	   dialog.cancel();
-		                       return true;
-		                }
-		                return false;
-		            }
-		        });	
+				// cancel button
+				dialog.setNegativeButton("Cancel",
+				        new DialogInterface.OnClickListener() {
+				            public void onClick(DialogInterface dialog, int which) {
+				                dialog.dismiss();
+				            }
+				        });
+				dialog.setSingleChoiceItems(arrayAdapter,currSelectedItemForSetLanguage,//setAdapter(arrayAdapter,
+				        new DialogInterface.OnClickListener() {
+				            public void onClick(DialogInterface dialog, int which) {
+				                Log.i("Selected Item : ", arrayAdapter.getItem(which));
+				                currSelectedItemForSetLanguage = which;
+				                
+								UsbongUtils.setLanguage(arrayAdapter.getItem(currSelectedItemForSetLanguage));
+
+								currLanguageBeingUsed = UsbongUtils.getLanguageID(UsbongUtils.getSetLanguage());
+								UsbongUtils.setCurrLanguage(UsbongUtils.getSetLanguage()); //added by Mike, 22 Sept. 2015
+								
+								//added by Mike, 4 June 2015
+								//remove the current element in the node container and start anew
+								//so that when end-user presses back, the previous screen will appear,
+								//and not cause the same screen to reappear.
+								if (!usbongNodeContainer.isEmpty()) {
+									usbongNodeContainer.removeElementAt(usbongNodeContainerCounter);                            
+					                usbongNodeContainerCounter--;
+								}						
+								initParser();
+				                dialog.dismiss();
+				            }
+				        });
 				dialog.show();
 				return true;
 			case(R.id.speak):
