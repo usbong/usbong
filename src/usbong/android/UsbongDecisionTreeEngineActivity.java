@@ -37,7 +37,6 @@ import usbong.android.utils.FedorMyLocation;
 import usbong.android.utils.UsbongScreenProcessor;
 import usbong.android.utils.UsbongUtils;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -45,11 +44,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -63,7 +62,6 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -715,21 +713,39 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity/*ActionB
 			}
 			else {
 				//it's either com.svox.pico (default) or com.svox.classic (Japanese, etc)        				
-				mTts.setEngineByPackageName("com.svox.pico"); //note: this method is already deprecated
+//commented out by Mike, 11 Oct. 2015
+//				mTts.setEngineByPackageName("com.svox.pico"); //note: this method is already deprecated
 				
 				switch (currLanguageBeingUsed) {
 					case UsbongUtils.LANGUAGE_FILIPINO:				    
 						mTts.setLanguage(new Locale("spa", "ESP"));
-						mTts.speak(UsbongUtils.convertFilipinoToSpanishAccentFriendlyText(sb.toString()), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
+						if (Build.VERSION.RELEASE.startsWith("5")) { 
+							mTts.speak(UsbongUtils.convertFilipinoToSpanishAccentFriendlyText(sb.toString()), TextToSpeech.QUEUE_FLUSH, null,null); //QUEUE_ADD			
+						}
+						else {
+							mTts.speak(UsbongUtils.convertFilipinoToSpanishAccentFriendlyText(sb.toString()), TextToSpeech.QUEUE_FLUSH, null); //QUEUE_ADD										
+						}
 						break;
 					case UsbongUtils.LANGUAGE_JAPANESE:
-				        mTts.setEngineByPackageName("com.svox.classic"); //note: this method is already deprecated
+//						commented out by Mike, 11 Oct. 2015
+//						mTts.setEngineByPackageName("com.svox.classic"); //note: this method is already deprecated
 						mTts.setLanguage(new Locale("ja", "JP"));
-						mTts.speak(sb.toString(), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
+						if (Build.VERSION.RELEASE.startsWith("5")) { 
+							mTts.speak(sb.toString(), TextToSpeech.QUEUE_FLUSH, null,null); //QUEUE_ADD			
+							
+						}
+						else {
+							mTts.speak(sb.toString(), TextToSpeech.QUEUE_FLUSH, null); //QUEUE_ADD			
+						}
 						break;
 					case UsbongUtils.LANGUAGE_ENGLISH:
 						mTts.setLanguage(new Locale("en", "US"));
-						mTts.speak(sb.toString(), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
+						if (Build.VERSION.RELEASE.startsWith("5")) { 
+							mTts.speak(sb.toString(), TextToSpeech.QUEUE_FLUSH, null,null); //QUEUE_ADD			
+						}
+						else {
+							mTts.speak(sb.toString(), TextToSpeech.QUEUE_FLUSH, null); //QUEUE_ADD										
+						}
 						break;
 					default:
 						mTts.setLanguage(new Locale("en", "US"));
@@ -780,7 +796,8 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity/*ActionB
                     TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
                 startActivity(installIntent);        		        	
             }
-            mTts = new TextToSpeech(this, this);        		
+//			commented out by Mike, 11 Oct. 2015
+//        	mTts = new TextToSpeech(this, this);        		
         }
         else if (requestCode==EMAIL_SENDING_SUCCESS) {
     		finish();    		
@@ -1509,6 +1526,8 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity/*ActionB
 			public void onClick(View v) {
 				wasNextButtonPressed=true;
 				hasUpdatedDecisionTrackerContainer=false;
+				
+//				Log.d(">>>>mTts.isSpeaking()?", ""+mTts.isSpeaking());
 				
 				if (mTts.isSpeaking()) {
 					mTts.stop();
