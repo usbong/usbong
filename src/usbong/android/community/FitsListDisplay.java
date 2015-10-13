@@ -15,7 +15,6 @@ import org.json.JSONObject;
 
 import usbong.android.R;
 import usbong.android.utils.UsbongUtils;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
@@ -26,7 +25,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,9 +37,10 @@ import android.view.WindowManager;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.util.regex.*;
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-public class FitsListDisplay extends ActionBarActivity {
+public class FitsListDisplay extends AppCompatActivity/*ActionBarActivity*/ {
 	private final String TAG = "usbong.usbongcommunitydraft.FitsListDisplay";
 	private SwipeRefreshLayout swipeContainer;
 	private ListView listView;
@@ -207,6 +208,9 @@ public class FitsListDisplay extends ActionBarActivity {
 		
 	    @Override
 	    protected void onPostExecute(String result){
+	    	result = Html.fromHtml(result).toString();
+	    	result = result.replaceAll("^[^\\[]*_", "");
+//	    	Log.d(TAG, "Removed HTML:" + result);
 	    	SharedPreferenceEditor.getInstance().save(editor.edit().putString(Constants.JSON_KEY, result));
 	    	ParseJSONToFitsArray(result);
 	    	dialog.dismiss();
@@ -257,13 +261,25 @@ public class FitsListDisplay extends ActionBarActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Toast toast;
+		View view;
 	    // Handle presses on the action bar items
 	    switch (item.getItemId()) {
 	        case R.id.action_search:
-	            Toast.makeText(this, "Pressed search", Toast.LENGTH_SHORT).show();
+//	            Toast.makeText(this, "Pressed search", Toast.LENGTH_SHORT).show();
+	        	 toast = Toast.makeText(this, "Pressed search", Toast.LENGTH_SHORT);
+	        	 view = toast.getView();
+	        	 view.setBackgroundResource(R.drawable.alternatetoastbox);
+	        	 toast.setView(view);
+	        	 toast.show();
 	            return true;
 	        case R.id.action_settings:
-	        	Toast.makeText(this, "Pressed settings", Toast.LENGTH_SHORT).show();
+//	        	Toast.makeText(this, "Pressed settings", Toast.LENGTH_SHORT).show();
+	        	toast = Toast.makeText(this, "Pressed settings", Toast.LENGTH_SHORT);
+	        	view = toast.getView();
+	        	view.setBackgroundResource(R.drawable.alternatetoastbox);
+	        	toast.setView(view);
+	        	toast.show();
 	            return true;
 	        default:
 	            return super.onOptionsItemSelected(item);

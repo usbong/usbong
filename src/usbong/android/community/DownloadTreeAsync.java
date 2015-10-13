@@ -22,6 +22,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 @SuppressLint("NewApi")
@@ -145,6 +146,9 @@ public class DownloadTreeAsync extends AsyncTask<String, Integer, String> {
 
     @Override
     protected void onPostExecute(String result) {
+    	Toast toast;
+    	View view;
+    	
         mWakeLock.release();
         if(mProgressDialog != null)
         	mProgressDialog.dismiss();
@@ -166,7 +170,12 @@ public class DownloadTreeAsync extends AsyncTask<String, Integer, String> {
             notificationManager.cancel(0);
             
             notificationManager.notify(0, n);
-            Toast.makeText(context,"Download error: "+result, Toast.LENGTH_LONG).show();
+//            Toast.makeText(context,"Download error: "+result, Toast.LENGTH_LONG).show();
+            toast = Toast.makeText(context,"Download error: " + result, Toast.LENGTH_LONG);
+            view = toast.getView();
+            view.setBackgroundResource(R.drawable.alternatetoastbox);
+            toast.setView(view);
+            toast.show();
             delegate.processFinish(false);
         } else {
         	Log.d(TAG, "intent: " + filePath);
@@ -187,7 +196,12 @@ public class DownloadTreeAsync extends AsyncTask<String, Integer, String> {
             notificationManager.cancel(0);
             
             notificationManager.notify(0, n);
-            Toast.makeText(context,"File downloaded", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(context,"File downloaded", Toast.LENGTH_SHORT).show();
+            toast = Toast.makeText(context,"File downloaded", Toast.LENGTH_SHORT);
+            view = toast.getView();
+            view.setBackgroundResource(R.drawable.alternatetoastbox);
+            toast.setView(view);
+            toast.show();
             delegate.processFinish(true);
         }
     }

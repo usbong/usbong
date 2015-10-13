@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 Michael Syson
+ * Copyright 2012-2015 Usbong Social Systems, Inc.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,6 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+ * @authors: Michael B. Syson, JP Talusan
+ */
+
 package usbong.android;
 
 import java.io.File;
@@ -334,13 +338,39 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity/*ActionB
         
 //    	initTreeLoader();
 		//added by JPT, May 25, 2015
+/*		
 		if(getIntent().getStringExtra(Constants.UTREE_KEY) != null) {
 			Log.d("DecisionTree", getIntent().getStringExtra(Constants.UTREE_KEY));
 			initParser(getIntent().getStringExtra(Constants.UTREE_KEY));
 		} else {			
 	    	initTreeLoader();
 		}
-    }
+*/
+		//added by JPT, Jul 13, 2015
+ 		Intent intent = getIntent();
+ 	    String action = intent.getAction();
+ 	    String type = intent.getType();
+ 	    
+ 	   if(getIntent().getStringExtra(Constants.UTREE_KEY) != null) {
+			Log.d("DecisionTree", getIntent().getStringExtra(Constants.UTREE_KEY));
+			initParser(getIntent().getStringExtra(Constants.UTREE_KEY));
+ 	   }
+ 	   else if(Intent.ACTION_SEND.equals(action) && type != null) {
+ 	    	if(getIntent().getStringExtra(Constants.UTREE_KEY) != null) {
+ 	    		Log.d("DecisionTree", getIntent().getStringExtra(Constants.UTREE_KEY));
+ 	    		initParser(getIntent().getStringExtra(Constants.UTREE_KEY));
+ 	    	} else if(Intent.ACTION_SEND.equals(action) && type != null) {
+	 			if ("application/utree".equals(type)) {
+	 				Log.d("DecisionTree", getIntent().getStringExtra(Constants.UTREE_KEY));
+	 				initParser(getIntent().getStringExtra(Constants.UTREE_KEY));
+	 			}
+ 	    	}
+ 	    }
+    	else {			
+	    		initTreeLoader();
+	    }
+ 	}
+ 	    	
 /*    
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {

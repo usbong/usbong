@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="usbong.android"
-      android:versionCode="64"
-      android:versionName="11 Oct. 2015"
+      android:versionCode="65"
+      android:versionName="13 Oct. 2015"
       android:installLocation="auto"      
 >
 
@@ -61,6 +61,11 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="usbong.android.UsbongMainActivity" />
+            <intent-filter>
+		        <action android:name="android.intent.action.SEND" />
+		        <category android:name="android.intent.category.DEFAULT" />
+		        <data android:mimeType="application/utree" />
+	    	</intent-filter>
         </activity>
         <activity android:name="CameraActivity" android:permission="android.permission.CAMERA" android:screenOrientation="nosensor"></activity>
 		<activity android:name="SettingsActivity" android:screenOrientation="portrait"></activity>

@@ -18,28 +18,25 @@ import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
-import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -50,7 +47,7 @@ import com.google.android.youtube.player.YouTubePlayer;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 @SuppressLint("NewApi")
-public class SingleItemViewWithFragment extends ActionBarActivity implements
+public class SingleItemViewWithFragment extends AppCompatActivity/*ActionBarActivity*/ implements
 YouTubePlayer.OnFullscreenListener,
 YouTubePlayer.OnInitializedListener,
 usbong.android.community.DownloadTreeAsync.AsyncResponse {
@@ -428,7 +425,12 @@ usbong.android.community.DownloadTreeAsync.AsyncResponse {
 		public void onReceive(Context ctxt, Intent intent) {
 			download.setText("Open Tree");
 			isFileDownloaded = true;
-			Toast.makeText(ctxt, "Done", Toast.LENGTH_LONG).show();
+//			Toast.makeText(ctxt, "Done", Toast.LENGTH_LONG).show();
+			Toast toast = Toast.makeText(ctxt, "Done", Toast.LENGTH_LONG);
+			View view = toast.getView();
+			view.setBackgroundResource(R.drawable.alternatetoastbox);
+			toast.setView(view);
+			toast.show();
 		}
 	};
 

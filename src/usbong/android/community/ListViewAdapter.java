@@ -27,7 +27,12 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+/*
+import com.bumptech.glide.DrawableRequestBuilder;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+*/
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 //ODO: Add a way to display (callback) if download has been completed.
@@ -99,6 +104,12 @@ public class ListViewAdapter extends BaseAdapter implements AsyncResponse {
 		// Load image into GridView
 		
 		url = "http://img.youtube.com/vi/" + UsbongUtils.parseYouTubeLink(fitObjects.get(position).getYOUTUBELINK()) + "/hqdefault.jpg";
+	
+		//		Glide.with(context)
+		//			.load(url)
+		//			.diskCacheStrategy(DiskCacheStrategy.ALL)
+		//			.placeholder(R.drawable.usbong_logo)
+		//			.into(holder.icon);
 				
 		if(!ImageLoader.getInstance().isInited()) {
 			UsbongUtils.initDisplayAndConfigOfUIL(context);
