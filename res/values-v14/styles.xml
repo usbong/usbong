@@ -9,4 +9,7 @@
         <!-- API 14 theme customizations can go here. -->
     </style>
 
+    <style name="DatePickerTheme" parent="@android:style/Theme.DeviceDefault.NoActionBar">
+        <!-- Any customizations for your app running on 4.0+ devices here -->
+    </style>
 </resources>

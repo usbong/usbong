@@ -1,27 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	style="@style/UsbongSpecialParentLayout"
-	android:id="@+id/parent_layout_id"       	
+	android:id="@+id/parent_layout_id"       
 	>
-	<ScrollView style="@style/UsbongDefaultScrollView"
+    <fragment
+        android:name="com.google.android.youtube.player.YouTubePlayerSupportFragment"
+        android:id="@+id/youtube_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#000000"/>	
+    <ScrollView style="@style/UsbongDefaultScrollView"
 	>		 	
-	<LinearLayout style="@style/UsbongDefaultMainLayout">
-	   	<TextView android:id="@+id/date_textview"
+		<TextView android:id="@+id/youtube_with_text_textview"
 		    style="@style/UsbongDefaultTextView"	    	
 		    android:text="@string/default_textview" 
-		    android:layout_alignParentBottom="true"
-		    />
-		      		
-	    <DatePicker
-         android:id="@+id/date_picker"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content" 
-         android:calendarViewShown="false"
-         style="@style/DatePickerTheme"
-         >
-    	</DatePicker>
-	</LinearLayout>
-	</ScrollView>	    	    
+		/>	    
+	</ScrollView>	    	        
 	<LinearLayout
 		style="@style/UsbongDefaultBackNextButtonLayout">	
 	    <Button android:id="@+id/back_button"

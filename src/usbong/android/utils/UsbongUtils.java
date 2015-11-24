@@ -46,7 +46,6 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -57,15 +56,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
-
-import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
-import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 import usbong.android.R;
 import usbong.android.UsbongDecisionTreeEngineActivity;
@@ -82,10 +72,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
-import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
@@ -97,16 +86,36 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayer.OnInitializedListener;
+import com.google.android.youtube.player.YouTubePlayer.Provider;
+import com.google.android.youtube.player.YouTubePlayerSupportFragment;
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 public class UsbongUtils {		
 	public static boolean IS_IN_DEBUG_MODE=false;
 	public static boolean STORE_OUTPUT=true;
+	
+	public final static String API_KEY = "AIzaSyB5mM_lk_bbdT5nUWQTO6S5FyZ9IgaxqXc"; //added by Mike, 20151120
 
+	public static String DEFAULT_UTREE_TO_LOAD="usbong_demo_tree"; //added by Mike, 27 Oct. 2015
 	public static String BASE_FILE_PATH = Environment.getExternalStorageDirectory()+"/usbong/";
 	public static String USBONG_TREES_FILE_PATH = BASE_FILE_PATH + "usbong_trees/";
 	//	public static String BASE_FILE_PATH = "/sdcard/usbong/";
 	private static String timeStamp;
 	private static String dateTimeStamp;
+	
+	public static final int FROM_MY_YOUTUBE_ACTIVITY = 1; //activity result, added by Mike, 20151124
 	
 	public static boolean isInAutoVoiceOverNarration=true;
     	
@@ -142,6 +151,10 @@ public class UsbongUtils {
 	public static final boolean USE_UNESCAPE=true; //allows the use of \n (new line) in the decision tree	
 
 	public static ArrayList<String> tokenizedStringList;
+	
+//	public static YouTubePlayer myYouTubePlayer;
+    private static String myYouTubeVideoId;
+
 	
 	//added by Mike, 22 Sept. 2015
 	public static String getCurrLanguage(){
@@ -188,6 +201,49 @@ public class UsbongUtils {
 /*        return EMAIL_ADDRESS_PATTERN.matcher(email).matches();
  */
 		return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches(); //updated by Mike, 24 Sept. 2015
+	}
+
+	//added by Mike, 27 Oct. 2015
+	public static void initUsbongConfigFile() {
+        try 
+        {
+        	System.out.println(">>>>>> Creating file structure.");
+        	UsbongUtils.createUsbongFileStructure();
+        	
+        	//default values
+        	UsbongUtils.IS_IN_DEBUG_MODE=false;
+        	UsbongUtils.setDestinationServerURL("127.0.0.1");//"192.168.1.105";
+    		
+        	if (UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + "usbong.config") == null) { 
+        		UsbongUtils.IS_IN_DEBUG_MODE=false;    			
+				PrintWriter out = UsbongUtils.getFileFromSDCardAsWriter(UsbongUtils.BASE_FILE_PATH + "usbong.config");    				
+				out.println("IS_IN_DEBUG_MODE=OFF");	    			
+				out.close();
+    		}
+    		else {
+				InputStreamReader reader = UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + "usbong.config");
+				BufferedReader br = new BufferedReader(reader);    		
+	        	String currLineString;        	
+	        	while((currLineString=br.readLine())!=null)
+	        	{ 		
+	    			if (currLineString.equals("IS_IN_DEBUG_MODE=ON")) {
+	    				UsbongUtils.IS_IN_DEBUG_MODE=true;				
+	    			}
+	    			else if (currLineString.contains("DESTINATION_URL=")) {
+	    				UsbongUtils.setDestinationServerURL(currLineString.replace("DESTINATION_URL=", ""));
+	    				System.out.println(">>>>>>>DestiantionServerURL: "+UsbongUtils.getDestinationServerURL());
+	    			}
+	    			/*
+	    			else {
+	    				UsbongUtils.IS_IN_DEBUG_MODE=false;		
+	    			}*/			
+	        	}	        				
+    		}
+        }
+        catch (Exception e) {
+        	System.out.println("ERROR creating usbong file structure! ");
+        	e.printStackTrace();
+        }
 	}
 	
 	public static boolean checkIfInDebugMode() {
@@ -642,6 +698,21 @@ public class UsbongUtils {
 		return myStringToken;
     }
 
+    //This methods gets the name of the YouTube ID
+    //example: <task-node name="youtubeVideoWithText~https://www.youtube.com/watch?v=mzB2P7bbmio~Usbong Builder Demo">
+    //becomes "mzB2P7bbmio"
+    public static String getYouTubeVideoID(String currUsbongNode) {
+		StringTokenizer st = new StringTokenizer(currUsbongNode, "~");
+		String myStringToken = st.nextToken();
+		myStringToken = st.nextToken(); 
+		
+		StringTokenizer stForActualYouTubeLink = new StringTokenizer(myStringToken, "=");
+		String myYouTubeVideoStringToken = stForActualYouTubeLink.nextToken();
+		myYouTubeVideoStringToken = stForActualYouTubeLink.nextToken();
+		
+		return myYouTubeVideoStringToken;
+    }
+    
     //This methods checks all the tokens for the "optional" keyword
     //from the start of the string up to the second to the last token 
     //with '~' as delimeter
@@ -2565,4 +2636,14 @@ public class UsbongUtils {
             return renamed.getPath();
         }
     }
+/*
+    //added by Mike, 20151120
+	public static void setYouTubeVideoID(String s) {
+		myYouTubeVideoId = s;
+	}
+	//added by Mike, 20151120
+	public static String getYouTubeVideoID() {
+		return myYouTubeVideoId;
+	}	
+*/	
 }

@@ -30,5 +30,8 @@
         <item name="android:minHeight">40dp</item>
         <item name="android:height">40dp</item>
     </style>
-
+    
+    <style name="DatePickerTheme" parent="@android:style/Theme.Holo.NoActionBar.Fullscreen">
+        <!-- Any customizations for your app running on pre-3.0 devices here -->
+    </style>
 </resources>

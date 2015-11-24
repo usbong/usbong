@@ -18,10 +18,6 @@ import java.util.Calendar;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import usbong.android.R;
@@ -42,7 +38,6 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -53,10 +48,12 @@ import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
+
+import com.google.android.youtube.player.YouTubePlayerSupportFragment;
+import com.google.android.youtube.player.YouTubePlayerView;
 
 /*
  * This class was created to reduce the length (i.e. number of lines of code) 
@@ -335,10 +332,10 @@ public class UsbongScreenProcessor
 				qrCodeReaderButton .setText((String) udtea.getResources().getText(R.string.UsbongQRCodeReaderTextViewFILIPINO));				    		
 			}
 			else if (udtea.currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
-				qrCodeReaderButton .setText((String) udtea.getResources().getText(R.string.UsbongQRCodeReaderTextViewJAPANESE));				    		
+				qrCodeReaderButton.setText((String) udtea.getResources().getText(R.string.UsbongQRCodeReaderTextViewJAPANESE));				    		
 			}
 			else { //if (udtea.currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
-				qrCodeReaderButton .setText((String) udtea.getResources().getText(R.string.UsbongQRCodeReaderTextViewENGLISH));				    		
+				qrCodeReaderButton.setText((String) udtea.getResources().getText(R.string.UsbongQRCodeReaderTextViewENGLISH));				    		
 			}
 		} else if (udtea.currScreen == udtea.TEXTFIELD_SCREEN) {
 			udtea.setContentView(R.layout.textfield_screen);
@@ -618,13 +615,16 @@ public class UsbongScreenProcessor
 		} else if (udtea.currScreen == udtea.DATE_SCREEN) {
 			udtea.setContentView(R.layout.date_screen);
 			udtea.initBackNextButtons();
-			TextView myDateScreenTextView = (TextView)udtea.findViewById(R.id.date_textview);
+			TextView myDateScreenTextView = (TextView)udtea.findViewById(R.id.date_textview); 
 			myDateScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myDateScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			//Reference: http://code.google.com/p/android/issues/detail?id=2037
 			//last accessed: 21 Aug. 2012
 			Configuration userConfig = new Configuration();
 			Settings.System.getConfiguration( udtea.getContentResolver(), userConfig );
 			Calendar date = Calendar.getInstance( userConfig.locale);
+
+			
+/*			
 			//Reference: http://www.androidpeople.com/android-spinner-default-value;
 			//last accessed: 21 Aug. 2012		        
 			//month-------------------------------
@@ -673,7 +673,7 @@ public class UsbongScreenProcessor
 				if (myDayStringToken.contains(udtea.dayAdapter.getItem(i).toString())) {
 					dateDaySpinner.setSelection(i);
 					
-					myStringToken = myStringToken.replace(/*udtea.dayAdapter.getItem(i).toString()*/myDayStringToken+",", "");
+					myStringToken = myStringToken.replace(myDayStringToken+",", "");
 //		        		System.out.println(">>>>>>>>>>>myStringToken: "+myStringToken);
 				}
 			}
@@ -690,6 +690,7 @@ public class UsbongScreenProcessor
 			else {
 				myDateYearEditText.setText(myStringToken);
 			}
+*/			
 		} else if (udtea.currScreen == udtea.TEXT_DISPLAY_SCREEN) {
 			udtea.setContentView(R.layout.text_display_screen);
 			udtea.initBackNextButtons();
@@ -857,6 +858,18 @@ public class UsbongScreenProcessor
 			myVideoFromFileWithTextScreenVideoView.setVideoPath(UsbongUtils.getPathOfVideoFile(udtea.myTree, UsbongUtils.getResName(udtea.currUsbongNode)));
 			myVideoFromFileWithTextScreenVideoView.setMediaController(new MediaController(((Activity)udtea)));
 			myVideoFromFileWithTextScreenVideoView.start();
+		} else if (udtea.currScreen == udtea.YOUTUBE_VIDEO_SCREEN) {
+			udtea.setContentView(R.layout.blank_screen);
+			udtea.initBackNextButtons();
+			udtea.initYouTubeScreen();
+		} else if (udtea.currScreen == udtea.YOUTUBE_VIDEO_WITH_TEXT_SCREEN) {
+			udtea.setContentView(R.layout.youtube_video_with_text_screen);
+			udtea.initBackNextButtons();
+
+			TextView myYouTubeWithTextTextView = (TextView)udtea.findViewById(R.id.youtube_with_text_textview);
+			myYouTubeWithTextTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myYouTubeWithTextTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+
+			udtea.initYouTubeScreen();
 		} else if (udtea.currScreen == udtea.TEXT_IMAGE_DISPLAY_SCREEN) {
 			udtea.setContentView(R.layout.text_image_display_screen);
 			udtea.initBackNextButtons();

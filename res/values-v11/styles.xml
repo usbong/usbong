@@ -8,4 +8,7 @@
         <!-- API 11 theme customizations can go here. -->
     </style>
 
+    <style name="DatePickerTheme" parent="@android:style/Theme.Holo">
+        <!-- Any customizations for your app running on 3.0+ devices here -->
+    </style>
 </resources>
