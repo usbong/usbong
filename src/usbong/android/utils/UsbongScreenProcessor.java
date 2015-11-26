@@ -1047,7 +1047,8 @@ public class UsbongScreenProcessor
         udtea.currUsbongBGAudioString=bgAudioFileName;
         
 		if ((!udtea.usedBackButton) && (!udtea.hasReturnedFromAnotherActivity)){
-			udtea.usbongNodeContainer.addElement(udtea.currUsbongNode);
+			udtea.usbongNodeContainer.addElement(
+					udtea.currUsbongNode);
 			udtea.usbongNodeContainerCounter++;
 		}
 		else {

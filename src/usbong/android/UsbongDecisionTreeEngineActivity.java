@@ -38,6 +38,7 @@ import usbong.android.features.node.PaintActivity;
 import usbong.android.features.node.QRCodeReaderActivity;
 import usbong.android.multimedia.audio.AudioRecorder;
 import usbong.android.utils.FedorMyLocation;
+import usbong.android.utils.UsbongConstants;
 import usbong.android.utils.UsbongScreenProcessor;
 import usbong.android.utils.UsbongUtils;
 import android.app.AlertDialog;
@@ -51,7 +52,6 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -77,11 +77,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
-import com.google.android.youtube.player.YouTubePlayerSupportFragment;
-import com.google.android.youtube.player.YouTubePlayer.OnInitializedListener;
-import com.google.android.youtube.player.YouTubePlayer.Provider;
 import com.google.android.youtube.player.YouTubePlayerFragment;
 
 //@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -246,13 +242,16 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 	
     private YouTubePlayerFragment myYouTubePlayerFragment;
 	public static YouTubePlayer myYouTubePlayer;
-
+	private UdteaObject myUdteaObject;
+	
 //	@SuppressLint("InlinedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
-        super.onCreate(savedInstanceState);        
+        super.onCreate(savedInstanceState);    
+        
+        Log.d(">>>>", "insideOnCreate(...)");
                 
         instance=this;
 
@@ -261,6 +260,8 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
         //added by Mike, 22 Sept. 2015
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);        
 
+        currUsbongNode=""; //added by Mike, 20151126
+        
         //if return is null, then currScreen=0
 //        currScreen=Integer.parseInt(getIntent().getStringExtra("currScreen")); 
         //modified by JPT, May 25, 2015        
@@ -389,8 +390,49 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 	 			}
  	    	}
  	    }
+ 	    //added by Mike, 20151126
+ 	    else if(getIntent().getParcelableExtra(UsbongConstants.BUNDLE) != null) {
+ 	    	myUdteaObject = getIntent().getParcelableExtra((UsbongConstants.BUNDLE));
+ 	    	Log.d(">>>>>","inside UsbongConstants.Bundle");
+ 	    	
+ 	    	myTree = myUdteaObject.getMyTree();
+ 	    	currUsbongNode = myUdteaObject.getCurrUsbongNode();
+	 	    Log.d(">>>>currUsbongNode",currUsbongNode); 	    		
+
+	    	nextUsbongNodeIfYes = myUdteaObject.getNextUsbongNodeIfYes();
+	    	nextUsbongNodeIfNo = myUdteaObject.getNextUsbongNodeIfYes();
+
+// 	    	usbongAnswerContainerCounter = myUdteaObject.getUsbongAnswerContainerCounter();
+// 	    	usbongNodeContainerCounter = myUdteaObject.getUsbongNodeContainerCounter();
+ 	    	decisionTrackerContainer = myUdteaObject.getDecisionTrackerContainer(); 	    	
+ 	    	usbongAnswerContainer = myUdteaObject.getUsbongAnswerContainer();
+ 	    	usbongNodeContainer = myUdteaObject.getUsbongNodeContainer();
+
+ 	    	usbongAnswerContainerCounter = usbongAnswerContainer.size()-1;
+ 	    	usbongNodeContainerCounter = usbongNodeContainer.size()-1;
+ 	    	
+	 	    Log.d(">>>>",usbongNodeContainerCounter+""); 	    		
+
+ 	    	for (int i=0; i<usbongNodeContainer.size(); i++) {
+ 	 	    	Log.d(">>>>",usbongNodeContainer.elementAt(i)); 	    		
+ 	    	}
+ 	    	 	    	
+        	Bundle bundle = getIntent().getExtras();
+        	String buttonPressed = bundle.getString("buttonPressed");
+        	
+        	Log.d(">>>> buttonPressed",buttonPressed);
+        	
+        	if (buttonPressed.equals("back")) {
+        		processBackButtonPressed();
+        	}
+        	else {
+        		processNextButtonPressed();
+        	}	    	
+//			initParser(myTree);
+ 	    }
     	else {			
-	    		initTreeLoader();
+    		myUdteaObject = new UdteaObject(); //added by Mike, 20151126
+	    	initTreeLoader();
 	    }
  	}
  	    	
@@ -862,10 +904,10 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     		if (mTts!=null) {
     			mTts.shutdown();
     		}
-        }
+        }/*
         else if (requestCode==UsbongUtils.FROM_MY_YOUTUBE_ACTIVITY) {
         	//do something
-        }
+        }*/
     }
 
     @Override
@@ -929,9 +971,22 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
         		break;
         	case YOUTUBE_VIDEO_SCREEN:
         	case YOUTUBE_VIDEO_WITH_TEXT_SCREEN:
+/*        		
             	Bundle bundle = getIntent().getExtras();
             	String buttonPressed = bundle.getString("buttonPressed");
             	currScreen = bundle.getInt("currScreen");
+
+     	    	myUdteaObject = getIntent().getParcelableExtra((UsbongConstants.BUNDLE));
+     	    	
+     	    	Log.d(">>>>>","inside UsbongConstants.Bundle");
+     	    	
+     	    	myTree = myUdteaObject.getMyTree();
+     	    	currUsbongNode = myUdteaObject.getCurrUsbongNode();
+     	    	usbongAnswerContainerCounter = myUdteaObject.getUsbongAnswerContainerCounter();
+     	    	usbongNodeContainerCounter = myUdteaObject.getUsbongNodeContainerCounter();
+     	    	decisionTrackerContainer = myUdteaObject.getDecisionTrackerContainer(); 	    	
+     	    	usbongAnswerContainer = myUdteaObject.getUsbongAnswerContainer();
+     	    	usbongNodeContainer = myUdteaObject.getUsbongNodeContainer();
 
             	if (buttonPressed.equals("back")) {
             		backButton.performClick();
@@ -940,7 +995,8 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
             		nextButton.performClick();            		
             	}
             	return;
-//        		break;
+*/            	
+        		break;
         }
         initParser(); 
     }
@@ -995,6 +1051,23 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 			e.printStackTrace();
 		}		
 	}
+	
+	//added by Mike, 20151126
+	public void storeDataToUdteaObject() {
+//		Log.d(">>>>>", "storeDataToUdteaObject()");
+		myUdteaObject.setMyTree(myTree); 
+    	myUdteaObject.setCurrUsbongNode(currUsbongNode);
+    	Log.d(">>>>>currUsbongNode", currUsbongNode);
+
+    	myUdteaObject.setNextUsbongNodeIfYes(nextUsbongNodeIfYes);
+    	myUdteaObject.setNextUsbongNodeIfNo(nextUsbongNodeIfNo);
+
+    	myUdteaObject.setUsbongAnswerContainerCounter(usbongAnswerContainerCounter);
+    	myUdteaObject.setUsbongNodeContainerCounter(usbongNodeContainerCounter);
+    	myUdteaObject.setDecisionTrackerContainer(decisionTrackerContainer); 	    	
+    	myUdteaObject.setUsbongAnswerContainer(usbongAnswerContainer);
+    	myUdteaObject.setUsbongNodeContainer(usbongNodeContainer);
+	}
     
 	//added by Mike, 24 May 2015
 	//@param: s is the name of the .utree file
@@ -1014,7 +1087,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 //		hasReachedEndOfAllDecisionTrees=false;		
 //			decisionTrackerContainer.addElement(usbongAnswerContainer.lastElement());
 		Log.d(">>>>>", "initParser");
-
+		
 		if (wasNextButtonPressed){
 			Log.d(">>>>>", "wasNextButtonPressed");
 			
@@ -1073,7 +1146,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 //		  }		  
 		  
 		  parser.setInput(isr);	
-				  
+
 		  while(parser.nextTag() != XmlPullParser.END_DOCUMENT) {
 			  //if this tag does not have an attribute; e.g. END_TAG
 			  if (parser.getAttributeCount()==-1) {
@@ -1535,10 +1608,16 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 			hasReturnedFromAnotherActivity=false;
 		}
 */		
+		
+		//added by Mike, 20151126
+		storeDataToUdteaObject();
+
 		initUsbongScreen();
 	}
 
 	public void initUsbongScreen() {		
+		Log.d(">>>>","inside: initUsbongScreen()");		
+		
 		myUsbongScreenProcessor.init();
 		if (UsbongUtils.isInAutoVoiceOverNarration) { //added by Mike, 24 Sept. 2015
 			processSpeak(new StringBuffer());
@@ -1558,50 +1637,56 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     	backButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (mTts.isSpeaking()) {
-					mTts.stop();
-				}
-				//added by Mike, 21 July 2015
-				if (myMediaPlayer.isPlaying()) {
-					myMediaPlayer.stop();
-				}
-
-				usedBackButton=true;
-				
-				decisionTrackerContainer.addElement("B;");
-				
-				if (!usbongAnswerContainer.isEmpty()) {
-/*					
-					currAnswer = usbongAnswerContainer.lastElement();
-					usbongAnswerContainer.removeElementAt(usbongAnswerContainer.size()-1);					
-*/
-					usbongAnswerContainerCounter--;
-					
-					if (usbongAnswerContainerCounter<0) {
-						usbongAnswerContainerCounter=0;
-					}
-					
-					currAnswer = usbongAnswerContainer.elementAt(usbongAnswerContainerCounter);
-				}
-
-				if (!usbongNodeContainer.isEmpty()) {
-					usbongNodeContainer.removeElementAt(usbongNodeContainerCounter);                            
-	                usbongNodeContainerCounter--;
-				}
-
-                if (usbongNodeContainerCounter>=0) {
-                	currUsbongNode=(String)usbongNodeContainer.elementAt(usbongNodeContainerCounter);
-                }
-                else { 
-                	processReturnToMainMenuActivity();
-/*                	initParser();
-                	return;
-*/
-                }
-            	initParser();
+				processBackButtonPressed();
 			}
-    	});    
+		});    
     }
+    
+    public void processBackButtonPressed() {
+		if (mTts.isSpeaking()) {
+			mTts.stop();
+		}
+		//added by Mike, 21 July 2015
+		if (myMediaPlayer.isPlaying()) {
+			myMediaPlayer.stop();
+		}
+
+		usedBackButton=true;
+		
+		decisionTrackerContainer.addElement("B;");
+		
+		if (!usbongAnswerContainer.isEmpty()) {
+/*					
+			currAnswer = usbongAnswerContainer.lastElement();
+			usbongAnswerContainer.removeElementAt(usbongAnswerContainer.size()-1);					
+*/
+			usbongAnswerContainerCounter--;
+			
+			if (usbongAnswerContainerCounter<0) {
+				usbongAnswerContainerCounter=0;
+			}
+			
+			currAnswer = usbongAnswerContainer.elementAt(usbongAnswerContainerCounter);
+		}
+
+		if (!usbongNodeContainer.isEmpty()) {
+			usbongNodeContainer.removeElementAt(usbongNodeContainerCounter);                            
+            usbongNodeContainerCounter--;
+            Log.d(">>>>>usbongNodeContainerCounter", ""+usbongNodeContainerCounter);
+		}
+
+        if (usbongNodeContainerCounter>=0) {
+        	currUsbongNode=(String)usbongNodeContainer.elementAt(usbongNodeContainerCounter);
+            Log.d(">>>>>currUsbongNode", currUsbongNode);
+        }
+        else { 
+        	processReturnToMainMenuActivity();
+/*                	initParser();
+        	return;
+*/
+        }
+    	initParser();
+	}
 
     public void initNextButton()
     {
@@ -1609,736 +1694,740 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     	nextButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				wasNextButtonPressed=true;
-				hasUpdatedDecisionTrackerContainer=false;
-				
-				if (mTts.isSpeaking()) {
-					mTts.stop();
-				}
-				//added by Mike, 21 July 2015
-				if (myMediaPlayer.isPlaying()) {
-					myMediaPlayer.stop();
-				}
+				processNextButtonPressed();
+			}
+    	});
+    }
+    
+    public void processNextButtonPressed() {
+		wasNextButtonPressed=true;
+		hasUpdatedDecisionTrackerContainer=false;
+		
+		if (mTts.isSpeaking()) {
+			mTts.stop();
+		}
+		//added by Mike, 21 July 2015
+		if (myMediaPlayer.isPlaying()) {
+			myMediaPlayer.stop();
+		}
 
-				if (currAudioRecorder!=null) {
-					try {					
-						//if stop button is pressable
-						if (stopButton.isEnabled()) { 
-							currAudioRecorder.stop();
-						}
-						if (currAudioRecorder.isPlaying()){
-							currAudioRecorder.stopPlayback();
-						}					
-					}
-					catch (Exception e) {
-						e.printStackTrace();
-					}
-					String path = currAudioRecorder.getPath();
-//					System.out.println(">>>>>>>>>>>>>>>>>>>currAudioRecorder: "+currAudioRecorder);
-					if (!attachmentFilePaths.contains(path)) {
-						attachmentFilePaths.add(path);
-//						System.out.println(">>>>>>>>>>>>>>>>adding path: "+path);
-					}							
+		if (currAudioRecorder!=null) {
+			try {					
+				//if stop button is pressable
+				if (stopButton.isEnabled()) { 
+					currAudioRecorder.stop();
 				}
+				if (currAudioRecorder.isPlaying()){
+					currAudioRecorder.stopPlayback();
+				}					
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			String path = currAudioRecorder.getPath();
+//			System.out.println(">>>>>>>>>>>>>>>>>>>currAudioRecorder: "+currAudioRecorder);
+			if (!attachmentFilePaths.contains(path)) {
+				attachmentFilePaths.add(path);
+//				System.out.println(">>>>>>>>>>>>>>>>adding path: "+path);
+			}							
+		}
 
-		    	//END_STATE_SCREEN = last screen
-		    	if (currScreen==END_STATE_SCREEN) {
-		    		int usbongAnswerContainerSize = usbongAnswerContainer.size();
+    	//END_STATE_SCREEN = last screen
+    	if (currScreen==END_STATE_SCREEN) {
+    		int usbongAnswerContainerSize = usbongAnswerContainer.size();
+    		StringBuffer outputStringBuffer = new StringBuffer();
+    		for(int i=0; i<usbongAnswerContainerSize;i++) {
+    			outputStringBuffer.append(usbongAnswerContainer.elementAt(i));
+    		}
+
+    		myOutputDirectory=UsbongUtils.getDateTimeStamp()+"/";
+    		if (UsbongUtils.STORE_OUTPUT) {
+    			try {
+    				UsbongUtils.createNewOutputFolderStructure();
+    			}
+    			catch(Exception e) {
+    				e.printStackTrace();
+    			}
+    			UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", outputStringBuffer.toString());
+    		}
+    		else {
+    			UsbongUtils.deleteRecursive(new File(UsbongUtils.BASE_FILE_PATH + myOutputDirectory));
+    		}
+
+    		//wasNextButtonPressed=false; //no need to make this true, because this is the last node
+			hasUpdatedDecisionTrackerContainer=true;
+			
+    		/*
+    		//send to server
+    		UsbongUtils.performFileUpload(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv");
+    		 
+    		//send to email
+    		Intent emailIntent = UsbongUtils.performEmailProcess(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv", attachmentFilePaths);
+    		emailIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//    		emailIntent.addFlags(RESULT_OK);
+    		startActivityForResult(Intent.createChooser(emailIntent, "Email:"),EMAIL_SENDING_SUCCESS);
+*/
+			
+    		//added by Mike, Sept. 10, 2014
+    		UsbongUtils.clearTempFolder();
+
+    		finish();
+    	}
+    	else {			
+    		if (currScreen==YES_NO_DECISION_SCREEN) {
+		        RadioButton myYesRadioButton = (RadioButton)findViewById(R.id.yes_radiobutton);
+		        RadioButton myNoRadioButton = (RadioButton)findViewById(R.id.no_radiobutton);
+
+		        if (myYesRadioButton.isChecked()) {
+					currUsbongNode = nextUsbongNodeIfYes;
+					
+					UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y;", usbongAnswerContainerCounter);
+					usbongAnswerContainerCounter++;
+
+					initParser();								        	
+		        }
+		        else if (myNoRadioButton.isChecked()) {
+					currUsbongNode = nextUsbongNodeIfNo; 
+//					usbongAnswerContainer.addElement("N;");															
+					UsbongUtils.addElementToContainer(usbongAnswerContainer, "N;", usbongAnswerContainerCounter);
+					usbongAnswerContainerCounter++;
+					
+					initParser();								        					        	
+		        }
+		        else { //if no radio button was checked				        	
+	        		if (!UsbongUtils.IS_IN_DEBUG_MODE) {
+	    				if (!isAnOptionalNode) {
+		    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
+	    					wasNextButtonPressed=false;
+	    					hasUpdatedDecisionTrackerContainer=true;
+	    					return;
+		        		}
+	        		}
+		    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+		    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
+					usbongAnswerContainerCounter++;
+
+		    		initParser();				
+		        }
+    		}	
+    		else if (currScreen==SEND_TO_WEBSERVER_SCREEN) {
+		        RadioButton myYesRadioButton = (RadioButton)findViewById(R.id.yes_radiobutton);
+		        RadioButton myNoRadioButton = (RadioButton)findViewById(R.id.no_radiobutton);
+
+		        if (myYesRadioButton.isChecked()) {
+					currUsbongNode = nextUsbongNodeIfYes; 
+//					usbongAnswerContainer.addElement("Y;");			
+					UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y;", usbongAnswerContainerCounter);
+					usbongAnswerContainerCounter++;
+					
+					decisionTrackerContainer.addElement(usbongAnswerContainer.lastElement());
+//					wasNextButtonPressed=false; //no need to make this true, because "Y;" has already been added to decisionTrackerContainer
+					hasUpdatedDecisionTrackerContainer=true;
+					
+		    		//edited by Mike, March 4, 2013
+		    		//"save" the output into the SDCard as "output.txt"
+//		    		int usbongAnswerContainerSize = usbongAnswerContainer.size();
+		    		int usbongAnswerContainerSize = usbongAnswerContainerCounter;
+		    					    		
 		    		StringBuffer outputStringBuffer = new StringBuffer();
 		    		for(int i=0; i<usbongAnswerContainerSize;i++) {
 		    			outputStringBuffer.append(usbongAnswerContainer.elementAt(i));
 		    		}
 
-		    		myOutputDirectory=UsbongUtils.getDateTimeStamp()+"/";
-		    		if (UsbongUtils.STORE_OUTPUT) {
-		    			try {
-		    				UsbongUtils.createNewOutputFolderStructure();
-		    			}
-		    			catch(Exception e) {
-		    				e.printStackTrace();
-		    			}
-		    			UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", outputStringBuffer.toString());
-		    		}
-		    		else {
-		    			UsbongUtils.deleteRecursive(new File(UsbongUtils.BASE_FILE_PATH + myOutputDirectory));
-		    		}
+		        	myOutputDirectory=UsbongUtils.getDateTimeStamp()+"/";
+	    			try {
+	    				UsbongUtils.createNewOutputFolderStructure();
+	    			}
+	    			catch(Exception e) {
+	    				e.printStackTrace();
+	    			}				        	
+		        	UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", outputStringBuffer.toString());
 
-		    		//wasNextButtonPressed=false; //no need to make this true, because this is the last node
+		    		//send to server
+		    		UsbongUtils.performFileUpload(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv");
+		        }
+		        else if (myNoRadioButton.isChecked()) {
+					currUsbongNode = nextUsbongNodeIfNo; 
+//					usbongAnswerContainer.addElement("N;");															
+					UsbongUtils.addElementToContainer(usbongAnswerContainer, "N;", usbongAnswerContainerCounter);
+					usbongAnswerContainerCounter++;
+		        }
+		        else { //if no radio button was checked				        	
+	        		if (!UsbongUtils.IS_IN_DEBUG_MODE) {
+	    				if (!isAnOptionalNode) {
+		    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
+	    					wasNextButtonPressed=false;
+	    					hasUpdatedDecisionTrackerContainer=true;
+	    					return;
+		        		}
+	        		}
+//	        		else {
+		    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+		    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
+					usbongAnswerContainerCounter++;
+//		    		initParser();				
+		        }
+				initParser();				
+    		}	
+    		else if (currScreen==SEND_TO_CLOUD_BASED_SERVICE_SCREEN) {
+		        RadioButton myYesRadioButton = (RadioButton)findViewById(R.id.yes_radiobutton);
+		        RadioButton myNoRadioButton = (RadioButton)findViewById(R.id.no_radiobutton);
+
+		        if (myYesRadioButton.isChecked()) {
+					currUsbongNode = nextUsbongNodeIfYes; 
+//					usbongAnswerContainer.addElement("Y;");															
+		    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y;", usbongAnswerContainerCounter);
+					usbongAnswerContainerCounter++;
+
+					decisionTrackerContainer.addElement(usbongAnswerContainer.lastElement());
+//					wasNextButtonPressed=false; //no need to make this true, because "Y;" has already been added to decisionTrackerContainer
 					hasUpdatedDecisionTrackerContainer=true;
 					
-		    		/*
-		    		//send to server
-		    		UsbongUtils.performFileUpload(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv");
-		    		 
-		    		//send to email
-		    		Intent emailIntent = UsbongUtils.performEmailProcess(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getTimeStamp() + ".csv", attachmentFilePaths);
-		    		emailIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//		    		emailIntent.addFlags(RESULT_OK);
-		    		startActivityForResult(Intent.createChooser(emailIntent, "Email:"),EMAIL_SENDING_SUCCESS);
-*/
+					StringBuffer sb = new StringBuffer();
+					for (int i=0; i<decisionTrackerContainer.size();i++) {
+						sb.append(decisionTrackerContainer.elementAt(i));
+					}
+					Log.d(">>>>>>>>>>>>>decisionTrackerContainer", sb.toString());								
 					
-		    		//added by Mike, Sept. 10, 2014
-		    		UsbongUtils.clearTempFolder();
+		    		//edited by Mike, March 4, 2013
+		    		//"save" the output into the SDCard as "output.txt"
+//		    		int usbongAnswerContainerSize = usbongAnswerContainer.size();
+		    		int usbongAnswerContainerSize = usbongAnswerContainerCounter;
 
-		    		finish();
-		    	}
-		    	else {			
-		    		if (currScreen==YES_NO_DECISION_SCREEN) {
-				        RadioButton myYesRadioButton = (RadioButton)findViewById(R.id.yes_radiobutton);
-				        RadioButton myNoRadioButton = (RadioButton)findViewById(R.id.no_radiobutton);
+		    		StringBuffer outputStringBuffer = new StringBuffer();
+		    		for(int i=0; i<usbongAnswerContainerSize; i++) {
+		    			outputStringBuffer.append(usbongAnswerContainer.elementAt(i));
+		    		}
 
-				        if (myYesRadioButton.isChecked()) {
-							currUsbongNode = nextUsbongNodeIfYes;
-							
-							UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y;", usbongAnswerContainerCounter);
-							usbongAnswerContainerCounter++;
+		        	myOutputDirectory=UsbongUtils.getDateTimeStamp()+"/";
+	    			try {
+	    				UsbongUtils.createNewOutputFolderStructure();
+	    			}
+	    			catch(Exception e) {
+	    				e.printStackTrace();
+	    			}				        	
+		        	UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", outputStringBuffer.toString());
 
-							initParser();								        	
-				        }
-				        else if (myNoRadioButton.isChecked()) {
-							currUsbongNode = nextUsbongNodeIfNo; 
-//							usbongAnswerContainer.addElement("N;");															
-							UsbongUtils.addElementToContainer(usbongAnswerContainer, "N;", usbongAnswerContainerCounter);
-							usbongAnswerContainerCounter++;
-							
-							initParser();								        					        	
-				        }
-				        else { //if no radio button was checked				        	
-			        		if (!UsbongUtils.IS_IN_DEBUG_MODE) {
-			    				if (!isAnOptionalNode) {
-				    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
-			    					wasNextButtonPressed=false;
-			    					hasUpdatedDecisionTrackerContainer=true;
-			    					return;
-				        		}
-			        		}
-				    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
-							usbongAnswerContainerCounter++;
-
-				    		initParser();				
-				        }
-		    		}	
-		    		else if (currScreen==SEND_TO_WEBSERVER_SCREEN) {
-				        RadioButton myYesRadioButton = (RadioButton)findViewById(R.id.yes_radiobutton);
-				        RadioButton myNoRadioButton = (RadioButton)findViewById(R.id.no_radiobutton);
-
-				        if (myYesRadioButton.isChecked()) {
-							currUsbongNode = nextUsbongNodeIfYes; 
-//							usbongAnswerContainer.addElement("Y;");			
-							UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y;", usbongAnswerContainerCounter);
-							usbongAnswerContainerCounter++;
-							
-							decisionTrackerContainer.addElement(usbongAnswerContainer.lastElement());
-//							wasNextButtonPressed=false; //no need to make this true, because "Y;" has already been added to decisionTrackerContainer
-							hasUpdatedDecisionTrackerContainer=true;
-							
-				    		//edited by Mike, March 4, 2013
-				    		//"save" the output into the SDCard as "output.txt"
-//				    		int usbongAnswerContainerSize = usbongAnswerContainer.size();
-				    		int usbongAnswerContainerSize = usbongAnswerContainerCounter;
-				    					    		
-				    		StringBuffer outputStringBuffer = new StringBuffer();
-				    		for(int i=0; i<usbongAnswerContainerSize;i++) {
-				    			outputStringBuffer.append(usbongAnswerContainer.elementAt(i));
-				    		}
-
-				        	myOutputDirectory=UsbongUtils.getDateTimeStamp()+"/";
-			    			try {
-			    				UsbongUtils.createNewOutputFolderStructure();
-			    			}
-			    			catch(Exception e) {
-			    				e.printStackTrace();
-			    			}				        	
-				        	UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", outputStringBuffer.toString());
-
-				    		//send to server
-				    		UsbongUtils.performFileUpload(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv");
-				        }
-				        else if (myNoRadioButton.isChecked()) {
-							currUsbongNode = nextUsbongNodeIfNo; 
-//							usbongAnswerContainer.addElement("N;");															
-							UsbongUtils.addElementToContainer(usbongAnswerContainer, "N;", usbongAnswerContainerCounter);
-							usbongAnswerContainerCounter++;
-				        }
-				        else { //if no radio button was checked				        	
-			        		if (!UsbongUtils.IS_IN_DEBUG_MODE) {
-			    				if (!isAnOptionalNode) {
-				    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
-			    					wasNextButtonPressed=false;
-			    					hasUpdatedDecisionTrackerContainer=true;
-			    					return;
-				        		}
-			        		}
-//			        		else {
-				    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
-							usbongAnswerContainerCounter++;
-//				    		initParser();				
-				        }
-						initParser();				
-		    		}	
-		    		else if (currScreen==SEND_TO_CLOUD_BASED_SERVICE_SCREEN) {
-				        RadioButton myYesRadioButton = (RadioButton)findViewById(R.id.yes_radiobutton);
-				        RadioButton myNoRadioButton = (RadioButton)findViewById(R.id.no_radiobutton);
-
-				        if (myYesRadioButton.isChecked()) {
-							currUsbongNode = nextUsbongNodeIfYes; 
-//							usbongAnswerContainer.addElement("Y;");															
-				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y;", usbongAnswerContainerCounter);
-							usbongAnswerContainerCounter++;
-
-							decisionTrackerContainer.addElement(usbongAnswerContainer.lastElement());
-//							wasNextButtonPressed=false; //no need to make this true, because "Y;" has already been added to decisionTrackerContainer
-							hasUpdatedDecisionTrackerContainer=true;
-							
-							StringBuffer sb = new StringBuffer();
-							for (int i=0; i<decisionTrackerContainer.size();i++) {
-								sb.append(decisionTrackerContainer.elementAt(i));
-							}
-							Log.d(">>>>>>>>>>>>>decisionTrackerContainer", sb.toString());								
-							
-				    		//edited by Mike, March 4, 2013
-				    		//"save" the output into the SDCard as "output.txt"
-//				    		int usbongAnswerContainerSize = usbongAnswerContainer.size();
-				    		int usbongAnswerContainerSize = usbongAnswerContainerCounter;
-
-				    		StringBuffer outputStringBuffer = new StringBuffer();
-				    		for(int i=0; i<usbongAnswerContainerSize; i++) {
-				    			outputStringBuffer.append(usbongAnswerContainer.elementAt(i));
-				    		}
-
-				        	myOutputDirectory=UsbongUtils.getDateTimeStamp()+"/";
-			    			try {
-			    				UsbongUtils.createNewOutputFolderStructure();
-			    			}
-			    			catch(Exception e) {
-			    				e.printStackTrace();
-			    			}				        	
-				        	UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", outputStringBuffer.toString());
-
-				    		//send to cloud-based service
-				    		Intent sendToCloudBasedServiceIntent = UsbongUtils.performSendToCloudBasedServiceProcess(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", attachmentFilePaths);
-				    		/*emailIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		    		//send to cloud-based service
+		    		Intent sendToCloudBasedServiceIntent = UsbongUtils.performSendToCloudBasedServiceProcess(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", attachmentFilePaths);
+		    		/*emailIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 */
-//				    		emailIntent.addFlags(RESULT_OK);
-//				    		startActivityForResult(Intent.createChooser(emailIntent, "Email:"),EMAIL_SENDING_SUCCESS);
-				    		//answer from Llango J, stackoverflow
-				    		//Reference: http://stackoverflow.com/questions/7479883/problem-with-sending-email-goes-back-to-previous-activity;
-				    		//last accessed: 22 Oct. 2012
-				    		startActivity(Intent.createChooser(sendToCloudBasedServiceIntent, "Send to Cloud-based Service:"));
-				        }
-				        else if (myNoRadioButton.isChecked()) {
-							currUsbongNode = nextUsbongNodeIfNo; 
-//							usbongAnswerContainer.addElement("N;");															
-				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N;", usbongAnswerContainerCounter);
-							usbongAnswerContainerCounter++;
-				        }
-				        else { //if no radio button was checked				        	
-			        		if (!UsbongUtils.IS_IN_DEBUG_MODE) {
-			    				if (!isAnOptionalNode) {
-				    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
-			    					wasNextButtonPressed=false;
-			    					hasUpdatedDecisionTrackerContainer=true;
-			    					return;
-				        		}
-			        		}
-//			        		else {
-				    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
-							usbongAnswerContainerCounter++;
-//				    		initParser();				
+//		    		emailIntent.addFlags(RESULT_OK);
+//		    		startActivityForResult(Intent.createChooser(emailIntent, "Email:"),EMAIL_SENDING_SUCCESS);
+		    		//answer from Llango J, stackoverflow
+		    		//Reference: http://stackoverflow.com/questions/7479883/problem-with-sending-email-goes-back-to-previous-activity;
+		    		//last accessed: 22 Oct. 2012
+		    		startActivity(Intent.createChooser(sendToCloudBasedServiceIntent, "Send to Cloud-based Service:"));
+		        }
+		        else if (myNoRadioButton.isChecked()) {
+					currUsbongNode = nextUsbongNodeIfNo; 
+//					usbongAnswerContainer.addElement("N;");															
+		    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N;", usbongAnswerContainerCounter);
+					usbongAnswerContainerCounter++;
+		        }
+		        else { //if no radio button was checked				        	
+	        		if (!UsbongUtils.IS_IN_DEBUG_MODE) {
+	    				if (!isAnOptionalNode) {
+		    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
+	    					wasNextButtonPressed=false;
+	    					hasUpdatedDecisionTrackerContainer=true;
+	    					return;
+		        		}
+	        		}
+//	        		else {
+		    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+		    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
+					usbongAnswerContainerCounter++;
+//		    		initParser();				
 
 /*
-				        	if (!isAnOptionalNode) {
-			        			showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
-		    					wasNextButtonPressed=false;
-		    					hasUpdatedDecisionTrackerContainer=true;
-		    					
-		    					return;
-			        		}
-			        		else {
-					    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-//								usbongAnswerContainer.addElement("A;");															
-					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
-								usbongAnswerContainerCounter++;
-
-								initParser();				
-			        		}
-*/			        		
-				        }
-/*				        
-						currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-						usbongAnswerContainer.addElement("Any;");															
-*/						
-						initParser();				
-		    		}	
-		    		else if (currScreen==MULTIPLE_CHECKBOXES_SCREEN) {
-//			    		requiredTotalCheckedBoxes	
-				        LinearLayout myMultipleCheckboxesLinearLayout = (LinearLayout)findViewById(R.id.multiple_checkboxes_linearlayout);
-				        StringBuffer sb = new StringBuffer();
-				        int totalCheckedBoxes=0;
-				        int totalCheckBoxChildren = myMultipleCheckboxesLinearLayout.getChildCount();
-				        //begin with i=1, because i=0 is for checkboxes_textview
-				        for(int i=1; i<totalCheckBoxChildren; i++) {
-				        	if (((CheckBox)myMultipleCheckboxesLinearLayout.getChildAt(i)).isChecked()) {
-				        		totalCheckedBoxes++;
-				        		sb.append(","+(i-1)); //do a (i-1) so that i starts with 0 for the checkboxes (excluding checkboxes_textview) to maintain consistency with the other components
-				        	}
-				        }
-				        
-				        if (totalCheckedBoxes>=requiredTotalCheckedBoxes) {
-							currUsbongNode = nextUsbongNodeIfYes; 	
-			        		sb.insert(0,"Y"); //insert in front of stringBuffer
-							sb.append(";");
-				        }
-				        else {
-							currUsbongNode = nextUsbongNodeIfNo; 				        					        	
-							sb.delete(0,sb.length());
-							sb.append("N,;"); //make sure to add the comma
-				        }				        
-//		    			usbongAnswerContainer.addElement(sb.toString());
-			    		UsbongUtils.addElementToContainer(usbongAnswerContainer, sb.toString(), usbongAnswerContainerCounter);
-						usbongAnswerContainerCounter++;
-
-		    			initParser();
-		    		}	
-		    		else if (currScreen==MULTIPLE_RADIO_BUTTONS_SCREEN) {
-//						currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-		    			RadioGroup myRadioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);				        				        		    			
-
-//		    			if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
-			    			if (myRadioGroup.getCheckedRadioButtonId()==-1) { //no radio button checked
-				        		if (!UsbongUtils.IS_IN_DEBUG_MODE) {
-				    				if (!isAnOptionalNode) {
-					    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
-				    					wasNextButtonPressed=false;
-				    					hasUpdatedDecisionTrackerContainer=true;
-//						        		Log.d(">>>>","BEFORE return: currUsbongNode"+currUsbongNode+"; nextUsbongNodeIfYes"+nextUsbongNodeIfYes);
-				    					return;
-					        		}
-				        		}				        						        		
-//				        		else {
-//				        		Log.d(">>>>","after return: currUsbongNode"+currUsbongNode+"; nextUsbongNodeIfYes"+nextUsbongNodeIfYes);
-					    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
-								usbongAnswerContainerCounter++;
-
-					    		initParser();				
-//				        		}
-			    			}
-			    			else {
-				    			currUsbongNode = nextUsbongNodeIfYes; //added by Mike, 31 Oct. 2015
-//				    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
-					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
-								usbongAnswerContainerCounter++;
-
-				    			initParser();
-			    			}
-//		    			}
-/*		    			
-		    			else {
-//			    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
-				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
-							usbongAnswerContainerCounter++;
-			    			
-			    			initParser();		    				
-		    			}
-*/		    			
-		    		}
-		    		else if (currScreen==MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN) {
-//						currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-		    			RadioGroup myRadioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);				        				        		    			
-
-/*		    			if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
- */
-			    			if (myRadioGroup.getCheckedRadioButtonId()==-1) { //no radio button checked			    							    				
-				        		if (!UsbongUtils.IS_IN_DEBUG_MODE) {
-				        			if (!isAnOptionalNode) {
-					    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
-				    					wasNextButtonPressed=false;
-				    					hasUpdatedDecisionTrackerContainer=true;
-				    					return;
-				        			}
-				        		}
-//				        		else {
-			        			currUsbongNode = nextUsbongNodeIfYes; //choose Yes if "Any"
-					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
-								usbongAnswerContainerCounter++;
-
-					    		initParser();				
-//				        		}
-			    			}
-			    			else {			    				
-			        			if (myMultipleRadioButtonsWithAnswerScreenAnswer.equals(""+myRadioGroup.getCheckedRadioButtonId())) {
-	    							currUsbongNode = nextUsbongNodeIfYes; 	
-						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y,"+myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
-	    				        }
-	    				        else {
-	    							currUsbongNode = nextUsbongNodeIfNo; 				        					        	
-						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N,"+myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
-	    				        }				        
-
-								usbongAnswerContainerCounter++;
-				    			initParser();
-			    			}
-		    		}
-		    		else if (currScreen==LINK_SCREEN) {		    			
-		    			RadioGroup myRadioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);				        				        		    					    			
-//		    			Log.d(">>>>>>>>>>currUsbongNode",currUsbongNode);
-			    			if (myRadioGroup.getCheckedRadioButtonId()==-1) { //no radio button checked
-//				    			if (!UsbongUtils.IS_IN_DEBUG_MODE) {
-				    				if (!isAnOptionalNode) {
-					    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
-				    					wasNextButtonPressed=false;
-				    					hasUpdatedDecisionTrackerContainer=true;				    					
-				    					return;
-					        		}
-//				    			}
-//				        		else {
-					    			//below line of code, added by Mike, 31 Oct. 2015
-					    			currUsbongNode = UsbongUtils.getLinkFromRadioButton(nextUsbongNodeIfYes); //nextUsbongNodeIfNo will also do, since this is "Any" 
-//						    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
-									usbongAnswerContainerCounter++;
-									
-									initParser();				
-//				        		}
-			    			}
-			    			else {
-				    			try {
-				    				currUsbongNode = UsbongUtils.getLinkFromRadioButton(radioButtonsContainer.elementAt(myRadioGroup.getCheckedRadioButtonId()));		    				
-				    			}
-				    			catch(Exception e) {
-				    				//if the user hasn't ticked any radio button yet
-				    				//put the currUsbongNode to default
-					    			currUsbongNode = UsbongUtils.getLinkFromRadioButton(nextUsbongNodeIfYes); //nextUsbongNodeIfNo will also do, since this is "Any"
-					    			//of course, showPleaseAnswerAlert() will be called			    			  
-				    			}		    			
-
-//				    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
-					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
-								usbongAnswerContainerCounter++;
-
-				    			initParser();
-			    			}
-/*		    			}
-		    			else {
-			    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
-					        initParser();		    				
-		    			}
-*/		    			
-		    		}
-		    		else if ((currScreen==TEXTFIELD_SCREEN) 
-		    				|| (currScreen==TEXTFIELD_WITH_UNIT_SCREEN)
-		    				|| (currScreen==TEXTFIELD_NUMERICAL_SCREEN)) {
-//		    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
-				        EditText myTextFieldScreenEditText = (EditText)findViewById(R.id.textfield_edittext);
-
-//				        if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
-					        //if it's blank
-			    			if (myTextFieldScreenEditText.getText().toString().trim().equals("")) {
-						        if (!UsbongUtils.IS_IN_DEBUG_MODE) {
-				    				if (!isAnOptionalNode) {
-					    				showRequiredFieldAlert(PLEASE_ANSWER_FIELD_ALERT_TYPE);
-				    					wasNextButtonPressed=false;
-				    					hasUpdatedDecisionTrackerContainer=true;
-				    					return;
-					        		}
-						        }
-//				        		else {
-						    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-//									usbongAnswerContainer.addElement("A;");															
-						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,;", usbongAnswerContainerCounter);
-									usbongAnswerContainerCounter++;
-						    		
-						    		initParser();				
-//				        		}
-			    			}
-							else {
-				    			currUsbongNode = nextUsbongNodeIfYes; //added by Mike, 31 Oct. 2015
-//								usbongAnswerContainer.addElement("A,"+myTextFieldScreenEditText.getText()+";");							
-					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myTextFieldScreenEditText.getText()+";", usbongAnswerContainerCounter);
-								usbongAnswerContainerCounter++;
-								
-								initParser();
-							}
-		    		}
-		    		else if (currScreen==TEXTFIELD_WITH_ANSWER_SCREEN) {
-//		    			currUsbongNode = nextUsbongNodeIfYes; 
-				        EditText myTextFieldScreenEditText = (EditText)findViewById(R.id.textfield_edittext);
-					        //if it's blank
-			    			if (myTextFieldScreenEditText.getText().toString().trim().equals("")) {
-				        		if (!UsbongUtils.IS_IN_DEBUG_MODE) {
-				        			if (!isAnOptionalNode) {
-					    				showRequiredFieldAlert(PLEASE_ANSWER_FIELD_ALERT_TYPE);
-				    					wasNextButtonPressed=false;
-				    					hasUpdatedDecisionTrackerContainer=true;
-				    					return;
-				        			}
-				        		}
-					    		currUsbongNode = nextUsbongNodeIfYes; //choose Yes if "Any"
-					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myTextFieldScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
-								usbongAnswerContainerCounter++;
-					    		
-					    		initParser();				
-			    			}
-							else {
-								//added by Mike, Jan. 27, 2014
-								Vector<String> myPossibleAnswers = new Vector<String>();
-								StringTokenizer myPossibleAnswersStringTokenizer = new StringTokenizer(myTextFieldWithAnswerScreenAnswer, "||");
-								if (myPossibleAnswersStringTokenizer != null) {
-									while (myPossibleAnswersStringTokenizer.hasMoreTokens()) { //get last element (i.e. Mike in "textFieldWithAnswer~Who is the founder of Usbong (nickname)?Answer=Mike")
-										myPossibleAnswers.add(myPossibleAnswersStringTokenizer.nextToken()); 
-									}
-								}
-								int size = myPossibleAnswers.size();
-								for(int i=0; i<size; i++) {
-				        			if (myPossibleAnswers.elementAt(i).equals(myTextFieldScreenEditText.getText().toString().trim())) {
-										currUsbongNode = nextUsbongNodeIfYes; 	
-							    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y,"+myTextFieldScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
-							    		break;
-							        }	
-
-				        			if (i==size-1) { //if this is the last element in the vector
-										currUsbongNode = nextUsbongNodeIfNo; 				        					        	
-							    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N,"+myTextFieldScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
-				        			}
-								}								
-/*								
-			        			if (myTextFieldWithAnswerScreenAnswer.equals(myTextFieldScreenEditText.getText().toString().trim())) {
-									currUsbongNode = nextUsbongNodeIfYes; 	
-						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y,"+myTextFieldScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
-						        }
-						        else {
-									currUsbongNode = nextUsbongNodeIfNo; 				        					        	
-						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N,"+myTextFieldScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
-						        }				        
-*/
-								usbongAnswerContainerCounter++;
-				    			initParser();
-							}
-		    		}
-		    		else if ((currScreen==TEXTAREA_SCREEN)) {
-//		    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
-				        EditText myTextAreaScreenEditText = (EditText)findViewById(R.id.textarea_edittext);
-
-//				        if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
-					        //if it's blank
-			    			if (myTextAreaScreenEditText.getText().toString().trim().equals("")) {
-						        if (!UsbongUtils.IS_IN_DEBUG_MODE) {							        	
-					        		if (!isAnOptionalNode) {
-					    				showRequiredFieldAlert(PLEASE_ANSWER_FIELD_ALERT_TYPE);
-				    					wasNextButtonPressed=false;
-				    					hasUpdatedDecisionTrackerContainer=true;
-				    					return;
-					        		}
-						        }
-//				        		else {
-						    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,;", usbongAnswerContainerCounter);
-									usbongAnswerContainerCounter++;
-									
-									initParser();				
-//				        		}
-			    			}
-							else {
-				    			currUsbongNode = nextUsbongNodeIfYes; //added by Mike, 31 Oct. 2015
-//								usbongAnswerContainer.addElement("A,"+myTextAreaScreenEditText.getText()+";");							
-					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myTextAreaScreenEditText.getText()+";", usbongAnswerContainerCounter);
-								usbongAnswerContainerCounter++;
-								
-								initParser();
-							}
-		    		}
-		    		else if (currScreen==TEXTAREA_WITH_ANSWER_SCREEN) {
-//		    			currUsbongNode = nextUsbongNodeIfYes; 
-				        EditText myTextAreaScreenEditText = (EditText)findViewById(R.id.textarea_edittext);
-					        //if it's blank
-			    			if (myTextAreaScreenEditText.getText().toString().trim().equals("")) {
-				        		if (!UsbongUtils.IS_IN_DEBUG_MODE) {
-				        			if (!isAnOptionalNode) {
-					    				showRequiredFieldAlert(PLEASE_ANSWER_FIELD_ALERT_TYPE);
-				    					wasNextButtonPressed=false;
-				    					hasUpdatedDecisionTrackerContainer=true;
-				    					return;
-				        			}
-				        		}
-					    		currUsbongNode = nextUsbongNodeIfYes; //choose Yes if "Any"
-					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myTextAreaScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
-								usbongAnswerContainerCounter++;
-					    		
-					    		initParser();				
-			    			}
-							else {
-/*								
-			        			if (myTextAreaWithAnswerScreenAnswer.equals(myTextAreaScreenEditText.getText().toString().trim())) {
-									currUsbongNode = nextUsbongNodeIfYes; 	
-						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y,"+myTextAreaScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
-						        }
-						        else {
-									currUsbongNode = nextUsbongNodeIfNo; 				        					        	
-						    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N,"+myTextAreaScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
-						        }				        
-*/
-								//added by Mike, Jan. 27, 2014
-								Vector<String> myPossibleAnswers = new Vector<String>();
-								StringTokenizer myPossibleAnswersStringTokenizer = new StringTokenizer(myTextAreaWithAnswerScreenAnswer, "||");
-								if (myPossibleAnswersStringTokenizer != null) {
-									while (myPossibleAnswersStringTokenizer.hasMoreTokens()) { //get last element (i.e. Mike in "textAreaWithAnswer~Who is the founder of Usbong (nickname)?Answer=Mike||mike")
-										myPossibleAnswers.add(myPossibleAnswersStringTokenizer.nextToken()); 
-									}
-								}
-								int size = myPossibleAnswers.size();
-								for(int i=0; i<size; i++) {
-//									Log.d(">>>>>>myPossibleAnswers: ",myPossibleAnswers.elementAt(i));
-									if (myPossibleAnswers.elementAt(i).equals(myTextAreaScreenEditText.getText().toString().trim())) {
-										currUsbongNode = nextUsbongNodeIfYes; 	
-							    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y,"+myTextAreaScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
-							    		break;
-							        }	
-
-				        			if (i==size-1) { //if this is the last element in the vector
-										currUsbongNode = nextUsbongNodeIfNo; 				        					        	
-							    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N,"+myTextAreaScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
-				        			}
-								}								
-								usbongAnswerContainerCounter++;
-				    			initParser();
-							}
-		    		}
-		    		else if (currScreen==GPS_LOCATION_SCREEN) {
-		    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
-						TextView myLongitudeTextView = (TextView)findViewById(R.id.longitude_textview);
-			            TextView myLatitudeTextView = (TextView)findViewById(R.id.latitude_textview);
-
-//						usbongAnswerContainer.addElement(myLongitudeTextView.getText()+","+myLatitudeTextView.getText()+";");							
-			    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myLongitudeTextView.getText()+","+myLatitudeTextView.getText()+";", usbongAnswerContainerCounter);
-						usbongAnswerContainerCounter++;
-
-			            initParser();				        	
-
-		    		}
-		    		else if (currScreen==SIMPLE_ENCRYPT_SCREEN) {
-						EditText myPinEditText = (EditText)findViewById(R.id.pin_edittext);
-
-		    			if (myPinEditText.getText().toString().length()!=4) {
-		    				String message ="";
-		    				if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
-		    					message = (String) getResources().getText(R.string.Usbong4DigitsPinAlertMessageFILIPINO);
-		    				}
-		    				else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
-		    					 message = (String) getResources().getText(R.string.Usbong4DigitsPinAlertMessageJAPANESE);				    		
-		    				}
-		    				else { //if (udtea.currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
-		    					message = (String) getResources().getText(R.string.Usbong4DigitsPinAlertMessageENGLISH);				    		
-		    				}
-		    				
-		    				new AlertDialog.Builder(UsbongDecisionTreeEngineActivity.this).setTitle("Hey!")
-			    	    	.setMessage(message)
-			    			.setPositiveButton("OK", new DialogInterface.OnClickListener() {					
-			    				@Override
-			    				public void onClick(DialogInterface dialog, int which) {	            				
-			    				}
-			    			}).show();		    				
-		    			}
-		    			else {
-							int yourKey = Integer.parseInt(myPinEditText.getText().toString());
-			    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
-	
-				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
-							usbongAnswerContainerCounter++;
-								
-	//						Log.d(">>>>>>>start encode","encode");
-							for(int i=0; i<usbongAnswerContainerCounter; i++) {							
-								try {
-									usbongAnswerContainer.set(i,UsbongUtils.performSimpleFileEncrypt(yourKey, usbongAnswerContainer.elementAt(i)));
-	//								Log.d(">>>>>>"+i,""+usbongAnswerContainer.get(i));
-	//								Log.d(">>>decoded"+i,""+UsbongUtils.performSimpleFileDecode(yourKey, usbongAnswerContainer.get(i)));
-								}
-								catch(Exception e) {
-									e.printStackTrace();
-								}			
-							}
-																		
-				            initParser();				        	
-		    			}
-		    		}		    		
-		    		else if (currScreen==DATE_SCREEN) {
-		    			currUsbongNode = nextUsbongNodeIfYes;
-		    			//added by Mike, 13 Oct. 2015
-		    			DatePicker myDatePicker = (DatePicker) findViewById(R.id.date_picker);		    			
-			    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myDatePicker.getMonth() +
-		 						 myDatePicker.getDayOfMonth() + "," +
-		 						myDatePicker.getYear()+";", usbongAnswerContainerCounter);
-
-/*		    			
-				    	Spinner dateMonthSpinner = (Spinner) findViewById(R.id.date_month_spinner);
-				        Spinner dateDaySpinner = (Spinner) findViewById(R.id.date_day_spinner);
-				        EditText myDateYearEditText = (EditText)findViewById(R.id.date_edittext);
-//		    			usbongAnswerContainer.addElement("A,"+monthAdapter.getItem(dateMonthSpinner.getSelectedItemPosition()).toString() +
-//								 						 dayAdapter.getItem(dateDaySpinner.getSelectedItemPosition()).toString() + "," +
-//								 						 myDateYearEditText.getText().toString()+";");		    					
-			    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+monthAdapter.getItem(dateMonthSpinner.getSelectedItemPosition()).toString() +
-								 						 dayAdapter.getItem(dateDaySpinner.getSelectedItemPosition()).toString() + "," +
-								 						 myDateYearEditText.getText().toString()+";", usbongAnswerContainerCounter);
-*/		    			
-						usbongAnswerContainerCounter++;
-
-//		    			System.out.println(">>>>>>>>>>>>>Date screen: "+usbongAnswerContainer.lastElement());
-		    			initParser();				        	
-		    		}		    		
-		    		else if (currScreen==TIMESTAMP_DISPLAY_SCREEN) {
-		    			currUsbongNode = nextUsbongNodeIfYes;
-			    		UsbongUtils.addElementToContainer(usbongAnswerContainer, timestampString+";", usbongAnswerContainerCounter);
-						usbongAnswerContainerCounter++;
-
-		    			initParser();				        	
-		    		}		    				    		
-		    		else if (currScreen==QR_CODE_READER_SCREEN) {
-		    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
-
-		    			if (!myQRCodeContent.equals("")) {
-//		    				usbongAnswerContainer.addElement("Y,"+myQRCodeContent+";");							
-				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y,"+myQRCodeContent+";", usbongAnswerContainerCounter);
-							usbongAnswerContainerCounter++;
-		    			}
-		    			else {
-//		    				usbongAnswerContainer.addElement("N;");									    				
-				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N;", usbongAnswerContainerCounter);
-							usbongAnswerContainerCounter++;
-		    			}
-		    			initParser();				        	
-		    		}
-		    		else if ((currScreen==DCAT_SUMMARY_SCREEN)) {
-		    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
-/*
-				        LinearLayout myDCATSummaryLinearLayout = (LinearLayout)findViewById(R.id.dcat_summary_linearlayout);
-				        int total = myDCATSummaryLinearLayout.getChildCount();
-
-						StringBuffer dcatSummary= new StringBuffer();
-				        for (int i=0; i<total; i++) {
-				        	dcatSummary.append(((TextView) myDCATSummaryLinearLayout.getChildAt(i)).getText().toString());
-				        }
-*/				        
-//		    			UsbongUtils.addElementToContainer(usbongAnswerContainer, "dcat_end;", usbongAnswerContainerCounter);
-		    			UsbongUtils.addElementToContainer(usbongAnswerContainer, "dcat_end,"+myDcatSummaryStringBuffer.toString()+";", usbongAnswerContainerCounter);
-				        usbongAnswerContainerCounter++;
-						
-						initParser();		    		}
-
-		    		else { //TODO: do this for now		    		
-		    			currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+		        	if (!isAnOptionalNode) {
+	        			showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
+    					wasNextButtonPressed=false;
+    					hasUpdatedDecisionTrackerContainer=true;
+    					
+    					return;
+	        		}
+	        		else {
+			    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
 //						usbongAnswerContainer.addElement("A;");															
 			    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
 						usbongAnswerContainerCounter++;
 
 						initParser();				
-		    		}		    		
-		    	}
-			}
-    	});
-    }
+	        		}
+*/			        		
+		        }
+/*				        
+				currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+				usbongAnswerContainer.addElement("Any;");															
+*/						
+				initParser();				
+    		}	
+    		else if (currScreen==MULTIPLE_CHECKBOXES_SCREEN) {
+//	    		requiredTotalCheckedBoxes	
+		        LinearLayout myMultipleCheckboxesLinearLayout = (LinearLayout)findViewById(R.id.multiple_checkboxes_linearlayout);
+		        StringBuffer sb = new StringBuffer();
+		        int totalCheckedBoxes=0;
+		        int totalCheckBoxChildren = myMultipleCheckboxesLinearLayout.getChildCount();
+		        //begin with i=1, because i=0 is for checkboxes_textview
+		        for(int i=1; i<totalCheckBoxChildren; i++) {
+		        	if (((CheckBox)myMultipleCheckboxesLinearLayout.getChildAt(i)).isChecked()) {
+		        		totalCheckedBoxes++;
+		        		sb.append(","+(i-1)); //do a (i-1) so that i starts with 0 for the checkboxes (excluding checkboxes_textview) to maintain consistency with the other components
+		        	}
+		        }
+		        
+		        if (totalCheckedBoxes>=requiredTotalCheckedBoxes) {
+					currUsbongNode = nextUsbongNodeIfYes; 	
+	        		sb.insert(0,"Y"); //insert in front of stringBuffer
+					sb.append(";");
+		        }
+		        else {
+					currUsbongNode = nextUsbongNodeIfNo; 				        					        	
+					sb.delete(0,sb.length());
+					sb.append("N,;"); //make sure to add the comma
+		        }				        
+//    			usbongAnswerContainer.addElement(sb.toString());
+	    		UsbongUtils.addElementToContainer(usbongAnswerContainer, sb.toString(), usbongAnswerContainerCounter);
+				usbongAnswerContainerCounter++;
+
+    			initParser();
+    		}	
+    		else if (currScreen==MULTIPLE_RADIO_BUTTONS_SCREEN) {
+//				currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+    			RadioGroup myRadioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);				        				        		    			
+
+//    			if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
+	    			if (myRadioGroup.getCheckedRadioButtonId()==-1) { //no radio button checked
+		        		if (!UsbongUtils.IS_IN_DEBUG_MODE) {
+		    				if (!isAnOptionalNode) {
+			    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
+		    					wasNextButtonPressed=false;
+		    					hasUpdatedDecisionTrackerContainer=true;
+//				        		Log.d(">>>>","BEFORE return: currUsbongNode"+currUsbongNode+"; nextUsbongNodeIfYes"+nextUsbongNodeIfYes);
+		    					return;
+			        		}
+		        		}				        						        		
+//		        		else {
+//		        		Log.d(">>>>","after return: currUsbongNode"+currUsbongNode+"; nextUsbongNodeIfYes"+nextUsbongNodeIfYes);
+			    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+			    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
+						usbongAnswerContainerCounter++;
+
+			    		initParser();				
+//		        		}
+	    			}
+	    			else {
+		    			currUsbongNode = nextUsbongNodeIfYes; //added by Mike, 31 Oct. 2015
+//		    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
+			    		UsbongUtils.addElementToContainer(usbongAnswerContainer, myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
+						usbongAnswerContainerCounter++;
+
+		    			initParser();
+	    			}
+//    			}
+/*		    			
+    			else {
+//	    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
+		    		UsbongUtils.addElementToContainer(usbongAnswerContainer, myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
+					usbongAnswerContainerCounter++;
+	    			
+	    			initParser();		    				
+    			}
+*/		    			
+    		}
+    		else if (currScreen==MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN) {
+//				currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+    			RadioGroup myRadioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);				        				        		    			
+
+/*		    			if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
+*/
+	    			if (myRadioGroup.getCheckedRadioButtonId()==-1) { //no radio button checked			    							    				
+		        		if (!UsbongUtils.IS_IN_DEBUG_MODE) {
+		        			if (!isAnOptionalNode) {
+			    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
+		    					wasNextButtonPressed=false;
+		    					hasUpdatedDecisionTrackerContainer=true;
+		    					return;
+		        			}
+		        		}
+//		        		else {
+	        			currUsbongNode = nextUsbongNodeIfYes; //choose Yes if "Any"
+			    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
+						usbongAnswerContainerCounter++;
+
+			    		initParser();				
+//		        		}
+	    			}
+	    			else {			    				
+	        			if (myMultipleRadioButtonsWithAnswerScreenAnswer.equals(""+myRadioGroup.getCheckedRadioButtonId())) {
+							currUsbongNode = nextUsbongNodeIfYes; 	
+				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y,"+myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
+				        }
+				        else {
+							currUsbongNode = nextUsbongNodeIfNo; 				        					        	
+				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N,"+myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
+				        }				        
+
+						usbongAnswerContainerCounter++;
+		    			initParser();
+	    			}
+    		}
+    		else if (currScreen==LINK_SCREEN) {		    			
+    			RadioGroup myRadioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);				        				        		    					    			
+//    			Log.d(">>>>>>>>>>currUsbongNode",currUsbongNode);
+	    			if (myRadioGroup.getCheckedRadioButtonId()==-1) { //no radio button checked
+//		    			if (!UsbongUtils.IS_IN_DEBUG_MODE) {
+		    				if (!isAnOptionalNode) {
+			    				showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
+		    					wasNextButtonPressed=false;
+		    					hasUpdatedDecisionTrackerContainer=true;				    					
+		    					return;
+			        		}
+//		    			}
+//		        		else {
+			    			//below line of code, added by Mike, 31 Oct. 2015
+			    			currUsbongNode = UsbongUtils.getLinkFromRadioButton(nextUsbongNodeIfYes); //nextUsbongNodeIfNo will also do, since this is "Any" 
+//				    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
+							usbongAnswerContainerCounter++;
+							
+							initParser();				
+//		        		}
+	    			}
+	    			else {
+		    			try {
+		    				currUsbongNode = UsbongUtils.getLinkFromRadioButton(radioButtonsContainer.elementAt(myRadioGroup.getCheckedRadioButtonId()));		    				
+		    			}
+		    			catch(Exception e) {
+		    				//if the user hasn't ticked any radio button yet
+		    				//put the currUsbongNode to default
+			    			currUsbongNode = UsbongUtils.getLinkFromRadioButton(nextUsbongNodeIfYes); //nextUsbongNodeIfNo will also do, since this is "Any"
+			    			//of course, showPleaseAnswerAlert() will be called			    			  
+		    			}		    			
+
+//		    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
+			    		UsbongUtils.addElementToContainer(usbongAnswerContainer, myRadioGroup.getCheckedRadioButtonId()+";", usbongAnswerContainerCounter);
+						usbongAnswerContainerCounter++;
+
+		    			initParser();
+	    			}
+/*		    			}
+    			else {
+	    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
+			        initParser();		    				
+    			}
+*/		    			
+    		}
+    		else if ((currScreen==TEXTFIELD_SCREEN) 
+    				|| (currScreen==TEXTFIELD_WITH_UNIT_SCREEN)
+    				|| (currScreen==TEXTFIELD_NUMERICAL_SCREEN)) {
+//    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
+		        EditText myTextFieldScreenEditText = (EditText)findViewById(R.id.textfield_edittext);
+
+//		        if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
+			        //if it's blank
+	    			if (myTextFieldScreenEditText.getText().toString().trim().equals("")) {
+				        if (!UsbongUtils.IS_IN_DEBUG_MODE) {
+		    				if (!isAnOptionalNode) {
+			    				showRequiredFieldAlert(PLEASE_ANSWER_FIELD_ALERT_TYPE);
+		    					wasNextButtonPressed=false;
+		    					hasUpdatedDecisionTrackerContainer=true;
+		    					return;
+			        		}
+				        }
+//		        		else {
+				    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+//							usbongAnswerContainer.addElement("A;");															
+				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,;", usbongAnswerContainerCounter);
+							usbongAnswerContainerCounter++;
+				    		
+				    		initParser();				
+//		        		}
+	    			}
+					else {
+		    			currUsbongNode = nextUsbongNodeIfYes; //added by Mike, 31 Oct. 2015
+//						usbongAnswerContainer.addElement("A,"+myTextFieldScreenEditText.getText()+";");							
+			    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myTextFieldScreenEditText.getText()+";", usbongAnswerContainerCounter);
+						usbongAnswerContainerCounter++;
+						
+						initParser();
+					}
+    		}
+    		else if (currScreen==TEXTFIELD_WITH_ANSWER_SCREEN) {
+//    			currUsbongNode = nextUsbongNodeIfYes; 
+		        EditText myTextFieldScreenEditText = (EditText)findViewById(R.id.textfield_edittext);
+			        //if it's blank
+	    			if (myTextFieldScreenEditText.getText().toString().trim().equals("")) {
+		        		if (!UsbongUtils.IS_IN_DEBUG_MODE) {
+		        			if (!isAnOptionalNode) {
+			    				showRequiredFieldAlert(PLEASE_ANSWER_FIELD_ALERT_TYPE);
+		    					wasNextButtonPressed=false;
+		    					hasUpdatedDecisionTrackerContainer=true;
+		    					return;
+		        			}
+		        		}
+			    		currUsbongNode = nextUsbongNodeIfYes; //choose Yes if "Any"
+			    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myTextFieldScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
+						usbongAnswerContainerCounter++;
+			    		
+			    		initParser();				
+	    			}
+					else {
+						//added by Mike, Jan. 27, 2014
+						Vector<String> myPossibleAnswers = new Vector<String>();
+						StringTokenizer myPossibleAnswersStringTokenizer = new StringTokenizer(myTextFieldWithAnswerScreenAnswer, "||");
+						if (myPossibleAnswersStringTokenizer != null) {
+							while (myPossibleAnswersStringTokenizer.hasMoreTokens()) { //get last element (i.e. Mike in "textFieldWithAnswer~Who is the founder of Usbong (nickname)?Answer=Mike")
+								myPossibleAnswers.add(myPossibleAnswersStringTokenizer.nextToken()); 
+							}
+						}
+						int size = myPossibleAnswers.size();
+						for(int i=0; i<size; i++) {
+		        			if (myPossibleAnswers.elementAt(i).equals(myTextFieldScreenEditText.getText().toString().trim())) {
+								currUsbongNode = nextUsbongNodeIfYes; 	
+					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y,"+myTextFieldScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
+					    		break;
+					        }	
+
+		        			if (i==size-1) { //if this is the last element in the vector
+								currUsbongNode = nextUsbongNodeIfNo; 				        					        	
+					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N,"+myTextFieldScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
+		        			}
+						}								
+/*								
+	        			if (myTextFieldWithAnswerScreenAnswer.equals(myTextFieldScreenEditText.getText().toString().trim())) {
+							currUsbongNode = nextUsbongNodeIfYes; 	
+				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y,"+myTextFieldScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
+				        }
+				        else {
+							currUsbongNode = nextUsbongNodeIfNo; 				        					        	
+				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N,"+myTextFieldScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
+				        }				        
+*/
+						usbongAnswerContainerCounter++;
+		    			initParser();
+					}
+    		}
+    		else if ((currScreen==TEXTAREA_SCREEN)) {
+//    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
+		        EditText myTextAreaScreenEditText = (EditText)findViewById(R.id.textarea_edittext);
+
+//		        if (UsbongUtils.IS_IN_DEBUG_MODE==false) {
+			        //if it's blank
+	    			if (myTextAreaScreenEditText.getText().toString().trim().equals("")) {
+				        if (!UsbongUtils.IS_IN_DEBUG_MODE) {							        	
+			        		if (!isAnOptionalNode) {
+			    				showRequiredFieldAlert(PLEASE_ANSWER_FIELD_ALERT_TYPE);
+		    					wasNextButtonPressed=false;
+		    					hasUpdatedDecisionTrackerContainer=true;
+		    					return;
+			        		}
+				        }
+//		        		else {
+				    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,;", usbongAnswerContainerCounter);
+							usbongAnswerContainerCounter++;
+							
+							initParser();				
+//		        		}
+	    			}
+					else {
+		    			currUsbongNode = nextUsbongNodeIfYes; //added by Mike, 31 Oct. 2015
+//						usbongAnswerContainer.addElement("A,"+myTextAreaScreenEditText.getText()+";");							
+			    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myTextAreaScreenEditText.getText()+";", usbongAnswerContainerCounter);
+						usbongAnswerContainerCounter++;
+						
+						initParser();
+					}
+    		}
+    		else if (currScreen==TEXTAREA_WITH_ANSWER_SCREEN) {
+//    			currUsbongNode = nextUsbongNodeIfYes; 
+		        EditText myTextAreaScreenEditText = (EditText)findViewById(R.id.textarea_edittext);
+			        //if it's blank
+	    			if (myTextAreaScreenEditText.getText().toString().trim().equals("")) {
+		        		if (!UsbongUtils.IS_IN_DEBUG_MODE) {
+		        			if (!isAnOptionalNode) {
+			    				showRequiredFieldAlert(PLEASE_ANSWER_FIELD_ALERT_TYPE);
+		    					wasNextButtonPressed=false;
+		    					hasUpdatedDecisionTrackerContainer=true;
+		    					return;
+		        			}
+		        		}
+			    		currUsbongNode = nextUsbongNodeIfYes; //choose Yes if "Any"
+			    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myTextAreaScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
+						usbongAnswerContainerCounter++;
+			    		
+			    		initParser();				
+	    			}
+					else {
+/*								
+	        			if (myTextAreaWithAnswerScreenAnswer.equals(myTextAreaScreenEditText.getText().toString().trim())) {
+							currUsbongNode = nextUsbongNodeIfYes; 	
+				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y,"+myTextAreaScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
+				        }
+				        else {
+							currUsbongNode = nextUsbongNodeIfNo; 				        					        	
+				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N,"+myTextAreaScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
+				        }				        
+*/
+						//added by Mike, Jan. 27, 2014
+						Vector<String> myPossibleAnswers = new Vector<String>();
+						StringTokenizer myPossibleAnswersStringTokenizer = new StringTokenizer(myTextAreaWithAnswerScreenAnswer, "||");
+						if (myPossibleAnswersStringTokenizer != null) {
+							while (myPossibleAnswersStringTokenizer.hasMoreTokens()) { //get last element (i.e. Mike in "textAreaWithAnswer~Who is the founder of Usbong (nickname)?Answer=Mike||mike")
+								myPossibleAnswers.add(myPossibleAnswersStringTokenizer.nextToken()); 
+							}
+						}
+						int size = myPossibleAnswers.size();
+						for(int i=0; i<size; i++) {
+//							Log.d(">>>>>>myPossibleAnswers: ",myPossibleAnswers.elementAt(i));
+							if (myPossibleAnswers.elementAt(i).equals(myTextAreaScreenEditText.getText().toString().trim())) {
+								currUsbongNode = nextUsbongNodeIfYes; 	
+					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y,"+myTextAreaScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
+					    		break;
+					        }	
+
+		        			if (i==size-1) { //if this is the last element in the vector
+								currUsbongNode = nextUsbongNodeIfNo; 				        					        	
+					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N,"+myTextAreaScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
+		        			}
+						}								
+						usbongAnswerContainerCounter++;
+		    			initParser();
+					}
+    		}
+    		else if (currScreen==GPS_LOCATION_SCREEN) {
+    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
+				TextView myLongitudeTextView = (TextView)findViewById(R.id.longitude_textview);
+	            TextView myLatitudeTextView = (TextView)findViewById(R.id.latitude_textview);
+
+//				usbongAnswerContainer.addElement(myLongitudeTextView.getText()+","+myLatitudeTextView.getText()+";");							
+	    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myLongitudeTextView.getText()+","+myLatitudeTextView.getText()+";", usbongAnswerContainerCounter);
+				usbongAnswerContainerCounter++;
+
+	            initParser();				        	
+
+    		}
+    		else if (currScreen==SIMPLE_ENCRYPT_SCREEN) {
+				EditText myPinEditText = (EditText)findViewById(R.id.pin_edittext);
+
+    			if (myPinEditText.getText().toString().length()!=4) {
+    				String message ="";
+    				if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
+    					message = (String) getResources().getText(R.string.Usbong4DigitsPinAlertMessageFILIPINO);
+    				}
+    				else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
+    					 message = (String) getResources().getText(R.string.Usbong4DigitsPinAlertMessageJAPANESE);				    		
+    				}
+    				else { //if (udtea.currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
+    					message = (String) getResources().getText(R.string.Usbong4DigitsPinAlertMessageENGLISH);				    		
+    				}
+    				
+    				new AlertDialog.Builder(UsbongDecisionTreeEngineActivity.this).setTitle("Hey!")
+	    	    	.setMessage(message)
+	    			.setPositiveButton("OK", new DialogInterface.OnClickListener() {					
+	    				@Override
+	    				public void onClick(DialogInterface dialog, int which) {	            				
+	    				}
+	    			}).show();		    				
+    			}
+    			else {
+					int yourKey = Integer.parseInt(myPinEditText.getText().toString());
+	    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
+
+		    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
+					usbongAnswerContainerCounter++;
+						
+//						Log.d(">>>>>>>start encode","encode");
+					for(int i=0; i<usbongAnswerContainerCounter; i++) {							
+						try {
+							usbongAnswerContainer.set(i,UsbongUtils.performSimpleFileEncrypt(yourKey, usbongAnswerContainer.elementAt(i)));
+//								Log.d(">>>>>>"+i,""+usbongAnswerContainer.get(i));
+//								Log.d(">>>decoded"+i,""+UsbongUtils.performSimpleFileDecode(yourKey, usbongAnswerContainer.get(i)));
+						}
+						catch(Exception e) {
+							e.printStackTrace();
+						}			
+					}
+																
+		            initParser();				        	
+    			}
+    		}		    		
+    		else if (currScreen==DATE_SCREEN) {
+    			currUsbongNode = nextUsbongNodeIfYes;
+    			//added by Mike, 13 Oct. 2015
+    			DatePicker myDatePicker = (DatePicker) findViewById(R.id.date_picker);		    			
+	    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myDatePicker.getMonth() +
+ 						 myDatePicker.getDayOfMonth() + "," +
+ 						myDatePicker.getYear()+";", usbongAnswerContainerCounter);
+
+/*		    			
+		    	Spinner dateMonthSpinner = (Spinner) findViewById(R.id.date_month_spinner);
+		        Spinner dateDaySpinner = (Spinner) findViewById(R.id.date_day_spinner);
+		        EditText myDateYearEditText = (EditText)findViewById(R.id.date_edittext);
+//    			usbongAnswerContainer.addElement("A,"+monthAdapter.getItem(dateMonthSpinner.getSelectedItemPosition()).toString() +
+//						 						 dayAdapter.getItem(dateDaySpinner.getSelectedItemPosition()).toString() + "," +
+//						 						 myDateYearEditText.getText().toString()+";");		    					
+	    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+monthAdapter.getItem(dateMonthSpinner.getSelectedItemPosition()).toString() +
+						 						 dayAdapter.getItem(dateDaySpinner.getSelectedItemPosition()).toString() + "," +
+						 						 myDateYearEditText.getText().toString()+";", usbongAnswerContainerCounter);
+*/		    			
+				usbongAnswerContainerCounter++;
+
+//    			System.out.println(">>>>>>>>>>>>>Date screen: "+usbongAnswerContainer.lastElement());
+    			initParser();				        	
+    		}		    		
+    		else if (currScreen==TIMESTAMP_DISPLAY_SCREEN) {
+    			currUsbongNode = nextUsbongNodeIfYes;
+	    		UsbongUtils.addElementToContainer(usbongAnswerContainer, timestampString+";", usbongAnswerContainerCounter);
+				usbongAnswerContainerCounter++;
+
+    			initParser();				        	
+    		}		    				    		
+    		else if (currScreen==QR_CODE_READER_SCREEN) {
+    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
+
+    			if (!myQRCodeContent.equals("")) {
+//    				usbongAnswerContainer.addElement("Y,"+myQRCodeContent+";");							
+		    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y,"+myQRCodeContent+";", usbongAnswerContainerCounter);
+					usbongAnswerContainerCounter++;
+    			}
+    			else {
+//    				usbongAnswerContainer.addElement("N;");									    				
+		    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N;", usbongAnswerContainerCounter);
+					usbongAnswerContainerCounter++;
+    			}
+    			initParser();				        	
+    		}
+    		else if ((currScreen==DCAT_SUMMARY_SCREEN)) {
+    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
+/*
+		        LinearLayout myDCATSummaryLinearLayout = (LinearLayout)findViewById(R.id.dcat_summary_linearlayout);
+		        int total = myDCATSummaryLinearLayout.getChildCount();
+
+				StringBuffer dcatSummary= new StringBuffer();
+		        for (int i=0; i<total; i++) {
+		        	dcatSummary.append(((TextView) myDCATSummaryLinearLayout.getChildAt(i)).getText().toString());
+		        }
+*/				        
+//    			UsbongUtils.addElementToContainer(usbongAnswerContainer, "dcat_end;", usbongAnswerContainerCounter);
+    			UsbongUtils.addElementToContainer(usbongAnswerContainer, "dcat_end,"+myDcatSummaryStringBuffer.toString()+";", usbongAnswerContainerCounter);
+		        usbongAnswerContainerCounter++;
+				
+				initParser();		    		}
+
+    		else { //TODO: do this for now		    		
+    			currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
+//				usbongAnswerContainer.addElement("A;");															
+	    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
+				usbongAnswerContainerCounter++;
+
+				initParser();				
+    		}		    		
+    	}
+	}
     
     public void initRecordAudioScreen() {    	    	
         String timeStamp = UsbongUtils.getDateTimeStamp();
@@ -2549,6 +2638,11 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     	youTubeIntent = new Intent().setClass(this, MyYouTubeActivity.class);
 		youTubeIntent.putExtra("youtubeID",UsbongUtils.getYouTubeVideoID(currUsbongNode));
 		youTubeIntent.putExtra("currScreen",currScreen+"");
+
+		Bundle myUdteaObjectBundle = new Bundle();
+		myUdteaObjectBundle.putParcelable(UsbongConstants.BUNDLE, myUdteaObject);
+		youTubeIntent.putExtras(myUdteaObjectBundle);
+
 		startActivity(UsbongDecisionTreeEngineActivity.youTubeIntent);
     }
     

@@ -42,12 +42,12 @@ public class ListViewAdapter extends BaseAdapter implements AsyncResponse {
 	Context context;
 	LayoutInflater inflater;
 	//NonLibraryImageLoader imageLoader;
-	private ArrayList<FitsObject> fitObjects = new ArrayList<FitsObject>();
+	private ArrayList<FitsObject> fitsObjects = new ArrayList<FitsObject>();
 	private DownloadTreeAsync downloadTask;
 		
-	public ListViewAdapter(Context context, ArrayList<FitsObject> fitObjects) {
+	public ListViewAdapter(Context context, ArrayList<FitsObject> fitsObjects) {
 		this.context = context;
-		this.fitObjects = fitObjects;
+		this.fitsObjects = fitsObjects;
 		inflater = LayoutInflater.from(context);
 		//imageLoader = new NonLibraryImageLoader(context);
 	}
@@ -65,12 +65,12 @@ public class ListViewAdapter extends BaseAdapter implements AsyncResponse {
 	
 	@Override
 	public int getCount() {
-		return fitObjects.size();
+		return fitsObjects.size();
 	}
 
 	@Override
 	public Object getItem(int position) {
-		return fitObjects.get(position);
+		return fitsObjects.get(position);
 	}
 
 	@Override
@@ -103,7 +103,7 @@ public class ListViewAdapter extends BaseAdapter implements AsyncResponse {
 		}
 		// Load image into GridView
 		
-		url = "http://img.youtube.com/vi/" + UsbongUtils.parseYouTubeLink(fitObjects.get(position).getYOUTUBELINK()) + "/hqdefault.jpg";
+		url = "http://img.youtube.com/vi/" + UsbongUtils.parseYouTubeLink(fitsObjects.get(position).getYOUTUBELINK()) + "/hqdefault.jpg";
 	
 		//		Glide.with(context)
 		//			.load(url)
@@ -117,27 +117,27 @@ public class ListViewAdapter extends BaseAdapter implements AsyncResponse {
 		ImageLoader.getInstance().displayImage(url, holder.icon);
 		//END TEST
 
-//		holder.uploader.setText(fitObjects.get(position).getUPLOADER());
+//		holder.uploader.setText(fitsObjects.get(position).getUPLOADER());
 		//added by Mike, 31 May 2015
-		if (fitObjects.get(position).getUPLOADER().length()>25) {
-			String s = fitObjects.get(position).getUPLOADER().substring(0, 25)+"...";
+		if (fitsObjects.get(position).getUPLOADER().length()>25) {
+			String s = fitsObjects.get(position).getUPLOADER().substring(0, 25)+"...";
 			holder.uploader.setText(s);
 		}
 		else {
-			holder.uploader.setText(fitObjects.get(position).getUPLOADER());
+			holder.uploader.setText(fitsObjects.get(position).getUPLOADER());
 		}
 
-		if (fitObjects.get(position).getFILENAME().length()>18) {
-			String s = fitObjects.get(position).getFILENAME().substring(0, 18)+"...";
+		if (fitsObjects.get(position).getFILENAME().length()>18) {
+			String s = fitsObjects.get(position).getFILENAME().substring(0, 18)+"...";
 			holder.fileName.setText(s);
 		}
 		else {
-			holder.fileName.setText(fitObjects.get(position).getFILENAME());
+			holder.fileName.setText(fitsObjects.get(position).getFILENAME());
 		}
 
 
 /*		//commented out by Mike, 30 May 2015
-		switch(fitObjects.get(position).getRATING()) {
+		switch(fitsObjects.get(position).getRATING()) {
 		default:
 		case 0:
 		case 1:
@@ -158,7 +158,7 @@ public class ListViewAdapter extends BaseAdapter implements AsyncResponse {
 		}
 */		
 		//added by Mike, 30 May 2015
-		holder.downloadCount.setText("Download Count: "+fitObjects.get(position).getDOWNLOADCOUNT());
+		holder.downloadCount.setText("Download Count: "+fitsObjects.get(position).getDOWNLOADCOUNT());
 
 		// Capture GridView item click
 		view.setOnClickListener(new OnClickListener() {
@@ -169,7 +169,7 @@ public class ListViewAdapter extends BaseAdapter implements AsyncResponse {
 //				Intent intent = new Intent(context, SingleItemView.class);
 				Intent intent = new Intent(context, SingleItemViewWithFragment.class);
 				Bundle fitsObjectBundle = new Bundle();
-				fitsObjectBundle.putParcelable(Constants.BUNDLE, fitObjects.get(position));
+				fitsObjectBundle.putParcelable(Constants.BUNDLE, fitsObjects.get(position));
 				intent.putExtras(fitsObjectBundle);
 				context.startActivity(intent);
 			}
@@ -194,7 +194,7 @@ public class ListViewAdapter extends BaseAdapter implements AsyncResponse {
 		        	
             		savedTree = new File(Environment.getExternalStorageDirectory().getPath()
                     		+ "/usbong/usbong_trees/"
-                    		+ fitObjects.get(position).getFILEPATH());
+                    		+ fitsObjects.get(position).getFILEPATH());
             		
             		if(savedTree.exists()) {
             			items[0] = "Open Tree";
@@ -207,7 +207,7 @@ public class ListViewAdapter extends BaseAdapter implements AsyncResponse {
 
             		// instantiate it within the onCreate method
             		mProgressDialog = new ProgressDialog(context);
-            		mProgressDialog.setMessage("Downloading: " + fitObjects.get(position).getFILEPATH());
+            		mProgressDialog.setMessage("Downloading: " + fitsObjects.get(position).getFILEPATH());
             		mProgressDialog.setTitle("Saving trees...");
             		mProgressDialog.setIndeterminate(true);
             		mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -221,17 +221,16 @@ public class ListViewAdapter extends BaseAdapter implements AsyncResponse {
 		            		
 		    				if(savedTree.exists()) {
 		    	            	Intent i = new Intent(context, UsbongDecisionTreeEngineActivity.class);
-		    	            	i.putExtra(Constants.UTREE_KEY, UsbongUtils.removeExtension(fitObjects.get(position).getFILEPATH()));
+		    	            	i.putExtra(Constants.UTREE_KEY, UsbongUtils.removeExtension(fitsObjects.get(position).getFILEPATH()));
 		    	            	context.startActivity(i);
 		    				} else {
 		    					downloadTask = new DownloadTreeAsync(context, mProgressDialog);
-		    					downloadTask.execute(fitObjects.get(position).getFILEPATH());
+		    					downloadTask.execute(fitsObjects.get(position).getFILEPATH());
 		    					downloadTask.delegate = ListViewAdapter.this;
 		    				}
 
 		                }
-		            });
-		            
+		            });		            
     				
     				mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
     				    @Override

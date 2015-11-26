@@ -1,5 +1,6 @@
 package usbong.android;
 
+import usbong.android.utils.UsbongConstants;
 import usbong.android.utils.UsbongUtils;
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,6 +29,8 @@ public class MyYouTubeActivity extends YouTubeBaseActivity implements YouTubePla
     	
 	private Button backButton;
 	private Button nextButton;	
+	
+	private UdteaObject myUdteaObject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +44,8 @@ public class MyYouTubeActivity extends YouTubeBaseActivity implements YouTubePla
 //    	Log.d(">>>>myYouTubeVideoID",myYouTubeVideoID);
 //    	currScreen = bundle.getInt("currScreen");
     	currScreen = bundle.getString("currScreen");
+
+		myUdteaObject = bundle.getParcelable(UsbongConstants.BUNDLE);
     	
     	youTubePlayerView = (YouTubePlayerView) findViewById(R.id.youtube_player);
 		youTubePlayerView.initialize(API_KEY, this);		
@@ -131,9 +136,14 @@ public class MyYouTubeActivity extends YouTubeBaseActivity implements YouTubePla
 			public void onClick(View v) {
 //				finish();
 		    	Intent returnToUDTEAIntent = new Intent().setClass(MyYouTubeActivity.this, UsbongDecisionTreeEngineActivity.class);
-//		    	returnToUDTEAIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
+		    	returnToUDTEAIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
 		    	returnToUDTEAIntent.putExtra("buttonPressed","back");
 		    	returnToUDTEAIntent.putExtra("currScreen",currScreen);
+		    	
+				Bundle myUdteaObjectBundle = new Bundle();
+				myUdteaObjectBundle.putParcelable(UsbongConstants.BUNDLE, myUdteaObject);
+				returnToUDTEAIntent.putExtras(myUdteaObjectBundle);
+		    	
 				startActivityForResult(returnToUDTEAIntent, UsbongUtils.FROM_MY_YOUTUBE_ACTIVITY);
 			}
     	});
@@ -146,9 +156,14 @@ public class MyYouTubeActivity extends YouTubeBaseActivity implements YouTubePla
 			public void onClick(View v) {
 //				finish();
 		    	Intent returnToUDTEAIntent = new Intent().setClass(MyYouTubeActivity.this, UsbongDecisionTreeEngineActivity.class);
-//		    	returnToUDTEAIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
+		    	returnToUDTEAIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
 		    	returnToUDTEAIntent.putExtra("buttonPressed","next");
 		    	returnToUDTEAIntent.putExtra("currScreen",currScreen);
+
+				Bundle myUdteaObjectBundle = new Bundle();
+				myUdteaObjectBundle.putParcelable(UsbongConstants.BUNDLE, myUdteaObject);
+				returnToUDTEAIntent.putExtras(myUdteaObjectBundle);
+		    	
 		    	startActivityForResult(returnToUDTEAIntent, UsbongUtils.FROM_MY_YOUTUBE_ACTIVITY);
 			}
     	});
