@@ -3,19 +3,19 @@
 	style="@style/UsbongSpecialParentLayout"
 	android:id="@+id/parent_layout_id"       
 	>
-    <fragment
-        android:name="com.google.android.youtube.player.YouTubePlayerSupportFragment"
-        android:id="@+id/youtube_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#000000"/>	
-    <ScrollView style="@style/UsbongDefaultScrollView"
-	>		 	
-		<TextView android:id="@+id/youtube_with_text_textview"
-		    style="@style/UsbongDefaultTextView"	    	
-		    android:text="@string/default_textview" 
-		/>	    
-	</ScrollView>	    	        
+	<LinearLayout style="@style/UsbongSpecialImageMainLayout">
+	    <com.google.android.youtube.player.YouTubePlayerView
+	        android:id="@+id/youtube_player"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:background="#000000"/>	    
+	    <ScrollView style="@style/UsbongDefaultScrollView">		 	
+			<TextView android:id="@+id/youtube_with_text_textview"
+			    style="@style/UsbongDefaultTextView"	    	
+			    android:text="@string/default_textview" 
+			/>	    
+		</ScrollView>	    	        	    
+    </LinearLayout>    
 	<LinearLayout
 		style="@style/UsbongDefaultBackNextButtonLayout">	
 	    <Button android:id="@+id/back_button"

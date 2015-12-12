@@ -1,48 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<process-definition  xmlns="urn:jbpm.org:jpdl-3.2"  name="usbongDemoTree">
+<process-definition xmlns=""  lang="English" name="usbongDemoTree">
 	<start-state name="start-state1">
-		<transition to="textDisplay~Usbong Demo Tree (ver.July31,2014)"></transition>
+		<transition to="textDisplay~Usbong Demo Tree (ver.20151212)"></transition>
 	</start-state>
 
-	<task-node name="textDisplay~Usbong Demo Tree (ver.July31,2014)">
-		<transition to='textDisplay~Welcome! Usbong is an open-source platform that allows you to create and run, what we call, "Trees."'></transition>
+	<task-node name="textDisplay~Usbong Demo Tree (ver.20151212)">
+		<transition to='textDisplay~Welcome! Usbong is an open source platform that enables you to create and run, what we call, "Trees."'></transition>
 	</task-node>
 
-	<task-node name='textDisplay~Welcome! Usbong is an open-source platform that allows you to create and run, what we call, "Trees."'>
+	<task-node name='textDisplay~Welcome! Usbong is an open source platform that enables you to create and run, what we call, "Trees."'>
 		<transition to='textDisplay~"Trees" can be anything from branching storybooks, step-by-step guides, and even clinical pathways.'></transition>
 	</task-node>
 
 	<task-node name='textDisplay~"Trees" can be anything from branching storybooks, step-by-step guides, and even clinical pathways.'>
-		<transition to='textDisplay~The idea is to create trees by putting together components such as checklists, radio buttons, text fields, the camera, the audio recorder, and even a canvas for drawing things.  You can also create your own components, say a stopwatch or a mini game,  by checking out usbong on {a href="https://code.google.com/p/usbong/"}Google Code{/a}, or sending us a request  through "usbong-users@googlegroups.com".'></transition>
+		<transition to='textDisplay~The idea is that as long as you have a flowchart, even though you don&#8217;t have a background in Computer Science or Engineering, you can create trees using the companion app, {a href="https://play.google.com/store/apps/details?id=usbong.android.builder"}Usbong Builder{/a}.'></transition>
 	</task-node>
 
-	<task-node name='textDisplay~The idea is to create trees by putting together components such as checklists, radio buttons, text fields, the camera, the audio recorder, and even a canvas for drawing things.  You can also create your own components, say a stopwatch or a mini game,  by checking out usbong on {a href="https://code.google.com/p/usbong/"}Google Code{/a}, or sending us a request  through "usbong-users@googlegroups.com".'>
-		<transition to="textDisplay~To create your own &quot;Trees&quot;, you don't really have to be an experienced programmer or even a technical person for that matter. You can use Google Drive Spreadsheet (or a Graphical User Interface (GUI)) to connect the components together, which are then converted into an XML file that can be played using Usbong."></transition>
+	<task-node name='textDisplay~The idea is that as long as you have a flowchart, even though you don&#8217;t have a background in Computer Science or Engineering, you can create trees using the companion app, {a href="https://play.google.com/store/apps/details?id=usbong.android.builder"}Usbong Builder{/a}.'>
+		<transition to='textDisplay~The trees that you create can then be run here on this Usbong app.'></transition>
 	</task-node>
 
-	<task-node name="textDisplay~To create your own &quot;Trees&quot;, you don't really have to be an experienced programmer or even a technical person for that matter. You can use Google Drive Spreadsheet (or a Graphical User Interface (GUI)) to connect the components together, which are then converted into an XML file that can be played using Usbong.">
+	<task-node name='textDisplay~The trees that you create can then be run here on this Usbong app.'>
 		<transition to='textDisplay~For more info on this, do visit our website! {a href="http://www.usbong.ph"}www.usbong.ph{/a}'></transition>
 	</task-node>
 
+	
 	<task-node name='textDisplay~For more info on this, do visit our website! {a href="http://www.usbong.ph"}www.usbong.ph{/a}'>
 		<transition to="At this point, do you want me to show you the various components that you can use?"></transition>
 	</task-node>
 
 	<decision name="At this point, do you want me to show you the various components that you can use?">
 		<transition to="end-state1" name="No"></transition>
-		<transition to='textDisplay~In the previous screen, you were asked a Yes/No question. That is actually a type of node called, "decision" node. Depending on your answer, you are led to a particular branching node.' name='Yes'></transition>
+		<transition to='textDisplay~In the previous screen, you were asked a Yes/No question. That is actually a type of screen called, "DECISION". Depending on your answer, you are led to a particular branching node.' name='Yes'></transition>
 	</decision>
 
-	<task-node name='textDisplay~In the previous screen, you were asked a Yes/No question. That is actually a type of node called, "decision" node. Depending on your answer, you are led to a particular branching node.'>
-		<transition to='From hereon, the rest of the nodes are called, "task-nodes." What you see in this screen is an example of a "textDisplay" task-node, where text is simply displayed on the screen.'></transition>
+	<task-node name='textDisplay~In the previous screen, you were asked a Yes/No question. That is actually a type of screen called, "DECISION". Depending on your answer, you are led to a particular branching node.'>
+		<transition to='What you see in this screen is an example of a "TEXT" screen type, where text is simply displayed on the screen.'></transition>
 	</task-node>
 
-	<task-node name='From hereon, the rest of the nodes are called, "task-nodes." What you see in this screen is an example of a "textDisplay" task-node, where text is simply displayed on the screen.'>
-		<transition to='textImageDisplay~sample_image~You can display both a text and an image as well. This is called, "textImageDisplay." If you only want to display an image, that type of node is called, "imageDisplay."'></transition>
+	<task-node name='What you see in this screen is an example of a "TEXT" screen type, where text is simply displayed on the screen.'>
+		<transition to='textImageDisplay~sample_image~You can display both a text and an image as well. This is called, "TEXT_AND_IMAGE". If you only want to display an image, that type of screen is called, "IMAGE."'></transition>
 	</task-node>
 
-	<task-node name='textImageDisplay~sample_image~You can display both a text and an image as well. This is called, "textImageDisplay." If you only want to display an image, that type of node is called, "imageDisplay."'>
+	<task-node name='textImageDisplay~sample_image~You can display both a text and an image as well. This is called, "TEXT_AND_IMAGE". If you only want to display an image, that type of screen is called, "IMAGE."'>
 		<transition to='photoCapture~The camera is also available for you to use!'></transition>
 	</task-node>
 
@@ -51,30 +52,30 @@
 	</task-node>
 
 	<task-node name='audioRecord~To record narrations, you can use the audio recorder!'>
-		<transition to='checkList~0~This is an example of a "checkList", where you can tick more than one box. You can specify how many boxes should be checked to go to the "Yes" branch. If the checked boxes are too few, the person is led to a "No" branch.'></transition>
+		<transition to='checkList~0~This is an example of a "LIST" screen type, which you can configure such that it acts like a checkList. It can then allow a person to tick more than one box. You can specify how many boxes should be checked to go to the "Correct" branch. If the checked boxes are too few, the person is led to the "Incorrect" branch.'></transition>
 	</task-node>
 
-	<task-node name='checkList~0~This is an example of a "checkList", where you can tick more than one box. You can specify how many boxes should be checked to go to the "Yes" branch. If the checked boxes are too few, the person is led to a "No" branch.'>
+	<task-node name='checkList~0~This is an example of a "LIST" screen type, which you can configure such that it acts like a checkList. It can then allow a person to tick more than one box. You can specify how many boxes should be checked to go to the "Correct" branch. If the checked boxes are too few, the person is led to the "Incorrect" branch.'>
 		<task name="Option 1"></task>
 		<task name="Option 2"></task>
-		<transition to='radioButtons~Alternatively, you can use the "radioButtons" node. However, only one button can be ticked, and you are always led to just a single branch, called "Any".'></transition>
+		<transition to='radioButtons~Alternatively, you can configure LIST so that it acts as a radio buttons list, like in a survey. However, only one button can be ticked, and you are always led to the next screen that you pre-specify.'></transition>
 	</task-node>
 
-	<task-node name='radioButtons~Alternatively, you can use the "radioButtons" node. However, only one button can be ticked, and you are always led to just a single branch, called "Any".'>
+	<task-node name='radioButtons~Alternatively, you can configure LIST so that it acts as a radio buttons list, like in a survey. However, only one button can be ticked, and you are always led to the next screen that you pre-specify.'>
 		<task name="Option 1"></task>
 		<task name="Option 2"></task>
-		<transition to='textField~This is an example of a "textField". This allows a person to enter text onto the device.'></transition>
+		<transition to='textField~This is an example of a "TEXT_INPUT". This allows a person to enter text onto the device.'></transition>
 	</task-node>
 
-	<task-node name='textField~This is an example of a "textField". This allows a person to enter text onto the device.'>
-		<transition to='textFieldWithUnit~kilogram(s)~Another variation of text fields is the "textFieldWithUnit". Notice that only numbers are allowed to be entered here.'></transition>
+	<task-node name='textField~This is an example of a "TEXT_INPUT". This allows a person to enter text onto the device.'>
+		<transition to='textFieldWithUnit~kilogram(s)~You can also configure the TEXT_INPUT such that it has a unit. Notice that only numbers are allowed to be entered here.'></transition>
 	</task-node>
 
-	<task-node name='textFieldWithUnit~kilogram(s)~Another variation of text fields is the "textFieldWithUnit". Notice that only numbers are allowed to be entered here.'>
-		<transition to='date~To get the date today, you can use the "date" task-node.'></transition>
+	<task-node name='textFieldWithUnit~kilogram(s)~You can also configure the TEXT_INPUT such that it has a unit. Notice that only numbers are allowed to be entered here.'>
+		<transition to='date~To get the date today, you can use the "SPECIAL_INPUT" screen type, and selecting "DATE" for the input type.'></transition>
 	</task-node>
 
-	<task-node name='date~To get the date today, you can use the "date" task-node.'>
+	<task-node name='date~To get the date today, you can use the "SPECIAL_INPUT" screen type, and selecting "DATE" for the input type.'>
 		<transition to="textDisplay~There are many more components that you can use, for example, a canvas for drawing (or signing documents), and a QR code reader (for patient identification)."></transition>
 	</task-node>
 
@@ -94,19 +95,17 @@
 		<task name="textImageDisplay"/>
 		<task name="clickableImageDisplay"/>
 		<task name="textClickableImageDisplay"/>
-		<task name="gps"/>
+		<task name="GPS"/>
 		<task name="classification"/>
 		<task name="checkList"/>
+		<task name="radioButtons"/>
+		<task name="link (ala choose-your-own-adventure)"/>
 		<transition to="Here are some more:" name="Any"></transition>
 	</task-node>
 
 	<task-node name="Here are some more:">
-		<task name="radioButtons"/>
 		<task name="audioRecord"/>
 		<task name="photoCapture"/>
-		<task name="link (ala choose-your-own-adventure)"/>
-		<task name="sendToWebServer"/>
-		<task name="sendToCloudBasedService"/>
 		<task name="paint"/>
 		<task name="qrCodeReader"/>
 		<task name="textFieldWithAnswer"/>
@@ -114,32 +113,40 @@
 		<task name="radioButtonsWithAnswer"/>
 		<task name="videoFromFile"/>
 		<task name="videoFromFileWithText"/>
+		<task name="youtubeVideo"/>
+		<task name="youtubeVideoWithText"/>
 		<task name="timestampDisplay"/>
 		<task name="simpleEncrypt"/>
-		<transition to="textDisplay~You can find out more about these by reading the {a href='http://www.usbong.ph/guide'}guides{/a}." name="Any"></transition>
+		<task name="sendToWebServer"/>
+		<task name="sendToCloudBasedService"/>
+		<transition to='textDisplay~You, too, can create your own components (e.g. stop watches, mini games) by checking out the Usbong code on {a href="https://github.com/masarapmabuhay/usbong"}GitHub{/a}. You can also send us your request via "support@usbong.ph" and/or "usbong-users@googlegroups.com"!' name="Any"></transition>
 	</task-node>
-	
-	<task-node name="textDisplay~You can find out more about these by reading the {a href='http://www.usbong.ph/guide'}guides{/a}.">
-		<transition to="textDisplay~As I've said, you can create your own components (e.g. stop watches, mini games) by checking out usbong on Google Code or by sending a request to &quot;usbong-users@googlegroups.com&quot;!"></transition>
-	</task-node>
-	
-	<task-node name="textDisplay~As I've said, you can create your own components (e.g. stop watches, mini games) by checking out usbong on Google Code or by sending a request to &quot;usbong-users@googlegroups.com&quot;!">
-		<transition to='textDisplay~The procedure we use is: The higher the number of people clamoring for a particular feature, the higher it becomes in the priority list.'></transition>
+		
+	<task-node name='textDisplay~You, too, can create your own components (e.g. stop watches, mini games) by checking out the Usbong code on {a href="https://github.com/masarapmabuhay/usbong"}GitHub{/a}. You can also send us your request via "support@usbong.ph" and/or "usbong-users@googlegroups.com"!'>
+		<transition to='textDisplay~The procedure we use is: the more people clamoring for a particular feature, the higher it becomes in the priority list.'></transition>
 	</task-node>
 
-	<task-node name='textDisplay~The procedure we use is: The higher the number of people clamoring for a particular feature, the higher it becomes in the priority list.'>
-		<transition to="textDisplay~Before I forget, data captured using Usbong are stored in the device's sdcard, but they can also be sent to your favorite cloud-based service, like email or a social networking site. Alternatively, you can send data to your own web server!"></transition>
+	<task-node name='textDisplay~The procedure we use is: the more people clamoring for a particular feature, the higher it becomes in the priority list.'>
+		<transition to="textDisplay~Before I forget, data captured using Usbong are stored in the device's SD Card, but they can also be sent to your favorite cloud-based service, like an email service or a social networking site. Alternatively, you can send data to your own web server!"></transition>
 	</task-node>
 
-	<task-node name="textDisplay~Before I forget, data captured using Usbong are stored in the device's sdcard, but they can also be sent to your favorite cloud-based service, like email or a social networking site. Alternatively, you can send data to your own web server!">
-		<transition to="textDisplay~Oh, and one more thing. By pressing the menu button on the device (outside the screen), you can actually make Usbong read aloud the displayed text! At present, Usbong can speak in Filipino, English, and Japanese. The Japanese Text-to-Speech though should first be purchased in Google Play."></transition>
+	<task-node name="textDisplay~Before I forget, data captured using Usbong are stored in the device's SD Card, but they can also be sent to your favorite cloud-based service, like an email service or a social networking site. Alternatively, you can send data to your own web server!">
+		<transition to="textDisplay~Oh, and one more thing."></transition>
 	</task-node>
 
-	<task-node name="textDisplay~Oh, and one more thing. By pressing the menu button on the device (outside the screen), you can actually make Usbong read aloud the displayed text! At present, Usbong can speak in Filipino, English, and Japanese. The Japanese Text-to-Speech though should first be purchased in Google Play.">
-		<transition to='Well, I hope this piqued your interest! If you have questions or concerns, do voice them out via "usbong-users@googlegroups.com". Hooray! '></transition>
+	<task-node name="textDisplay~Oh, and one more thing.">
+		<transition to="By pressing the menu button on the device (outside the screen) or the button at the top-right of the screen, you can actually switch languages, if they're available, and make Usbong read aloud the displayed text!"></transition>
 	</task-node>
 
-	<task-node name='Well, I hope this piqued your interest! If you have questions or concerns, do voice them out via "usbong-users@googlegroups.com". Hooray! '>
+	<task-node name="textDisplay~By pressing the menu button on the device (outside the screen) or the button at the top-right of the screen, you can actually switch languages, if they're available, and make Usbong read aloud the displayed text!">
+		<transition to='textDisplay~At present, Usbong can automatically speak in Filipino, English, and Japanese. The Japanese Text-to-Speech though should first be purchased on Google Play. Plus, if the tree file has its own translations and voice-over narrations, Usbong can display and play them no matter what language they may be!'></transition>
+	</task-node>
+
+	<task-node name="textDisplay~At present, Usbong can automatically speak in Filipino, English, and Japanese. The Japanese Text-to-Speech though should first be purchased on Google Play. Plus, if the tree file has its own translations and voice-over narrations, Usbong can display and play them no matter what language they may be!">
+		<transition to='Well, I hope this piqued your interest! If you have questions or concerns, do voice them out via "support@usbong.ph" and/or "usbong-users@googlegroups.com"! Thank you!'></transition>
+	</task-node>
+
+	<task-node name='Well, I hope this piqued your interest! If you have questions or concerns, do voice them out via "support@usbong.ph" and/or "usbong-users@googlegroups.com"! Thank you!'>
 		<transition to="end-state1"></transition>
 	</task-node>
 	<end-state name="end-state1"></end-state>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="usbong.android"
-      android:versionCode="67"
-      android:versionName="20151126"
+      android:versionCode="71"
+      android:versionName="20151212v2"
       android:installLocation="auto"      
 >
 
@@ -76,7 +76,8 @@
 		<activity android:name=".features.node.QRCodeReaderActivity" android:screenOrientation="portrait"></activity>        				
 		<activity android:name="usbong.android.MyYouTubeActivity"         
 		    android:theme="@style/ThemeHoloWithActionBar"
-        	android:configChanges="keyboardHidden|orientation|screenSize">
+        	android:configChanges="keyboardHidden|orientation|screenSize"
+        	android:windowSoftInputMode="adjustResize|stateVisible|stateAlwaysHidden">
 		</activity>					
 		<activity android:name="usbong.android.community.FitsListDisplay" android:screenOrientation="portrait"
 		    android:theme="@style/ThemeHoloWithActionBar">

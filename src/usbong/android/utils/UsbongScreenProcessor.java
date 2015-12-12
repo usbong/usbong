@@ -121,7 +121,7 @@ public class UsbongScreenProcessor
     			}	    			
     		}
 	    	
-		if (udtea.currScreen == udtea.MULTIPLE_RADIO_BUTTONS_SCREEN) {
+		if (udtea.currScreen == UsbongConstants.MULTIPLE_RADIO_BUTTONS_SCREEN) {
 			udtea.setContentView(R.layout.multiple_radio_buttons_screen);
 			udtea.initBackNextButtons();
 			TextView myMultipleRadioButtonsScreenTextView = (TextView)udtea.findViewById(R.id.radio_buttons_textview);
@@ -152,7 +152,7 @@ public class UsbongScreenProcessor
 			    
 			    radioGroup.addView(radioButton);
 			}
-		} else if (udtea.currScreen == udtea.MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN) {
 			udtea.setContentView(R.layout.multiple_radio_buttons_screen);
 			udtea.initBackNextButtons();
 			String myMultipleRadioButtonsWithAnswerScreenStringToken = "";
@@ -190,7 +190,7 @@ public class UsbongScreenProcessor
 			    
 			    myMultipleRadioButtonsWithAnswerRadioGroup.addView(radioButton);
 			}
-		} else if (udtea.currScreen == udtea.LINK_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.LINK_SCREEN) {
 			//use same contentView as multiple_radio_buttons_screen
 			udtea.setContentView(R.layout.multiple_radio_buttons_screen);
 			udtea.initBackNextButtons();
@@ -219,7 +219,7 @@ public class UsbongScreenProcessor
 			    
 			    myLinkScreenRadioGroup.addView(radioButton);
 			}
-		} else if (udtea.currScreen == udtea.MULTIPLE_CHECKBOXES_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.MULTIPLE_CHECKBOXES_SCREEN) {
 			udtea.setContentView(R.layout.multiple_checkboxes_screen);
 			udtea.initBackNextButtons();
 			TextView myMultipleCheckBoxesScreenTextView = (TextView)udtea.findViewById(R.id.checkboxes_textview);
@@ -259,7 +259,7 @@ public class UsbongScreenProcessor
 			    checkBox.setTextColor(Color.parseColor("#4a452a"));			        
 			    myMultipleCheckboxesLinearLayout.addView(checkBox);
 			}
-		} else if (udtea.currScreen == udtea.AUDIO_RECORD_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.AUDIO_RECORD_SCREEN) {
 			udtea.setContentView(R.layout.audio_recorder_screen);
 			udtea.initRecordAudioScreen();
 			udtea.initBackNextButtons();
@@ -283,7 +283,7 @@ public class UsbongScreenProcessor
 				stopButton.setText((String) udtea.getResources().getText(R.string.UsbongStopTextViewENGLISH));				    		
 				playButton.setText((String) udtea.getResources().getText(R.string.UsbongPlayTextViewENGLISH));				    		
 			}
-		} else if (udtea.currScreen == udtea.PHOTO_CAPTURE_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.PHOTO_CAPTURE_SCREEN) {
 			udtea.setContentView(R.layout.photo_capture_screen);
 			if (!udtea.performedCapturePhoto) {
 			  udtea.initTakePhotoScreen();
@@ -301,7 +301,7 @@ public class UsbongScreenProcessor
 			else { //if (udtea.currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
 				photoCaptureButton.setText((String) udtea.getResources().getText(R.string.UsbongTakePhotoTextViewENGLISH));				    		
 			}
-		} else if (udtea.currScreen == udtea.PAINT_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.PAINT_SCREEN) {
 			udtea.setContentView(R.layout.paint_screen);
 			if (!udtea.performedRunPaint) {
 			  udtea.initPaintScreen();
@@ -319,7 +319,7 @@ public class UsbongScreenProcessor
 			else { //if (udtea.currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
 				paintButton.setText((String) udtea.getResources().getText(R.string.UsbongRunPaintTextViewENGLISH));				    		
 			}
-		} else if (udtea.currScreen == udtea.QR_CODE_READER_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.QR_CODE_READER_SCREEN) {
 			udtea.setContentView(R.layout.qr_code_reader_screen);
 			if (!udtea.performedGetQRCode) {
 			  udtea.initQRCodeReaderScreen();
@@ -337,14 +337,14 @@ public class UsbongScreenProcessor
 			else { //if (udtea.currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
 				qrCodeReaderButton.setText((String) udtea.getResources().getText(R.string.UsbongQRCodeReaderTextViewENGLISH));				    		
 			}
-		} else if (udtea.currScreen == udtea.TEXTFIELD_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.TEXTFIELD_SCREEN) {
 			udtea.setContentView(R.layout.textfield_screen);
 			udtea.initBackNextButtons();
 			TextView myTextFieldScreenTextView = (TextView)udtea.findViewById(R.id.textfield_textview);
 			myTextFieldScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextFieldScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			EditText myTextFieldScreenEditText = (EditText)udtea.findViewById(R.id.textfield_edittext);
 			myTextFieldScreenEditText.setText(myStringToken);
-		} else if (udtea.currScreen == udtea.TEXTFIELD_WITH_ANSWER_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.TEXTFIELD_WITH_ANSWER_SCREEN) {
 			udtea.setContentView(R.layout.textfield_screen);
 			udtea.initBackNextButtons();
 			String myTextFieldWithAnswerScreenStringToken = "";
@@ -364,14 +364,14 @@ public class UsbongScreenProcessor
 			myTextFieldWithAnswerScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextFieldWithAnswerScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNodeWithoutAnswer);
 			EditText myTextFieldScreenWithAnswerEditText = (EditText)udtea.findViewById(R.id.textfield_edittext);
 			myTextFieldScreenWithAnswerEditText.setText(myStringToken);
-		} else if (udtea.currScreen == udtea.TEXTAREA_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.TEXTAREA_SCREEN) {
 			udtea.setContentView(R.layout.textarea_screen);
 			udtea.initBackNextButtons();
 			TextView myTextAreaScreenTextView = (TextView)udtea.findViewById(R.id.textarea_textview);
 			myTextAreaScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextAreaScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			EditText myTextAreaScreenEditText = (EditText)udtea.findViewById(R.id.textarea_edittext);
 			myTextAreaScreenEditText.setText(myStringToken);
-		} else if (udtea.currScreen == udtea.TEXTAREA_WITH_ANSWER_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.TEXTAREA_WITH_ANSWER_SCREEN) {
 			udtea.setContentView(R.layout.textarea_screen);
 			udtea.initBackNextButtons();
 			String myTextAreaWithAnswerScreenStringToken = "";
@@ -391,7 +391,7 @@ public class UsbongScreenProcessor
 			myTextAreaWithAnswerScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextAreaWithAnswerScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNodeWithoutAnswer);
 			EditText myTextAreaScreenWithAnswerEditText = (EditText)udtea.findViewById(R.id.textarea_edittext);
 			myTextAreaScreenWithAnswerEditText.setText(myStringToken);
-		} else if (udtea.currScreen == udtea.TEXTFIELD_WITH_UNIT_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.TEXTFIELD_WITH_UNIT_SCREEN) {
 			udtea.setContentView(R.layout.textfield_with_unit_screen);
 			udtea.initBackNextButtons();
 			TextView myTextFieldWithUnitScreenTextView = (TextView)udtea.findViewById(R.id.textfield_textview);
@@ -401,7 +401,7 @@ public class UsbongScreenProcessor
 			myEditText.setText(myStringToken);
 			TextView myUnitScreenTextView = (TextView)udtea.findViewById(R.id.textfieldunit_textview);
 			myUnitScreenTextView.setText(udtea.textFieldUnit);
-		} else if (udtea.currScreen == udtea.TEXTFIELD_NUMERICAL_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.TEXTFIELD_NUMERICAL_SCREEN) {
 			udtea.setContentView(R.layout.textfield_screen);
 			udtea.initBackNextButtons();
 			TextView myTextFieldNumericalScreenTextView = (TextView)udtea.findViewById(R.id.textfield_textview);
@@ -409,7 +409,7 @@ public class UsbongScreenProcessor
 			EditText myTextFieldNumericalScreenEditText = (EditText)udtea.findViewById(R.id.textfield_edittext);
 			myTextFieldNumericalScreenEditText.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);
 			myTextFieldNumericalScreenEditText.setText(myStringToken);
-		} else if (udtea.currScreen == udtea.CLASSIFICATION_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.CLASSIFICATION_SCREEN) {
 			udtea.setContentView(R.layout.classification_screen);
 			udtea.initBackNextButtons();
 			TextView myClassificationScreenTextView = (TextView)udtea.findViewById(R.id.classification_textview);
@@ -436,7 +436,7 @@ public class UsbongScreenProcessor
 			    myTextView.setTextColor(Color.parseColor("#4a452a"));			        
 			    myClassificationLinearLayout.addView(myTextView);
 			}
-		} else if (udtea.currScreen == udtea.DCAT_SUMMARY_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.DCAT_SUMMARY_SCREEN) {
 			udtea.setContentView(R.layout.dcat_summary_screen);
 			udtea.initBackNextButtons();
 			TextView myDCATSummaryScreenTextView = (TextView)udtea.findViewById(R.id.dcat_summary_textview);
@@ -612,7 +612,7 @@ public class UsbongScreenProcessor
 //	        			hasReachedStandardTotal=false;
 //	        		}
 			}
-		} else if (udtea.currScreen == udtea.DATE_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.DATE_SCREEN) {
 			udtea.setContentView(R.layout.date_screen);
 			udtea.initBackNextButtons();
 			TextView myDateScreenTextView = (TextView)udtea.findViewById(R.id.date_textview); 
@@ -691,7 +691,7 @@ public class UsbongScreenProcessor
 				myDateYearEditText.setText(myStringToken);
 			}
 */			
-		} else if (udtea.currScreen == udtea.TEXT_DISPLAY_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.TEXT_DISPLAY_SCREEN) {
 			udtea.setContentView(R.layout.text_display_screen);
 			udtea.initBackNextButtons();
 			TextView myTextDisplayScreenTextView = (TextView)udtea.findViewById(R.id.text_display_textview);
@@ -701,14 +701,14 @@ public class UsbongScreenProcessor
 //			myTextDisplayScreenTextView = (TextView) UsbongUtils.applyHintsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextDisplayScreenTextView, UsbongUtils.IS_TEXTVIEW);
 //			Log.d(">>>>>","after myTextDisplayScreenTextView");
 			
-		} else if (udtea.currScreen == udtea.TIMESTAMP_DISPLAY_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.TIMESTAMP_DISPLAY_SCREEN) {
 			udtea.setContentView(R.layout.timestamp_display_screen);
 			udtea.initBackNextButtons();
 			TextView myTimeDisplayScreenTextView = (TextView)udtea.findViewById(R.id.time_display_textview);
 			udtea.timestampString = UsbongUtils.getCurrTimeStamp();
 			myTimeDisplayScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTimeDisplayScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode+"{br}"+udtea.timestampString);
 
-		} else if (udtea.currScreen == udtea.SIMPLE_ENCRYPT_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.SIMPLE_ENCRYPT_SCREEN) {
 			udtea.setContentView(R.layout.simple_encrypt_screen);
 			udtea.initBackNextButtons();
 			TextView myEncryptScreenTextView = (TextView)udtea.findViewById(R.id.encrypt_textview);
@@ -733,7 +733,7 @@ public class UsbongScreenProcessor
 				}
 			}).show();
 						
-		} else if (udtea.currScreen == udtea.IMAGE_DISPLAY_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.IMAGE_DISPLAY_SCREEN) {
 			udtea.setContentView(R.layout.image_display_screen);
 			udtea.initBackNextButtons();
 			ImageView myImageDisplayScreenImageView = (ImageView)udtea.findViewById(R.id.special_imageview);
@@ -744,7 +744,7 @@ public class UsbongScreenProcessor
 			    myDrawableImage = myRes.getDrawable(myRes.getIdentifier("no_image", "drawable", udtea.myPackageName));
 			    myImageDisplayScreenImageView.setImageDrawable(myDrawableImage);		        		        	
 			}
-		} else if (udtea.currScreen == udtea.CLICKABLE_IMAGE_DISPLAY_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.CLICKABLE_IMAGE_DISPLAY_SCREEN) {
 			udtea.setContentView(R.layout.clickable_image_display_screen);
 			udtea.initBackNextButtons();
 			ImageButton myClickableImageDisplayScreenImageButton = (ImageButton)udtea.findViewById(R.id.clickable_image_display_imagebutton);
@@ -775,7 +775,7 @@ public class UsbongScreenProcessor
 					}).show();
 			    }
 			});
-		} else if (udtea.currScreen == udtea.TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN) {
 			udtea.setContentView(R.layout.text_clickable_image_display_screen);
 			udtea.initBackNextButtons();
 			TextView myTextClickableImageDisplayTextView = (TextView)udtea.findViewById(R.id.text_clickable_image_display_textview);
@@ -808,7 +808,7 @@ public class UsbongScreenProcessor
 					}).show();
 			    }
 			});
-		} else if (udtea.currScreen == udtea.CLICKABLE_IMAGE_TEXT_DISPLAY_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.CLICKABLE_IMAGE_TEXT_DISPLAY_SCREEN) {
 			udtea.setContentView(R.layout.clickable_image_text_display_screen);
 			udtea.initBackNextButtons();
 			TextView myClickableImageTextDisplayTextView = (TextView)udtea.findViewById(R.id.clickable_image_text_display_textview);
@@ -841,7 +841,7 @@ public class UsbongScreenProcessor
 					}).show();
 			    }
 			});
-		} else if (udtea.currScreen == udtea.VIDEO_FROM_FILE_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.VIDEO_FROM_FILE_SCREEN) {
 			udtea.setContentView(R.layout.video_from_file_screen);
 			udtea.initBackNextButtons();
 			VideoView myVideoFromFileScreenVideoView = (VideoView)udtea.findViewById(R.id.video_from_file_videoview);
@@ -849,7 +849,7 @@ public class UsbongScreenProcessor
 			//added by Mike, Sept. 9, 2013
 			myVideoFromFileScreenVideoView.setMediaController(new MediaController(((Activity)udtea)));
 			myVideoFromFileScreenVideoView.start();
-		} else if (udtea.currScreen == udtea.VIDEO_FROM_FILE_WITH_TEXT_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.VIDEO_FROM_FILE_WITH_TEXT_SCREEN) {
 			udtea.setContentView(R.layout.video_from_file_with_text_screen);
 			udtea.initBackNextButtons();
 			TextView myVideoFromFileWithTextTextView = (TextView)udtea.findViewById(R.id.video_from_file_with_text_textview);
@@ -858,19 +858,15 @@ public class UsbongScreenProcessor
 			myVideoFromFileWithTextScreenVideoView.setVideoPath(UsbongUtils.getPathOfVideoFile(udtea.myTree, UsbongUtils.getResName(udtea.currUsbongNode)));
 			myVideoFromFileWithTextScreenVideoView.setMediaController(new MediaController(((Activity)udtea)));
 			myVideoFromFileWithTextScreenVideoView.start();
-		} else if (udtea.currScreen == udtea.YOUTUBE_VIDEO_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.YOUTUBE_VIDEO_SCREEN) {
 			udtea.setContentView(R.layout.blank_screen);
 			udtea.initBackNextButtons();
 			udtea.initYouTubeScreen();
-		} else if (udtea.currScreen == udtea.YOUTUBE_VIDEO_WITH_TEXT_SCREEN) {
-			udtea.setContentView(R.layout.youtube_video_with_text_screen);
+		} else if (udtea.currScreen == UsbongConstants.YOUTUBE_VIDEO_WITH_TEXT_SCREEN) {
+			udtea.setContentView(R.layout.blank_screen);
 			udtea.initBackNextButtons();
-
-			TextView myYouTubeWithTextTextView = (TextView)udtea.findViewById(R.id.youtube_with_text_textview);
-			myYouTubeWithTextTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myYouTubeWithTextTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
-
 			udtea.initYouTubeScreen();
-		} else if (udtea.currScreen == udtea.TEXT_IMAGE_DISPLAY_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.TEXT_IMAGE_DISPLAY_SCREEN) {
 			udtea.setContentView(R.layout.text_image_display_screen);
 			udtea.initBackNextButtons();
 			TextView myTextImageDisplayTextView = (TextView)udtea.findViewById(R.id.text_image_display_textview);
@@ -883,7 +879,7 @@ public class UsbongScreenProcessor
 			    myDrawableImage = myRes.getDrawable(myRes.getIdentifier("no_image", "drawable", udtea.myPackageName));
 			    myTextImageDisplayImageView.setImageDrawable(myDrawableImage);		        		        	
 			}
-		} else if (udtea.currScreen == udtea.IMAGE_TEXT_DISPLAY_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.IMAGE_TEXT_DISPLAY_SCREEN) {
 			udtea.setContentView(R.layout.image_text_display_screen);
 			udtea.initBackNextButtons();
 			TextView myImageTextDisplayTextView = (TextView)udtea.findViewById(R.id.image_text_display_textview);
@@ -896,7 +892,7 @@ public class UsbongScreenProcessor
 			    myDrawableImage = myRes.getDrawable(myRes.getIdentifier("no_image", "drawable", udtea.myPackageName));
 			    myImageTextDisplayImageView.setImageDrawable(myDrawableImage);		        		        	
 			}
-		} else if (udtea.currScreen == udtea.GPS_LOCATION_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.GPS_LOCATION_SCREEN) {
 			udtea.setContentView(R.layout.gps_location_screen);
 			udtea.initBackNextButtons();
 			TextView myGPSLocationTextView = (TextView)udtea.findViewById(R.id.gps_location_textview);
@@ -910,7 +906,7 @@ public class UsbongScreenProcessor
 			    public void gotLocation(Location location){
 			        //Got the location!
 			    		System.out.println(">>>>>>>>>>>>>>>>>location: "+location);
-			    		if (udtea.currScreen==udtea.GPS_LOCATION_SCREEN) {
+			    		if (udtea.currScreen==UsbongConstants.GPS_LOCATION_SCREEN) {
 				        	if (location!=null) {
 				        		myLongitude = location.getLongitude()+"";
 				        		myLatitude = location.getLatitude()+"";
@@ -947,7 +943,7 @@ public class UsbongScreenProcessor
 			myLoadingProgressBar = (ProgressBar) udtea.findViewById(R.id.progressBar);
 			new ProgressTask().execute();			
 			
-		} else if (udtea.currScreen == udtea.YES_NO_DECISION_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.YES_NO_DECISION_SCREEN) {
 			udtea.setContentView(R.layout.yes_no_decision_screen);
 			udtea.initBackNextButtons();
 			TextView myYesNoDecisionScreenTextView = (TextView)udtea.findViewById(R.id.yes_no_decision_textview);
@@ -964,7 +960,7 @@ public class UsbongScreenProcessor
 			else if ((myStringToken.equals("Y"))){
 				myYesRadioButton.setChecked(true);		        	
 			}
-		} else if (udtea.currScreen == udtea.SEND_TO_CLOUD_BASED_SERVICE_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.SEND_TO_CLOUD_BASED_SERVICE_SCREEN) {
 			udtea.setContentView(R.layout.yes_no_decision_screen);
 			udtea.initBackNextButtons();
 			TextView mySendToCloudBasedServiceScreenTextView = (TextView)udtea.findViewById(R.id.yes_no_decision_textview);
@@ -981,7 +977,7 @@ public class UsbongScreenProcessor
 			else if ((myStringToken.equals("Y"))){
 				mySendToCloudBasedServiceScreenYesRadioButton.setChecked(true);		        	
 			}
-		} else if (udtea.currScreen == udtea.SEND_TO_WEBSERVER_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.SEND_TO_WEBSERVER_SCREEN) {
 			udtea.setContentView(R.layout.send_to_webserver_screen);
 			udtea.initBackNextButtons();
 			TextView mySendToWebserverScreenTextView = (TextView)udtea.findViewById(R.id.send_to_webserver_textview);
@@ -1008,7 +1004,7 @@ public class UsbongScreenProcessor
 			else if ((myStringToken.equals("Y"))){
 				mySendToWebserverYesRadioButton.setChecked(true);		        	
 			}
-		} else if (udtea.currScreen == udtea.END_STATE_SCREEN) {
+		} else if (udtea.currScreen == UsbongConstants.END_STATE_SCREEN) {
 			udtea.setContentView(R.layout.end_state_screen);
 			TextView endStateTextView = (TextView)udtea.findViewById(R.id.end_state_textview);
 			if (udtea.currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {

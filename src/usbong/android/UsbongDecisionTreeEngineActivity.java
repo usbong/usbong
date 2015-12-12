@@ -19,6 +19,7 @@
 package usbong.android;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -91,44 +92,8 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 	
 	public int currLanguageBeingUsed;
 	
-	public final int YES_NO_DECISION_SCREEN=0;	
-	public final int MULTIPLE_RADIO_BUTTONS_SCREEN=1;	
-	public final int MULTIPLE_CHECKBOXES_SCREEN=2;	
-	public final int AUDIO_RECORD_SCREEN=3;
-	public final int PHOTO_CAPTURE_SCREEN=4;	
-	public final int TEXTFIELD_SCREEN=5;	
-	public final int TEXTFIELD_WITH_UNIT_SCREEN=6;	
-	public final int TEXTFIELD_NUMERICAL_SCREEN=7;
-	public final int TEXTAREA_SCREEN=8;
-	public final int TEXT_DISPLAY_SCREEN=9;	
-	public final int IMAGE_DISPLAY_SCREEN=10;
-	public final int TEXT_IMAGE_DISPLAY_SCREEN=11;
-	public final int IMAGE_TEXT_DISPLAY_SCREEN=12;
-	public final int CLASSIFICATION_SCREEN=13;		
-	public final int DATE_SCREEN=14;	
-	public final int TIMESTAMP_DISPLAY_SCREEN=15;		
-	public final int GPS_LOCATION_SCREEN=16;		
-	public final int VIDEO_FROM_FILE_SCREEN=17;	
-	public final int VIDEO_FROM_FILE_WITH_TEXT_SCREEN=18;	
-	public final int LINK_SCREEN=19;			
-	public final int SEND_TO_WEBSERVER_SCREEN=20;		
-	public final int SEND_TO_CLOUD_BASED_SERVICE_SCREEN=21;	
-	public final int PAINT_SCREEN=22;
-	public final int QR_CODE_READER_SCREEN=23;
-	public final int CLICKABLE_IMAGE_DISPLAY_SCREEN=24;
-	public final int TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN=25;
-	public final int CLICKABLE_IMAGE_TEXT_DISPLAY_SCREEN=26;
-	public final int DCAT_SUMMARY_SCREEN=27;			
-	public final int MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN=28;	
-	public final int TEXTFIELD_WITH_ANSWER_SCREEN=29;	
-	public final int TEXTAREA_WITH_ANSWER_SCREEN=30;	
-	public final int SIMPLE_ENCRYPT_SCREEN=31;	
-	public final int YOUTUBE_VIDEO_SCREEN=32;	
-	public final int YOUTUBE_VIDEO_WITH_TEXT_SCREEN=33;	
 	
-	public final int END_STATE_SCREEN=34;		
-	
-	public int currScreen=TEXTFIELD_SCREEN;
+	public int currScreen=UsbongConstants.TEXTFIELD_SCREEN;
 	
 	public static final int PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE=0;
 	public static final int PLEASE_ANSWER_FIELD_ALERT_TYPE=1;
@@ -196,8 +161,6 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 	
 	private static UsbongDecisionTreeEngineActivity instance;
     private static TextToSpeech mTts;
-    private int MY_DATA_CHECK_CODE=0;
-	private final int EMAIL_SENDING_SUCCESS=99;
 
 	public ListView treesListView;
 	
@@ -286,7 +249,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
         //text-to-speech stuff
         Intent checkIntent = new Intent();
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-        startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
+        startActivityForResult(checkIntent, UsbongUtils.MY_DATA_CHECK_CODE);
 
         mTts = new TextToSpeech(this,this);
 		mTts.setLanguage(new Locale("en", "US"));//default
@@ -371,15 +334,21 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		}
 */
 		//added by JPT, Jul 13, 2015
- 		Intent intent = getIntent();
- 	    String action = intent.getAction();
- 	    String type = intent.getType();
+		Intent intent = getIntent();
+ 	   	String action = intent.getAction();
+ 	   	String type = intent.getType();
  	    
  	   if(getIntent().getStringExtra(Constants.UTREE_KEY) != null) {
-			Log.d("DecisionTree", getIntent().getStringExtra(Constants.UTREE_KEY));
-			initParser(getIntent().getStringExtra(Constants.UTREE_KEY));
+ 		   Log.d(">>>>>>","if(getIntent().getStringExtra(Constants.UTREE_KEY) != null) {");
+ 		   Log.d("DecisionTree", getIntent().getStringExtra(Constants.UTREE_KEY));
+		   
+ 		   myUdteaObject = new UdteaObject(); //added by Mike, 20151212 		   
+ 		   initParser(getIntent().getStringExtra(Constants.UTREE_KEY));
  	   }
  	   else if(Intent.ACTION_SEND.equals(action) && type != null) {
+ 		   Log.d(">>>>>>","inside else if(Intent.ACTION_SEND.equals(action) && type != null) {");
+ 		   myUdteaObject = new UdteaObject(); //added by Mike, 20151212 		   
+
  	    	if(getIntent().getStringExtra(Constants.UTREE_KEY) != null) {
  	    		Log.d("DecisionTree", getIntent().getStringExtra(Constants.UTREE_KEY));
  	    		initParser(getIntent().getStringExtra(Constants.UTREE_KEY));
@@ -430,7 +399,13 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
         	}	    	
 //			initParser(myTree);
  	    }
-    	else {			
+ 	    //added by Mike, 20151130
+ 	    else if(getIntent().getStringExtra(UsbongConstants.FROM_MY_YOUTUBE_ACTIVITY_TO_MAIN_MENU) != null) {
+            processReturnToMainMenuActivityYes();
+    	}    		
+    	else {			   		  
+  		   Log.d(">>>>>>","else");
+
     		myUdteaObject = new UdteaObject(); //added by Mike, 20151126
 	    	initTreeLoader();
 	    }
@@ -648,7 +623,12 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 						myBGMediaPlayer.stop();
 					}
 					myBGMediaPlayer.reset();
-					myBGMediaPlayer.setDataSource(filePath);
+					//edited by Mike, 20151201
+//					myBGMediaPlayer.setDataSource(filePath);
+					FileInputStream fis = new FileInputStream(new File(filePath));
+					myBGMediaPlayer.setDataSource(fis.getFD());
+					fis.close();
+
 					myBGMediaPlayer.prepare();
 		//				myMediaPlayer.setVolume(1.0f, 1.0f);
 					myBGMediaPlayer.setLooping(true);
@@ -671,15 +651,15 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 //		Log.d(">>>>currScreen",currScreen+"");
 		switch(currScreen) {
 			//edit later, Mike, Sept. 26, 2013
-			case SIMPLE_ENCRYPT_SCREEN:
+			case UsbongConstants.SIMPLE_ENCRYPT_SCREEN:
 				break;
 			//edit later, Mike, May 23, 2013
-			case DCAT_SUMMARY_SCREEN:
+			case UsbongConstants.DCAT_SUMMARY_SCREEN:
 				break;
 				
-	    	case LINK_SCREEN:
-	    	case MULTIPLE_RADIO_BUTTONS_SCREEN:
-	    	case MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN:
+	    	case UsbongConstants.LINK_SCREEN:
+	    	case UsbongConstants.MULTIPLE_RADIO_BUTTONS_SCREEN:
+	    	case UsbongConstants.MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN:
 		        sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
 
 		        int totalRadioButtonsInContainer = radioButtonsContainer.size();
@@ -687,7 +667,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 			        sb.append(((RadioButton) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new RadioButton(this), UsbongUtils.IS_RADIOBUTTON, radioButtonsContainer.elementAt(i))).getText().toString()+". ");
 		        }		     		        
 				break;
-	    	case MULTIPLE_CHECKBOXES_SCREEN:
+	    	case UsbongConstants.MULTIPLE_CHECKBOXES_SCREEN:
 		        sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
 
 		        int totalCheckBoxesInContainer = checkBoxesContainer.size();
@@ -695,7 +675,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 			        sb.append(((CheckBox) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new CheckBox(this), UsbongUtils.IS_CHECKBOX, checkBoxesContainer.elementAt(i))).getText().toString()+". ");
 		        }		     		        
 		        break;
-	    	case AUDIO_RECORD_SCREEN:
+	    	case UsbongConstants.AUDIO_RECORD_SCREEN:
 		        sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
 
 		        Button recordButton = (Button)findViewById(R.id.record_button);
@@ -706,27 +686,27 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		        sb.append(stopButton.getText()+". ");
 		        sb.append(playButton.getText()+". ");
 		        break;
-			case PAINT_SCREEN:
+			case UsbongConstants.PAINT_SCREEN:
 	    		sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
 
 	    		Button paintButton = (Button)findViewById(R.id.paint_button);
 		        sb.append(paintButton.getText()+". ");
 	    		break;
-			case PHOTO_CAPTURE_SCREEN:
+			case UsbongConstants.PHOTO_CAPTURE_SCREEN:
 	    		sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
 
 	    		Button photoCaptureButton = (Button)findViewById(R.id.photo_capture_button);
 		        sb.append(photoCaptureButton.getText()+". ");
 	    		break;
-			case TEXTFIELD_SCREEN:
-			case TEXTFIELD_WITH_ANSWER_SCREEN:						
-			case TEXTFIELD_WITH_UNIT_SCREEN:
-			case TEXTFIELD_NUMERICAL_SCREEN:
-			case TEXTAREA_SCREEN:
-			case TEXTAREA_WITH_ANSWER_SCREEN:						
+			case UsbongConstants.TEXTFIELD_SCREEN:
+			case UsbongConstants.TEXTFIELD_WITH_ANSWER_SCREEN:						
+			case UsbongConstants.TEXTFIELD_WITH_UNIT_SCREEN:
+			case UsbongConstants.TEXTFIELD_NUMERICAL_SCREEN:
+			case UsbongConstants.TEXTAREA_SCREEN:
+			case UsbongConstants.TEXTAREA_WITH_ANSWER_SCREEN:						
 				sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
 		        break;    	
-			case CLASSIFICATION_SCREEN:
+			case UsbongConstants.CLASSIFICATION_SCREEN:
 		        sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
 
 		        int totalClassificationsInContainer = classificationContainer.size();
@@ -734,34 +714,34 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 			        sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, classificationContainer.elementAt(i))).getText().toString()+". ");
 		        }		     		        
 		        break;    	
-			case DATE_SCREEN:				       
-			case TEXT_DISPLAY_SCREEN:
-			case TEXT_IMAGE_DISPLAY_SCREEN:
-			case IMAGE_TEXT_DISPLAY_SCREEN:
-			case CLICKABLE_IMAGE_TEXT_DISPLAY_SCREEN:				       
-			case TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN:				       
-			case GPS_LOCATION_SCREEN:
-			case QR_CODE_READER_SCREEN:
-			case TIMESTAMP_DISPLAY_SCREEN:						
-			case VIDEO_FROM_FILE_WITH_TEXT_SCREEN:							
-			case YOUTUBE_VIDEO_WITH_TEXT_SCREEN:							
+			case UsbongConstants.DATE_SCREEN:				       
+			case UsbongConstants.TEXT_DISPLAY_SCREEN:
+			case UsbongConstants.TEXT_IMAGE_DISPLAY_SCREEN:
+			case UsbongConstants.IMAGE_TEXT_DISPLAY_SCREEN:
+			case UsbongConstants.CLICKABLE_IMAGE_TEXT_DISPLAY_SCREEN:				       
+			case UsbongConstants.TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN:				       
+			case UsbongConstants.GPS_LOCATION_SCREEN:
+			case UsbongConstants.QR_CODE_READER_SCREEN:
+			case UsbongConstants.TIMESTAMP_DISPLAY_SCREEN:						
+			case UsbongConstants.VIDEO_FROM_FILE_WITH_TEXT_SCREEN:							
+			case UsbongConstants.YOUTUBE_VIDEO_WITH_TEXT_SCREEN:							
 				sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
 //		        Log.d(">>>>sb",sb.toString());
 		        break;
-			case CLICKABLE_IMAGE_DISPLAY_SCREEN:				       
-			case IMAGE_DISPLAY_SCREEN:
-			case VIDEO_FROM_FILE_SCREEN:							
-			case YOUTUBE_VIDEO_SCREEN:											
+			case UsbongConstants.CLICKABLE_IMAGE_DISPLAY_SCREEN:				       
+			case UsbongConstants.IMAGE_DISPLAY_SCREEN:
+			case UsbongConstants.VIDEO_FROM_FILE_SCREEN:							
+			case UsbongConstants.YOUTUBE_VIDEO_SCREEN:											
 		        break;    	
-			case YES_NO_DECISION_SCREEN:
-			case SEND_TO_WEBSERVER_SCREEN:
-			case SEND_TO_CLOUD_BASED_SERVICE_SCREEN:
+			case UsbongConstants.YES_NO_DECISION_SCREEN:
+			case UsbongConstants.SEND_TO_WEBSERVER_SCREEN:
+			case UsbongConstants.SEND_TO_CLOUD_BASED_SERVICE_SCREEN:
 		        sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
 		        sb.append(yesStringValue+". ");
 		        sb.append(noStringValue+". ");
 		        break;    	
 /*						
-			case PAINT_SCREEN:
+			case UsbongConstants.PAINT_SCREEN:
 		    	if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
 					sb.append((String) getResources().getText(R.string.UsbongPaintScreenTextViewFILIPINO));
 		    	}
@@ -773,7 +753,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		    	}
 		    	break;    		
 */				    	
-			case END_STATE_SCREEN:
+			case UsbongConstants.END_STATE_SCREEN:
 		    	if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
 					sb.append((String) getResources().getText(R.string.UsbongEndStateTextViewFILIPINO));				    		
 		    	}
@@ -802,7 +782,12 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 					myMediaPlayer.stop();
 				}
 				myMediaPlayer.reset();
-				myMediaPlayer.setDataSource(filePath);
+				//edited by Mike, 20151201
+//				myMediaPlayer.setDataSource(filePath);
+				FileInputStream fis = new FileInputStream(new File(filePath));
+				myMediaPlayer.setDataSource(fis.getFD());
+				fis.close();
+
 				myMediaPlayer.prepare();
 //				myMediaPlayer.setVolume(1.0f, 1.0f);
 				myMediaPlayer.start();
@@ -834,8 +819,10 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 						else {
 							mTts.speak(sb.toString(), TextToSpeech.QUEUE_FLUSH, null); //QUEUE_ADD			
 						}
-						break;
-					case UsbongUtils.LANGUAGE_ENGLISH:
+						break;						
+					/*case UsbongUtils.LANGUAGE_ENGLISH:*/
+					default:
+						Log.d(">>>>sb.toString()",sb.toString());
 						mTts.setLanguage(new Locale("en", "US"));
 						if (Build.VERSION.RELEASE.startsWith("5")) { 
 							mTts.speak(sb.toString(), TextToSpeech.QUEUE_FLUSH, null,null); //QUEUE_ADD			
@@ -844,10 +831,12 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 							mTts.speak(sb.toString(), TextToSpeech.QUEUE_FLUSH, null); //QUEUE_ADD										
 						}
 						break;
+/*						
 					default:
 						mTts.setLanguage(new Locale("en", "US"));
 						mTts.speak(sb.toString(), TextToSpeech.QUEUE_ADD, null); //QUEUE_FLUSH			
 						break;
+*/						
 				}
 			}
 		}
@@ -871,10 +860,12 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 */
 	}
 
+	@Override
     protected void onActivityResult(
             int requestCode, int resultCode, Intent data) {
+    	Log.d(">>>>>requestCode", ""+requestCode);
 
-    	if (requestCode == MY_DATA_CHECK_CODE) {
+    	if (requestCode == UsbongUtils.MY_DATA_CHECK_CODE) {
     		/*
         	if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
                 // success, create the TTS instance
@@ -896,7 +887,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 //			commented out by Mike, 11 Oct. 2015
 //        	mTts = new TextToSpeech(this, this);        		
         }
-        else if (requestCode==EMAIL_SENDING_SUCCESS) {
+        else if (requestCode==UsbongUtils.EMAIL_SENDING_SUCCESS) {
     		finish();    		
 			Intent toUsbongMainActivityIntent = new Intent(UsbongDecisionTreeEngineActivity.this, UsbongMainActivity.class);
 			toUsbongMainActivityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
@@ -904,9 +895,10 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     		if (mTts!=null) {
     			mTts.shutdown();
     		}
-        }/*
-        else if (requestCode==UsbongUtils.FROM_MY_YOUTUBE_ACTIVITY) {
-        	//do something
+        }/*//requestCode seems to be always 0
+        else if (requestCode==UsbongUtils.FROM_MY_YOUTUBE_ACTIVITY_TO_MAIN_MENU) {
+        	Log.d(">>>>>", "requestCode==UsbongUtils.FROM_MY_YOUTUBE_ACTIVITY_TO_MAIN_MENU");
+        	processReturnToMainMenuActivityYes();
         }*/
     }
 
@@ -952,7 +944,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     //added by Mike, Feb. 2, 2013
     @Override
 	public void onBackPressed() {
-    	processReturnToMainMenuActivity();    
+    	processReturnToMainMenuActivity();  
     }
     
     @Override
@@ -966,11 +958,11 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
         hasReturnedFromAnotherActivity=true; //camera, paint, email, etc
 
         switch(currScreen) {
-        	case PHOTO_CAPTURE_SCREEN:
+        	case UsbongConstants.PHOTO_CAPTURE_SCREEN:
         		initTakePhotoScreen();
         		break;
-        	case YOUTUBE_VIDEO_SCREEN:
-        	case YOUTUBE_VIDEO_WITH_TEXT_SCREEN:
+        	case UsbongConstants.YOUTUBE_VIDEO_SCREEN:
+        	case UsbongConstants.YOUTUBE_VIDEO_WITH_TEXT_SCREEN:
 /*        		
             	Bundle bundle = getIntent().getExtras();
             	String buttonPressed = bundle.getString("buttonPressed");
@@ -1218,13 +1210,13 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 					  //  <transition to="MASTOIDITIS" name="Yes"></transition>
 					  //</decision>
 					  if (parser.getName().equals("decision")) {//transition")) {//(parser.getAttributeCount()>1) {
-						  currScreen=YES_NO_DECISION_SCREEN;
+						  currScreen=UsbongConstants.YES_NO_DECISION_SCREEN;
 						  parser.nextTag(); //go to the next tag
 						  parseYesNoAnswers(parser);
 					  }
 					  else if (parser.getName().equals("end-state")) { 
 						  //temporarily do this
-						  currScreen=END_STATE_SCREEN;
+						  currScreen=UsbongConstants.END_STATE_SCREEN;
 					  }
 					  else if (parser.getName().equals("task-node")) { 
 						    StringTokenizer st = new StringTokenizer(currUsbongNode, "~");
@@ -1240,7 +1232,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 								//</task-node>
 								parser.nextTag(); //go to task tag
 
-								currScreen = CLASSIFICATION_SCREEN;
+								currScreen = UsbongConstants.CLASSIFICATION_SCREEN;
 								classificationContainer.removeAllElements();
 								while(!parser.getName().equals("transition")) {
 									  classificationContainer.addElement(parser.getAttributeValue(0).toString());
@@ -1273,7 +1265,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 										t=st.nextToken();
 									}
 */									
-									currScreen=MULTIPLE_RADIO_BUTTONS_SCREEN;
+									currScreen=UsbongConstants.MULTIPLE_RADIO_BUTTONS_SCREEN;
 									
 									radioButtonsContainer.removeAllElements();
 									while(!parser.getName().equals("transition")) {
@@ -1295,7 +1287,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 									//</task-node>
 									parser.nextTag(); //go to task tag
 									//radioButtons by definition requires only 1 ticked button in the group
-									currScreen=MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN;
+									currScreen=UsbongConstants.MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN;
 									
 									radioButtonsContainer.removeAllElements();
 									while(!parser.getName().equals("transition")) {
@@ -1325,7 +1317,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 										t=st.nextToken();
 									}
 */									
-									currScreen=LINK_SCREEN;
+									currScreen=UsbongConstants.LINK_SCREEN;
 									
 									radioButtonsContainer.removeAllElements();
 									while(!parser.getName().equals("transition")) {
@@ -1368,7 +1360,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 										isSevereDehydrationCheckBox=true;
 									}
 */									
-									currScreen=MULTIPLE_CHECKBOXES_SCREEN;
+									currScreen=UsbongConstants.MULTIPLE_CHECKBOXES_SCREEN;
 
 									checkBoxesContainer.removeAllElements();
 									while(!parser.getName().equals("transition")) {
@@ -1381,17 +1373,17 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 									parseYesNoAnswers(parser);
 								}
 								else if (myStringToken.equals("sendToWebServer")) { 								
-								  currScreen=SEND_TO_WEBSERVER_SCREEN;
+								  currScreen=UsbongConstants.SEND_TO_WEBSERVER_SCREEN;
 								  parser.nextTag(); //go to the next tag
 								  parseYesNoAnswers(parser);
 								}
 								else if (myStringToken.equals("sendToCloudBasedService")) { 								
-								  currScreen=SEND_TO_CLOUD_BASED_SERVICE_SCREEN;
+								  currScreen=UsbongConstants.SEND_TO_CLOUD_BASED_SERVICE_SCREEN;
 								  parser.nextTag(); //go to the next tag
 								  parseYesNoAnswers(parser);
 								}
 								else if (myStringToken.equals("dcatSummary")) { 								
-								  currScreen=DCAT_SUMMARY_SCREEN;
+								  currScreen=UsbongConstants.DCAT_SUMMARY_SCREEN;
 								  parser.nextTag(); //go to the next tag
 								  parseYesNoAnswers(parser);
 								}									
@@ -1399,7 +1391,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 									//<task-node name="qrCodeReader~Scan Patient's QR Code ID?">
 									//  <transition to="textField~Family Name:" name="Any"></transition>
 									//</task-node>
-									currScreen=QR_CODE_READER_SCREEN;
+									currScreen=UsbongConstants.QR_CODE_READER_SCREEN;
 									parser.nextTag(); //go to the next tag
 									parseYesNoAnswers(parser);
 								}
@@ -1408,7 +1400,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 									//  <transition to="Does the child have wheezing? (child must be calm)" name="Any"></transition>
 									//</task-node>
 									parser.nextTag(); //go to transition tag
-									currScreen=TEXTFIELD_SCREEN;
+									currScreen=UsbongConstants.TEXTFIELD_SCREEN;
 									
 									parseYesNoAnswers(parser);
 								}
@@ -1418,7 +1410,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 									//  <transition to="textDisplay~Incorrect!" name="No"></transition>		
 									//</task-node>
 									parser.nextTag(); //go to transition tag
-									currScreen=TEXTFIELD_WITH_ANSWER_SCREEN;
+									currScreen=UsbongConstants.TEXTFIELD_WITH_ANSWER_SCREEN;
 									
 									parseYesNoAnswers(parser);
 								}
@@ -1428,7 +1420,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 									//</task-node>
 									parser.nextTag(); //go to transition tag
 									textFieldUnit = st.nextToken();									
-									currScreen=TEXTFIELD_WITH_UNIT_SCREEN;
+									currScreen=UsbongConstants.TEXTFIELD_WITH_UNIT_SCREEN;
 									
 									parseYesNoAnswers(parser);
 								}																								
@@ -1437,7 +1429,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 									//  <transition to="Does the child have wheezing? (child must be calm)" name="Any"></transition>
 									//</task-node>
 									parser.nextTag(); //go to transition tag
-									currScreen=TEXTFIELD_NUMERICAL_SCREEN;
+									currScreen=UsbongConstants.TEXTFIELD_NUMERICAL_SCREEN;
 									
 									parseYesNoAnswers(parser);
 								}																								
@@ -1446,7 +1438,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 									//  <transition to="Does the child have wheezing? (child must be calm)" name="Any"></transition>
 									//</task-node>
 									parser.nextTag(); //go to transition tag
-									currScreen=TEXTAREA_SCREEN;
+									currScreen=UsbongConstants.TEXTAREA_SCREEN;
 									
 									parseYesNoAnswers(parser);
 								}
@@ -1456,7 +1448,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 									//  <transition to="textDisplay~Incorrect!" name="No"></transition>		
 									//</task-node>
 									parser.nextTag(); //go to transition tag
-									currScreen=TEXTAREA_WITH_ANSWER_SCREEN;
+									currScreen=UsbongConstants.TEXTAREA_WITH_ANSWER_SCREEN;
 									
 									parseYesNoAnswers(parser);
 								}
@@ -1465,7 +1457,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 									//  <transition to="textField~Address" name="Any"></transition>
 									//</task-node>
 									parser.nextTag(); //go to transition tag
-									currScreen=DATE_SCREEN;
+									currScreen=UsbongConstants.DATE_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
@@ -1474,7 +1466,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 									//  <transition to="textDisplay~Comments" name="Any"></transition>
 									//</task-node>
 									parser.nextTag(); //go to transition tag
-									currScreen=TIMESTAMP_DISPLAY_SCREEN;
+									currScreen=UsbongConstants.TIMESTAMP_DISPLAY_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
@@ -1483,67 +1475,67 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 									//  <transition to="Does the child have wheezing? (child must be calm)" name="Any"></transition>
 									//</task-node>
 									parser.nextTag(); //go to transition tag
-									currScreen=TEXT_DISPLAY_SCREEN;
+									currScreen=UsbongConstants.TEXT_DISPLAY_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
 								else if ((myStringToken.equals("specialImage")) || (myStringToken.equals("imageDisplay"))) { //special?
 									parser.nextTag(); //go to transition tag
-									currScreen=IMAGE_DISPLAY_SCREEN;
+									currScreen=UsbongConstants.IMAGE_DISPLAY_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
 								else if (myStringToken.equals("clickableImageDisplay")) { 
 									parser.nextTag(); //go to transition tag
-									currScreen=CLICKABLE_IMAGE_DISPLAY_SCREEN;
+									currScreen=UsbongConstants.CLICKABLE_IMAGE_DISPLAY_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
 								else if (myStringToken.equals("textImageDisplay")) { //special?
 									parser.nextTag(); //go to transition tag
-									currScreen=TEXT_IMAGE_DISPLAY_SCREEN;
+									currScreen=UsbongConstants.TEXT_IMAGE_DISPLAY_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
 								else if (myStringToken.equals("imageTextDisplay")) { //special?
 									parser.nextTag(); //go to transition tag
-									currScreen=IMAGE_TEXT_DISPLAY_SCREEN;
+									currScreen=UsbongConstants.IMAGE_TEXT_DISPLAY_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
 								else if (myStringToken.equals("textClickableImageDisplay")) { 
 									parser.nextTag(); //go to transition tag
-									currScreen=TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN;
+									currScreen=UsbongConstants.TEXT_CLICKABLE_IMAGE_DISPLAY_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
 								else if (myStringToken.equals("clickableImageTextDisplay")) { 
 									parser.nextTag(); //go to transition tag
-									currScreen=CLICKABLE_IMAGE_TEXT_DISPLAY_SCREEN;
+									currScreen=UsbongConstants.CLICKABLE_IMAGE_TEXT_DISPLAY_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
 								else if (myStringToken.equals("videoFromFile")) { 
 									parser.nextTag(); //go to transition tag
-									currScreen=VIDEO_FROM_FILE_SCREEN;
+									currScreen=UsbongConstants.VIDEO_FROM_FILE_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
 								else if (myStringToken.equals("videoFromFileWithText")) { 
 									parser.nextTag(); //go to transition tag
-									currScreen=VIDEO_FROM_FILE_WITH_TEXT_SCREEN;
+									currScreen=UsbongConstants.VIDEO_FROM_FILE_WITH_TEXT_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
 								else if (myStringToken.equals("youtubeVideo")) { 
 									parser.nextTag(); //go to transition tag
-									currScreen=YOUTUBE_VIDEO_SCREEN;
+									currScreen=UsbongConstants.YOUTUBE_VIDEO_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
 								else if (myStringToken.equals("youtubeVideoWithText")) { 
 									parser.nextTag(); //go to transition tag
-									currScreen=YOUTUBE_VIDEO_WITH_TEXT_SCREEN;
+									currScreen=UsbongConstants.YOUTUBE_VIDEO_WITH_TEXT_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
@@ -1552,32 +1544,32 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 									//  <transition to="Does the child have wheezing? (child must be calm)" name="Any"></transition>
 									//</task-node>
 									parser.nextTag(); //go to transition tag
-									currScreen=GPS_LOCATION_SCREEN;
+									currScreen=UsbongConstants.GPS_LOCATION_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
 								else if (myStringToken.equals("photoCapture")) { 
 									
 									parser.nextTag(); //go to transition tag
-									currScreen=PHOTO_CAPTURE_SCREEN;
+									currScreen=UsbongConstants.PHOTO_CAPTURE_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
 								else if (myStringToken.equals("audioRecord")) { 
 									parser.nextTag(); //go to transition tag
-									currScreen=AUDIO_RECORD_SCREEN;
+									currScreen=UsbongConstants.AUDIO_RECORD_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
 								else if (myStringToken.equals("paint")) { 
 									parser.nextTag(); //go to transition tag
-									currScreen=PAINT_SCREEN;
+									currScreen=UsbongConstants.PAINT_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
 								else if (myStringToken.equals("simpleEncrypt")) { 
 									parser.nextTag(); //go to transition tag
-									currScreen=SIMPLE_ENCRYPT_SCREEN;
+									currScreen=UsbongConstants.SIMPLE_ENCRYPT_SCREEN;
 
 									parseYesNoAnswers(parser);
 								}
@@ -1732,8 +1724,8 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 			}							
 		}
 
-    	//END_STATE_SCREEN = last screen
-    	if (currScreen==END_STATE_SCREEN) {
+    	//UsbongConstants.END_STATE_SCREEN = last screen
+    	if (currScreen==UsbongConstants.END_STATE_SCREEN) {
     		int usbongAnswerContainerSize = usbongAnswerContainer.size();
     		StringBuffer outputStringBuffer = new StringBuffer();
     		for(int i=0; i<usbongAnswerContainerSize;i++) {
@@ -1774,7 +1766,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     		finish();
     	}
     	else {			
-    		if (currScreen==YES_NO_DECISION_SCREEN) {
+    		if (currScreen==UsbongConstants.YES_NO_DECISION_SCREEN) {
 		        RadioButton myYesRadioButton = (RadioButton)findViewById(R.id.yes_radiobutton);
 		        RadioButton myNoRadioButton = (RadioButton)findViewById(R.id.no_radiobutton);
 
@@ -1810,7 +1802,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		    		initParser();				
 		        }
     		}	
-    		else if (currScreen==SEND_TO_WEBSERVER_SCREEN) {
+    		else if (currScreen==UsbongConstants.SEND_TO_WEBSERVER_SCREEN) {
 		        RadioButton myYesRadioButton = (RadioButton)findViewById(R.id.yes_radiobutton);
 		        RadioButton myNoRadioButton = (RadioButton)findViewById(R.id.no_radiobutton);
 
@@ -1869,7 +1861,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		        }
 				initParser();				
     		}	
-    		else if (currScreen==SEND_TO_CLOUD_BASED_SERVICE_SCREEN) {
+    		else if (currScreen==UsbongConstants.SEND_TO_CLOUD_BASED_SERVICE_SCREEN) {
 		        RadioButton myYesRadioButton = (RadioButton)findViewById(R.id.yes_radiobutton);
 		        RadioButton myNoRadioButton = (RadioButton)findViewById(R.id.no_radiobutton);
 
@@ -1964,7 +1956,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 */						
 				initParser();				
     		}	
-    		else if (currScreen==MULTIPLE_CHECKBOXES_SCREEN) {
+    		else if (currScreen==UsbongConstants.MULTIPLE_CHECKBOXES_SCREEN) {
 //	    		requiredTotalCheckedBoxes	
 		        LinearLayout myMultipleCheckboxesLinearLayout = (LinearLayout)findViewById(R.id.multiple_checkboxes_linearlayout);
 		        StringBuffer sb = new StringBuffer();
@@ -1994,7 +1986,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 
     			initParser();
     		}	
-    		else if (currScreen==MULTIPLE_RADIO_BUTTONS_SCREEN) {
+    		else if (currScreen==UsbongConstants.MULTIPLE_RADIO_BUTTONS_SCREEN) {
 //				currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
     			RadioGroup myRadioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);				        				        		    			
 
@@ -2037,7 +2029,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     			}
 */		    			
     		}
-    		else if (currScreen==MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN) {
+    		else if (currScreen==UsbongConstants.MULTIPLE_RADIO_BUTTONS_WITH_ANSWER_SCREEN) {
 //				currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
     			RadioGroup myRadioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);				        				        		    			
 
@@ -2074,7 +2066,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		    			initParser();
 	    			}
     		}
-    		else if (currScreen==LINK_SCREEN) {		    			
+    		else if (currScreen==UsbongConstants.LINK_SCREEN) {		    			
     			RadioGroup myRadioGroup = (RadioGroup)findViewById(R.id.multiple_radio_buttons_radiogroup);				        				        		    					    			
 //    			Log.d(">>>>>>>>>>currUsbongNode",currUsbongNode);
 	    			if (myRadioGroup.getCheckedRadioButtonId()==-1) { //no radio button checked
@@ -2120,9 +2112,9 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     			}
 */		    			
     		}
-    		else if ((currScreen==TEXTFIELD_SCREEN) 
-    				|| (currScreen==TEXTFIELD_WITH_UNIT_SCREEN)
-    				|| (currScreen==TEXTFIELD_NUMERICAL_SCREEN)) {
+    		else if ((currScreen==UsbongConstants.TEXTFIELD_SCREEN) 
+    				|| (currScreen==UsbongConstants.TEXTFIELD_WITH_UNIT_SCREEN)
+    				|| (currScreen==UsbongConstants.TEXTFIELD_NUMERICAL_SCREEN)) {
 //    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
 		        EditText myTextFieldScreenEditText = (EditText)findViewById(R.id.textfield_edittext);
 
@@ -2155,7 +2147,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 						initParser();
 					}
     		}
-    		else if (currScreen==TEXTFIELD_WITH_ANSWER_SCREEN) {
+    		else if (currScreen==UsbongConstants.TEXTFIELD_WITH_ANSWER_SCREEN) {
 //    			currUsbongNode = nextUsbongNodeIfYes; 
 		        EditText myTextFieldScreenEditText = (EditText)findViewById(R.id.textfield_edittext);
 			        //if it's blank
@@ -2210,7 +2202,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		    			initParser();
 					}
     		}
-    		else if ((currScreen==TEXTAREA_SCREEN)) {
+    		else if ((currScreen==UsbongConstants.TEXTAREA_SCREEN)) {
 //    			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
 		        EditText myTextAreaScreenEditText = (EditText)findViewById(R.id.textarea_edittext);
 
@@ -2242,7 +2234,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 						initParser();
 					}
     		}
-    		else if (currScreen==TEXTAREA_WITH_ANSWER_SCREEN) {
+    		else if (currScreen==UsbongConstants.TEXTAREA_WITH_ANSWER_SCREEN) {
 //    			currUsbongNode = nextUsbongNodeIfYes; 
 		        EditText myTextAreaScreenEditText = (EditText)findViewById(R.id.textarea_edittext);
 			        //if it's blank
@@ -2298,7 +2290,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		    			initParser();
 					}
     		}
-    		else if (currScreen==GPS_LOCATION_SCREEN) {
+    		else if (currScreen==UsbongConstants.GPS_LOCATION_SCREEN) {
     			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
 				TextView myLongitudeTextView = (TextView)findViewById(R.id.longitude_textview);
 	            TextView myLatitudeTextView = (TextView)findViewById(R.id.latitude_textview);
@@ -2310,7 +2302,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 	            initParser();				        	
 
     		}
-    		else if (currScreen==SIMPLE_ENCRYPT_SCREEN) {
+    		else if (currScreen==UsbongConstants.SIMPLE_ENCRYPT_SCREEN) {
 				EditText myPinEditText = (EditText)findViewById(R.id.pin_edittext);
 
     			if (myPinEditText.getText().toString().length()!=4) {
@@ -2355,7 +2347,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		            initParser();				        	
     			}
     		}		    		
-    		else if (currScreen==DATE_SCREEN) {
+    		else if (currScreen==UsbongConstants.DATE_SCREEN) {
     			currUsbongNode = nextUsbongNodeIfYes;
     			//added by Mike, 13 Oct. 2015
     			DatePicker myDatePicker = (DatePicker) findViewById(R.id.date_picker);		    			
@@ -2379,14 +2371,14 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 //    			System.out.println(">>>>>>>>>>>>>Date screen: "+usbongAnswerContainer.lastElement());
     			initParser();				        	
     		}		    		
-    		else if (currScreen==TIMESTAMP_DISPLAY_SCREEN) {
+    		else if (currScreen==UsbongConstants.TIMESTAMP_DISPLAY_SCREEN) {
     			currUsbongNode = nextUsbongNodeIfYes;
 	    		UsbongUtils.addElementToContainer(usbongAnswerContainer, timestampString+";", usbongAnswerContainerCounter);
 				usbongAnswerContainerCounter++;
 
     			initParser();				        	
     		}		    				    		
-    		else if (currScreen==QR_CODE_READER_SCREEN) {
+    		else if (currScreen==UsbongConstants.QR_CODE_READER_SCREEN) {
     			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
 
     			if (!myQRCodeContent.equals("")) {
@@ -2401,7 +2393,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     			}
     			initParser();				        	
     		}
-    		else if ((currScreen==DCAT_SUMMARY_SCREEN)) {
+    		else if ((currScreen==UsbongConstants.DCAT_SUMMARY_SCREEN)) {
     			currUsbongNode = nextUsbongNodeIfYes; //= nextIMCIQuestionIfNo will also do
 /*
 		        LinearLayout myDCATSummaryLinearLayout = (LinearLayout)findViewById(R.id.dcat_summary_linearlayout);
@@ -2639,6 +2631,10 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		youTubeIntent.putExtra("youtubeID",UsbongUtils.getYouTubeVideoID(currUsbongNode));
 		youTubeIntent.putExtra("currScreen",currScreen+"");
 
+//		if (currScreen == UsbongConstants.YOUTUBE_VIDEO_WITH_TEXT_SCREEN) {
+			youTubeIntent.putExtra("currUsbongNode",currUsbongNode);			
+//		}
+		
 		Bundle myUdteaObjectBundle = new Bundle();
 		myUdteaObjectBundle.putParcelable(UsbongConstants.BUNDLE, myUdteaObject);
 		youTubeIntent.putExtras(myUdteaObjectBundle);
@@ -2660,71 +2656,55 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     	currScreen++;
     	initUsbongScreen();
     }
-    
+
+    //edited by Mike, 20151129
     private void processReturnToMainMenuActivity() {
-	    	String myPromptTitle="";
-	    	String myPromptMessage="";
-	    	String myPromptPositiveButtonText="";
-	    	String myPromptNegativeButtonText="";
-	    	
-	    	if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
-	    		myPromptTitle = ((String) getResources().getText(R.string.alertStringValueFilipino));
-	    		myPromptMessage = ((String) getResources().getText(R.string.areYouSureYouWantToReturnToMainMenuFilipino));
-	    		myPromptPositiveButtonText=(String) getResources().getText(R.string.yesStringValueFilipino);
-	    		myPromptNegativeButtonText=(String) getResources().getText(R.string.noStringValueFilipino);  
-	    	}
-	    	else if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_JAPANESE) {
-	    		myPromptTitle = ((String) getResources().getText(R.string.alertStringValueJapanese));				    						    		
-	    		myPromptMessage = ((String) getResources().getText(R.string.areYouSureYouWantToReturnToMainMenuJapanese));
-	    		myPromptPositiveButtonText=(String) getResources().getText(R.string.yesStringValueJapanese);
-	    		myPromptNegativeButtonText=(String) getResources().getText(R.string.noStringValueJapanese);  
-	    	}
-	    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
-	    		myPromptTitle = ((String) getResources().getText(R.string.alertStringValueEnglish));				    						    		        	    		
-	    		myPromptMessage = ((String) getResources().getText(R.string.areYouSureYouWantToReturnToMainMenuEnglish));
-	    		myPromptPositiveButtonText=(String) getResources().getText(R.string.yesStringValueEnglish);
-	    		myPromptNegativeButtonText=(String) getResources().getText(R.string.noStringValueEnglish);  
-	    	}
-	
-	    	//added by Mike, Feb. 2, 2013
-	    	AlertDialog.Builder prompt = new AlertDialog.Builder(UsbongDecisionTreeEngineActivity.this);
-			prompt.setTitle(myPromptTitle);
-			prompt.setMessage(myPromptMessage); 
-			prompt.setPositiveButton(myPromptPositiveButtonText, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					decisionTrackerContainer.removeAllElements();
-
-					Log.d(">>>>UsbongUtils.STORE_OUTPUT",""+UsbongUtils.STORE_OUTPUT);
-					myOutputDirectory=UsbongUtils.getDateTimeStamp()+"/";
-		    		if (UsbongUtils.STORE_OUTPUT) {
-						UsbongUtils.deleteEmptyOutputFolder(new File(UsbongUtils.BASE_FILE_PATH + myOutputDirectory));
-		    		}
-		    		else {
-		    			UsbongUtils.deleteRecursive(new File(UsbongUtils.BASE_FILE_PATH + myOutputDirectory));
-		    		}
-
-		    		//added by Mike, Sept. 10, 2014
-		    		UsbongUtils.clearTempFolder();
-
-		    		//added by Mike, 21 July 2015
-		    		if (myMediaPlayer!=null) {myMediaPlayer.stop();}
-		    		if (mTts!=null) {mTts.stop();}
-		    		if (myBGMediaPlayer!=null) {myBGMediaPlayer.stop();} //added by Mike, 25 Sept. 2015
+		String[] myPrompts = UsbongUtils.initProcessReturnToMainMenuActivity();
 		    		
-		    		//return to main activity
-		    		finish();    
-					Intent toUsbongMainActivityIntent = new Intent(UsbongDecisionTreeEngineActivity.this, UsbongMainActivity.class);
-					toUsbongMainActivityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
-					startActivity(toUsbongMainActivityIntent);
-				}
-			});
-			prompt.setNegativeButton(myPromptNegativeButtonText, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-				}
-			});
-			prompt.show();
+    	//added by Mike, Feb. 2, 2013;
+		//edited by Mike, 20151120
+    	AlertDialog.Builder prompt = new AlertDialog.Builder(UsbongDecisionTreeEngineActivity.this);
+		prompt.setTitle(myPrompts[UsbongUtils.MY_PROMPT_TITLE]);
+		prompt.setMessage(myPrompts[UsbongUtils.MY_PROMPT_MESSAGE]); 
+		prompt.setPositiveButton(myPrompts[UsbongUtils.MY_PROMPT_POSITIVE_BUTTON_TEXT], new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				processReturnToMainMenuActivityYes();
+			}
+		});
+		prompt.setNegativeButton(myPrompts[UsbongUtils.MY_PROMPT_NEGATIVE_BUTTON_TEXT], new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+			}
+		});
+		prompt.show();		
+    }
+    
+    private void processReturnToMainMenuActivityYes() {
+		decisionTrackerContainer.removeAllElements();
+
+		Log.d(">>>>UsbongUtils.STORE_OUTPUT",""+UsbongUtils.STORE_OUTPUT);
+		myOutputDirectory=UsbongUtils.getDateTimeStamp()+"/";
+		if (UsbongUtils.STORE_OUTPUT) {
+			UsbongUtils.deleteEmptyOutputFolder(new File(UsbongUtils.BASE_FILE_PATH + myOutputDirectory));
+		}
+		else {
+			UsbongUtils.deleteRecursive(new File(UsbongUtils.BASE_FILE_PATH + myOutputDirectory));
+		}
+
+		//added by Mike, Sept. 10, 2014
+		UsbongUtils.clearTempFolder();
+
+		//added by Mike, 21 July 2015
+		if (myMediaPlayer!=null) {myMediaPlayer.stop();}
+		if (mTts!=null) {mTts.stop();}
+		if (myBGMediaPlayer!=null) {myBGMediaPlayer.stop();} //added by Mike, 25 Sept. 2015
+		
+		//return to main activity
+		finish();    
+		Intent toUsbongMainActivityIntent = new Intent(UsbongDecisionTreeEngineActivity.this, UsbongMainActivity.class);
+		toUsbongMainActivityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
+		startActivity(toUsbongMainActivityIntent);
     }
     
 	private class CustomDataAdapter extends ArrayAdapter<String>

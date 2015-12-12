@@ -1,13 +1,25 @@
 package usbong.android;
 
+import java.util.ArrayList;
+
 import usbong.android.utils.UsbongConstants;
 import usbong.android.utils.UsbongUtils;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeBaseActivity;
@@ -24,33 +36,60 @@ public class MyYouTubeActivity extends YouTubeBaseActivity implements YouTubePla
 	private String myYouTubeVideoID;
 //	private int currScreen;
 	private String currScreen;
+	private String currUsbongNode;
 	private YouTubePlayerView youTubePlayerView;
     private YouTubePlayer player;
+    
+    private TextView myTextView;
     	
 	private Button backButton;
 	private Button nextButton;	
 	
 	private UdteaObject myUdteaObject;
+	private static MediaPlayer myMediaPlayer; //added by Mike, 20151208
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-		setContentView(R.layout.youtube_video_screen);
+//		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
-	    initBackNextButtons();
+        super.onCreate(savedInstanceState);    
+                
+        //added by Mike, 20151208
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);        
+
+        //myMediaPlayer is not yet used
+		//added by Mike, 20151208
+		myMediaPlayer = new MediaPlayer();
+		myMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC); //added by Mike, 22 July 2015
+		myMediaPlayer.setVolume(1.0f, 1.0f);
 
     	Bundle bundle = getIntent().getExtras();
     	myYouTubeVideoID = bundle.getString("youtubeID");
 //    	Log.d(">>>>myYouTubeVideoID",myYouTubeVideoID);
 //    	currScreen = bundle.getInt("currScreen");
     	currScreen = bundle.getString("currScreen");
+    	
+    	Log.d(">>>currScreen",currScreen);
+    	Log.d(">>>UsbongConstants.YOUTUBE_VIDEO_WITH_TEXT_SCREEN",""+UsbongConstants.YOUTUBE_VIDEO_WITH_TEXT_SCREEN);
+    	
+    	if (currScreen.equals(UsbongConstants.YOUTUBE_VIDEO_WITH_TEXT_SCREEN+"")) { //make the Usbong Constant a String
+    		setContentView(R.layout.youtube_video_with_text_screen);    		
+    		myTextView = (TextView) findViewById(R.id.youtube_with_text_textview);    		
+        	currUsbongNode = bundle.getString("currUsbongNode");    		
+        	myTextView.setText(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextView, UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText());
+    	}
+    	else {
+    		setContentView(R.layout.youtube_video_screen);    		
+    	}
 
 		myUdteaObject = bundle.getParcelable(UsbongConstants.BUNDLE);
     	
     	youTubePlayerView = (YouTubePlayerView) findViewById(R.id.youtube_player);
-		youTubePlayerView.initialize(API_KEY, this);		
+		youTubePlayerView.initialize(API_KEY, this);				
+		
+	    initBackNextButtons();
     }
-    
+
 	@Override
 	public void onInitializationFailure(Provider arg0,
 			YouTubeInitializationResult arg1) {
@@ -168,4 +207,31 @@ public class MyYouTubeActivity extends YouTubeBaseActivity implements YouTubePla
 			}
     	});
     }    
+    
+    //added by Mike, 20151129
+    @Override
+    public void onBackPressed() {
+		String[] myPrompts = UsbongUtils.initProcessReturnToMainMenuActivity();
+    	
+    	AlertDialog.Builder prompt = new AlertDialog.Builder(MyYouTubeActivity.this);
+		prompt.setTitle(myPrompts[UsbongUtils.MY_PROMPT_TITLE]);
+		prompt.setMessage(myPrompts[UsbongUtils.MY_PROMPT_MESSAGE]); 
+		prompt.setPositiveButton(myPrompts[UsbongUtils.MY_PROMPT_POSITIVE_BUTTON_TEXT], new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				Log.d(">>>>>onBackPressed(); UsbongUtils.FROM_MY_YOUTUBE_ACTIVITY_TO_MAIN_MENU: ", UsbongUtils.FROM_MY_YOUTUBE_ACTIVITY_TO_MAIN_MENU+"");
+	    		//return to main activity
+				Intent toUDTEAIntent = new Intent(MyYouTubeActivity.this, UsbongDecisionTreeEngineActivity.class);
+				toUDTEAIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
+				toUDTEAIntent.putExtra(UsbongConstants.FROM_MY_YOUTUBE_ACTIVITY_TO_MAIN_MENU,UsbongConstants.FROM_MY_YOUTUBE_ACTIVITY_TO_MAIN_MENU);
+				startActivityForResult(toUDTEAIntent, UsbongUtils.FROM_MY_YOUTUBE_ACTIVITY_TO_MAIN_MENU);
+			}
+		});
+		prompt.setNegativeButton(myPrompts[UsbongUtils.MY_PROMPT_NEGATIVE_BUTTON_TEXT], new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+			}
+		});
+		prompt.show();
+    }
 }

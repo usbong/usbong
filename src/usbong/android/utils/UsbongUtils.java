@@ -72,7 +72,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.TextPaint;
@@ -86,13 +85,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.youtube.player.YouTubeInitializationResult;
-import com.google.android.youtube.player.YouTubePlayer;
-import com.google.android.youtube.player.YouTubePlayer.OnInitializedListener;
-import com.google.android.youtube.player.YouTubePlayer.Provider;
-import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -114,8 +107,11 @@ public class UsbongUtils {
 	//	public static String BASE_FILE_PATH = "/sdcard/usbong/";
 	private static String timeStamp;
 	private static String dateTimeStamp;
-	
+
+    public static final int MY_DATA_CHECK_CODE=0;
+	public static final int EMAIL_SENDING_SUCCESS=99;
 	public static final int FROM_MY_YOUTUBE_ACTIVITY = 1; //activity result, added by Mike, 20151124
+	public static final int FROM_MY_YOUTUBE_ACTIVITY_TO_MAIN_MENU = 2; //activity result, added by Mike, 20151129
 	
 	public static boolean isInAutoVoiceOverNarration=true;
     	
@@ -151,6 +147,12 @@ public class UsbongUtils {
 	public static final boolean USE_UNESCAPE=true; //allows the use of \n (new line) in the decision tree	
 
 	public static ArrayList<String> tokenizedStringList;
+	
+	//added by Mike, 20151129
+	public static final int MY_PROMPT_TITLE = 0;
+	public static final int MY_PROMPT_MESSAGE = 1;
+	public static final int MY_PROMPT_POSITIVE_BUTTON_TEXT = 2;
+	public static final int MY_PROMPT_NEGATIVE_BUTTON_TEXT = 3;
 	
 //	public static YouTubePlayer myYouTubePlayer;
     private static String myYouTubeVideoId;
@@ -583,6 +585,8 @@ public class UsbongUtils {
 		while (counter<totalTokens-1) { //up to second to the last only
 			myStringToken = st.nextToken(); 
 			counter++;
+
+			Log.d(">>>>>",myStringToken);
 			
 			if (myStringToken.matches("@bgAudioName=.*")) {
 		        Log.d(">>>>myStringToken.substring(13)",myStringToken.substring(11));
@@ -2636,14 +2640,30 @@ public class UsbongUtils {
             return renamed.getPath();
         }
     }
-/*
-    //added by Mike, 20151120
-	public static void setYouTubeVideoID(String s) {
-		myYouTubeVideoId = s;
-	}
-	//added by Mike, 20151120
-	public static String getYouTubeVideoID() {
-		return myYouTubeVideoId;
-	}	
-*/	
+    
+    //added by Mike, 20151129
+    public static String[] initProcessReturnToMainMenuActivity() {
+		String[] myPrompts = new String[4];
+    	    	
+    	if (getLanguageID(currLanguage)==LANGUAGE_FILIPINO) {
+    		myPrompts[MY_PROMPT_TITLE] = ((String) UsbongDecisionTreeEngineActivity.getInstance().getResources().getText(R.string.alertStringValueFilipino));
+    		myPrompts[MY_PROMPT_MESSAGE] = ((String) UsbongDecisionTreeEngineActivity.getInstance().getResources().getText(R.string.areYouSureYouWantToReturnToMainMenuFilipino));
+    		myPrompts[MY_PROMPT_POSITIVE_BUTTON_TEXT] = (String) UsbongDecisionTreeEngineActivity.getInstance().getResources().getText(R.string.yesStringValueFilipino);
+    		myPrompts[MY_PROMPT_NEGATIVE_BUTTON_TEXT] = (String) UsbongDecisionTreeEngineActivity.getInstance().getResources().getText(R.string.noStringValueFilipino);  
+    	}
+    	else if (getLanguageID(currLanguage)==LANGUAGE_JAPANESE) {
+    		myPrompts[MY_PROMPT_TITLE] = ((String) UsbongDecisionTreeEngineActivity.getInstance().getResources().getText(R.string.alertStringValueJapanese));				    						    		
+    		myPrompts[MY_PROMPT_MESSAGE] = ((String) UsbongDecisionTreeEngineActivity.getInstance().getResources().getText(R.string.areYouSureYouWantToReturnToMainMenuJapanese));
+    		myPrompts[MY_PROMPT_POSITIVE_BUTTON_TEXT] = (String) UsbongDecisionTreeEngineActivity.getInstance().getResources().getText(R.string.yesStringValueJapanese);
+    		myPrompts[MY_PROMPT_NEGATIVE_BUTTON_TEXT] = (String) UsbongDecisionTreeEngineActivity.getInstance().getResources().getText(R.string.noStringValueJapanese);  
+    	}
+    	else { //if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_ENGLISH) {
+    		myPrompts[MY_PROMPT_TITLE] = ((String) UsbongDecisionTreeEngineActivity.getInstance().getResources().getText(R.string.alertStringValueEnglish));				    						    		        	    		
+    		myPrompts[MY_PROMPT_MESSAGE] = ((String) UsbongDecisionTreeEngineActivity.getInstance().getResources().getText(R.string.areYouSureYouWantToReturnToMainMenuEnglish));
+    		myPrompts[MY_PROMPT_POSITIVE_BUTTON_TEXT] = (String) UsbongDecisionTreeEngineActivity.getInstance().getResources().getText(R.string.yesStringValueEnglish);
+    		myPrompts[MY_PROMPT_NEGATIVE_BUTTON_TEXT] = (String) UsbongDecisionTreeEngineActivity.getInstance().getResources().getText(R.string.noStringValueEnglish);  
+    	}
+    	
+    	return myPrompts;
+    }
 }
