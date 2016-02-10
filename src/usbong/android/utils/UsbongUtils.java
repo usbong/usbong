@@ -31,6 +31,7 @@ import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -298,39 +299,8 @@ public class UsbongUtils {
 	}	
 	
     public static void generateDateTimeStamp() {
-		Calendar date = Calendar.getInstance();
-		String day = ""+ date.get(Calendar.DATE);
-		int m = date.get(Calendar.MONTH) +1; //why +1? Because month starts at 0 (i.e. Jan).
-		String month = ""+ m;
-		String year = ""+ date.get(Calendar.YEAR);
-		String hour = ""+ date.get(Calendar.HOUR_OF_DAY);
-		String min = ""+ date.get(Calendar.MINUTE);
-		String sec = ""+ date.get(Calendar.SECOND);		
-//		int millisec = date.get(Calendar.MILLISECOND);
-//		TimeZone tz = date.getTimeZone(); //reference: http://stackoverflow.com/questions/9482754/getting-the-current-time-zone-in-android-application; last accessed: 20160210; aav
-		String tz = new SimpleDateFormat("Z").format(date.getTime());
-		
-		if (day.length()<2) {
-			day = day.replace(day, "0" + day);
-		}
-		if (month.length()<2) {
-			month = month.replace(month, "0" + month);
-		}
-		if (hour.length()<2) {
-			hour = hour.replace(hour,"0" + hour);
-		}
-		if (min.length()<2) {
-			min = min.replace(min,"0" + min);
-		}
-		if (sec.length()<2) {
-			sec = sec.replace(sec, "0" + sec);
-		}
-		
-//		dateTimeStamp = "" + day +"-"+ month +"-"+ year +"-"+ hour +"hr"+ min +"min"+ sec + "sec";//millisec;
-//		dateTimeStamp = "" + year +"-"+ month +"-"+ day +"-"+ hour +"hr"+ min +"min"+ sec + "sec";//millisec; //updated by Mike, Feb. 24, 2014
-
 		//2015-10-31T14:49:20+08:00
-		dateTimeStamp = "" + year +"-"+ month +"-"+ day +"T"+ hour +":"+ min +":"+ sec + tz.substring(0, 3) + ":"+ tz.substring(3, 5);//updated by Mike, 20160210
+		dateTimeStamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ", Locale.US).format(new Date());
 		Log.d(">>>", "dateTimeStamp: "+dateTimeStamp);
     }
 
