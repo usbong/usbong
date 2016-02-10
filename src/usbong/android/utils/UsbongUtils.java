@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.security.SecureRandom;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -35,6 +36,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.StringTokenizer;
+import java.util.TimeZone;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -123,6 +125,7 @@ public class UsbongUtils {
 	public static final int LANGUAGE_ILONGGO=5;
 	public static final int LANGUAGE_KAPAMPANGAN=6;
 	public static final int LANGUAGE_FRENCH=7;
+	public static final int LANGUAGE_SPANISH=8;
 	
 	private static String currLanguage;
 	
@@ -296,16 +299,39 @@ public class UsbongUtils {
 	
     public static void generateDateTimeStamp() {
 		Calendar date = Calendar.getInstance();
-		int day = date.get(Calendar.DATE);
-		int month = date.get(Calendar.MONTH) +1; //why +1? Because month starts at 0 (i.e. Jan).
-		int year = date.get(Calendar.YEAR);
-		int hour = date.get(Calendar.HOUR_OF_DAY);
-		int min = date.get(Calendar.MINUTE);
-		int sec = date.get(Calendar.SECOND);
+		String day = ""+ date.get(Calendar.DATE);
+		int m = date.get(Calendar.MONTH) +1; //why +1? Because month starts at 0 (i.e. Jan).
+		String month = ""+ m;
+		String year = ""+ date.get(Calendar.YEAR);
+		String hour = ""+ date.get(Calendar.HOUR_OF_DAY);
+		String min = ""+ date.get(Calendar.MINUTE);
+		String sec = ""+ date.get(Calendar.SECOND);		
 //		int millisec = date.get(Calendar.MILLISECOND);
+//		TimeZone tz = date.getTimeZone(); //reference: http://stackoverflow.com/questions/9482754/getting-the-current-time-zone-in-android-application; last accessed: 20160210; aav
+		String tz = new SimpleDateFormat("Z").format(date.getTime());
+		
+		if (day.length()<2) {
+			day = day.replace(day, "0" + day);
+		}
+		if (month.length()<2) {
+			month = month.replace(month, "0" + month);
+		}
+		if (hour.length()<2) {
+			hour = hour.replace(hour,"0" + hour);
+		}
+		if (min.length()<2) {
+			min = min.replace(min,"0" + min);
+		}
+		if (sec.length()<2) {
+			sec = sec.replace(sec, "0" + sec);
+		}
 		
 //		dateTimeStamp = "" + day +"-"+ month +"-"+ year +"-"+ hour +"hr"+ min +"min"+ sec + "sec";//millisec;
-		dateTimeStamp = "" + year +"-"+ month +"-"+ day +"-"+ hour +"hr"+ min +"min"+ sec + "sec";//millisec; //updated by Mike, Feb. 24, 2014
+//		dateTimeStamp = "" + year +"-"+ month +"-"+ day +"-"+ hour +"hr"+ min +"min"+ sec + "sec";//millisec; //updated by Mike, Feb. 24, 2014
+
+		//2015-10-31T14:49:20+08:00
+		dateTimeStamp = "" + year +"-"+ month +"-"+ day +"T"+ hour +":"+ min +":"+ sec + tz.substring(0, 3) + ":"+ tz.substring(3, 5);//updated by Mike, 20160210
+		Log.d(">>>", "dateTimeStamp: "+dateTimeStamp);
     }
 
     public static String getDateTimeStamp() {
@@ -1200,6 +1226,9 @@ public class UsbongUtils {
 	    	if (s.equals("French")) {
 	    		return LANGUAGE_FRENCH;
 	    	}
+	    	if (s.equals("Spanish")) {
+	    		return LANGUAGE_SPANISH;
+	    	}
     	}
     	return LANGUAGE_ENGLISH;
     }
@@ -1220,6 +1249,8 @@ public class UsbongUtils {
     			return "Kapampangan";
     		case LANGUAGE_FRENCH:
     			return "French";
+    		case LANGUAGE_SPANISH:
+    			return "Spanish";
     		default:
     			return "English";
     	}
@@ -1958,7 +1989,7 @@ public class UsbongUtils {
 						  //pattern taken from stackoverflow
 						  //http://stackoverflow.com/questions/7552253/how-to-remove-special-characters-from-a-string;
 						  //last accessed: 19 Sept. 2015
-						  if (parser.getAttributeValue(null, "name").equals(tokenizedStringList.get(i).trim().toLowerCase().replaceAll("[^\\w\\s]", ""))) {
+						  if (parser.getAttributeValue(null, "name").trim().toLowerCase().equals(tokenizedStringList.get(i).trim().toLowerCase().replaceAll("[^\\w\\s]", ""))) {
 							  if (parser.next() == XmlPullParser.TEXT) {
 //								  Log.d(">>>>>parser.getText();: ",parser.getText());
 //								  return parser.getText();

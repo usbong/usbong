@@ -1005,6 +1005,10 @@ public class UsbongScreenProcessor
 				mySendToWebserverYesRadioButton.setChecked(true);		        	
 			}
 		} else if (udtea.currScreen == UsbongConstants.END_STATE_SCREEN) {
+			//updated by Mike, 20160210
+			//skip displaying of END_STATE_SCREEN, but perform end-state processes
+			udtea.processNextButtonPressed();
+/*
 			udtea.setContentView(R.layout.end_state_screen);
 			TextView endStateTextView = (TextView)udtea.findViewById(R.id.end_state_textview);
 			if (udtea.currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
@@ -1021,6 +1025,7 @@ public class UsbongScreenProcessor
 			}
 			//add Bisaya, Ilonggo, and Kapampangan
 			udtea.initBackNextButtons();
+*/			
 		}
 		View myLayout= udtea.findViewById(R.id.parent_layout_id);
 

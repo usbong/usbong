@@ -39,19 +39,23 @@ import usbong.android.features.node.PaintActivity;
 import usbong.android.features.node.QRCodeReaderActivity;
 import usbong.android.multimedia.audio.AudioRecorder;
 import usbong.android.utils.FedorMyLocation;
+import usbong.android.utils.PurchaseLanguageBundleListAdapter;
 import usbong.android.utils.UsbongConstants;
 import usbong.android.utils.UsbongScreenProcessor;
 import usbong.android.utils.UsbongUtils;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -78,6 +82,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.vending.billing.IInAppBillingService;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
 
@@ -207,6 +212,10 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 	public static YouTubePlayer myYouTubePlayer;
 	private UdteaObject myUdteaObject;
 	
+	//added by Mike, 20160123
+    IInAppBillingService mService;
+    ServiceConnection mServiceConn;
+	
 //	@SuppressLint("InlinedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -299,6 +308,30 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 
 	    //added by Mike, March 4, 2013
 	    usbongAnswerContainerCounter=0;
+
+	    //-----------------------------------------------------------------
+	    //setup In-App Billing Service
+	    //reference: http://developer.android.com/google/play/billing/billing_integrate.html
+	    //last accessed: 20160123
+	    //added by Mike, 20160123
+	    //-----------------------------------------------------------------
+	    mServiceConn = new ServiceConnection() {
+	       @Override
+	       public void onServiceDisconnected(ComponentName name) {
+	           mService = null;
+	       }
+
+	       @Override
+	       public void onServiceConnected(ComponentName name,
+	          IBinder service) {
+	           mService = IInAppBillingService.Stub.asInterface(service);
+	       }
+	    };
+	    Intent serviceIntent =
+	    	      new Intent("com.android.vending.billing.InAppBillingService.BIND");
+	    serviceIntent.setPackage("com.android.vending");
+	    bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
+	    //-----------------------------------------------------------------
 	    
         //reference: Labeeb P's answer from stackoverflow;
         //http://stackoverflow.com/questions/4275797/view-setpadding-accepts-only-in-px-is-there-anyway-to-setpadding-in-dp;
@@ -529,7 +562,36 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 				for (int i = 0; i < myTransArrayListSize; i++) {
 				    arrayAdapter.add(myTransArrayList.get(i));
 				}
+
+				//init purchase languages list
+				final AlertDialog.Builder purchaseLanguagesListDialog = new AlertDialog.Builder(this);
+				purchaseLanguagesListDialog.setTitle("Purchase");
 				
+				final PurchaseLanguageBundleListAdapter myPurchaseLanguageBundleListAdapter = new PurchaseLanguageBundleListAdapter(this);
+				
+				// Unlock Languages button
+				dialog.setPositiveButton("Unlock Languages",
+				        new DialogInterface.OnClickListener() {
+				            public void onClick(DialogInterface dialog, int which) {
+				            	purchaseLanguagesListDialog.setSingleChoiceItems(myPurchaseLanguageBundleListAdapter,0,
+								        new DialogInterface.OnClickListener() {
+								            public void onClick(DialogInterface dialog, int which) {
+								            	/*
+								                Log.i("Selected Item : ", (String) myPurchaseLanguageBundleListAdapter.getItem(which));
+								                dialog.dismiss();
+								                */
+								            }
+								        });				            	
+				            	purchaseLanguagesListDialog.setNegativeButton("Cancel",
+								        new DialogInterface.OnClickListener() {
+								            public void onClick(DialogInterface dialog, int which) {
+								                dialog.dismiss();
+								            }
+								        });
+				            	purchaseLanguagesListDialog.show();
+				            }
+				        });
+
 				// cancel button
 				dialog.setNegativeButton("Cancel",
 				        new DialogInterface.OnClickListener() {
@@ -794,7 +856,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 //				myMediaPlayer.seekTo(0);
 			}
 			else {
-				//it's either com.svox.pico (default) or com.svox.classic (Japanese, etc)        				
+				//it's either com.svox.pico (default) or com.svox.classic (Japanese, etc)  
 //commented out by Mike, 11 Oct. 2015
 //				mTts.setEngineByPackageName("com.svox.pico"); //note: this method is already deprecated
 				
@@ -914,6 +976,10 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		if (myBGMediaPlayer!=null) {
 			myBGMediaPlayer.release();			
 		}
+		//added by Mike, 20160123
+		if (mService != null) {
+	        unbindService(mServiceConn);
+	    }
 	}
 	
     public static UsbongDecisionTreeEngineActivity getInstance() {

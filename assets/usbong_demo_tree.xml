@@ -135,7 +135,7 @@
 	</task-node>
 
 	<task-node name="textDisplay~Oh, and one more thing.">
-		<transition to="By pressing the menu button on the device (outside the screen) or the button at the top-right of the screen, you can actually switch languages, if they're available, and make Usbong read aloud the displayed text!"></transition>
+		<transition to="textDisplay~By pressing the menu button on the device (outside the screen) or the button at the top-right of the screen, you can actually switch languages, if they're available, and make Usbong read aloud the displayed text!"></transition>
 	</task-node>
 
 	<task-node name="textDisplay~By pressing the menu button on the device (outside the screen) or the button at the top-right of the screen, you can actually switch languages, if they're available, and make Usbong read aloud the displayed text!">

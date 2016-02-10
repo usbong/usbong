@@ -200,5 +200,8 @@
     <string name="sign_in_label">Sign-in</string>
     <string name="manage_account_label">Manage account</string>
     <string name="sign_out_label">Sign-out</string>
-    
+
+    <string name="buy">buy</string>        
+    <string name="price">price</string>        
+    <string name="name">name</string>
 </resources>

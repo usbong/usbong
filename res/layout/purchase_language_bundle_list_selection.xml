@@ -1,0 +1,52 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity" 
+    >
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:textSize="16sp"
+        android:text="@string/name" 
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="5dp"
+        />
+	<TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        android:textSize="14sp"
+        android:text="@string/price" 
+        android:textColor="#cbcbcb"
+        android:layout_marginTop="2dp"
+        android:layout_below="@+id/textView1"
+        />
+	<Button
+        android:id="@+id/buyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/textView1"
+        android:layout_marginRight="12dp"
+        android:textSize="16sp"
+        android:text="@string/buy"
+        android:background="@drawable/buy_button"
+        android:textColor="#f7faf5"
+        android:padding="8dp"        
+        android:minHeight="0dp"
+		android:minWidth="0dp"
+        />
+        <View 
+        android:id="@+id/separator" 
+ 		android:background="#747474" 
+ 		android:layout_width = "fill_parent"
+ 		android:layout_height="0.5dip"
+ 		android:layout_centerVertical ="true"
+ 		android:layout_below="@+id/textView2"/>
+    
+</RelativeLayout>
