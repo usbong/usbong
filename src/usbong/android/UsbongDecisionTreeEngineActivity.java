@@ -815,6 +815,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		    	}
 		    	break;    		
 */				    	
+/*			//commented out by Mike, 20160213	        
 			case UsbongConstants.END_STATE_SCREEN:
 		    	if (currLanguageBeingUsed==UsbongUtils.LANGUAGE_FILIPINO) {
 					sb.append((String) getResources().getText(R.string.UsbongEndStateTextViewFILIPINO));				    		
@@ -826,6 +827,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 					sb.append((String) getResources().getText(R.string.UsbongEndStateTextViewENGLISH));				    						    		
 		    	}
 		    	break;    		
+*/		    	
 		}
 		//edited by Mike, 21 July 2015
 		try {

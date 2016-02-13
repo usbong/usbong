@@ -1029,24 +1029,27 @@ public class UsbongScreenProcessor
 		}
 		View myLayout= udtea.findViewById(R.id.parent_layout_id);
 
-		//added by Mike, 19 July 2015    	
-        String bgStringName = UsbongUtils.getSpecificBGImageStringForThisScreenIfAvailable(udtea.currUsbongNode);
-//        Log.d(">>>>bgStringName",bgStringName);
-        if (bgStringName !=null) {
-        	UsbongUtils.setBackgroundImage(myLayout, udtea.myTree, bgStringName);
-        }
-        else {
-	        if (!UsbongUtils.setBackgroundImage(myLayout, udtea.myTree, "bg")) {
-	    		myLayout.setBackgroundResource(R.drawable.bg);//default bg
+		//added by Mike, 20160213
+		if (udtea.currScreen != UsbongConstants.END_STATE_SCREEN) {			
+			//added by Mike, 19 July 2015    	
+	        String bgStringName = UsbongUtils.getSpecificBGImageStringForThisScreenIfAvailable(udtea.currUsbongNode);
+	//        Log.d(">>>>bgStringName",bgStringName);
+	        if (bgStringName !=null) {
+	        	UsbongUtils.setBackgroundImage(myLayout, udtea.myTree, bgStringName);
 	        }
-        }
+	        else {
+		        if (!UsbongUtils.setBackgroundImage(myLayout, udtea.myTree, "bg")) {
+		    		myLayout.setBackgroundResource(R.drawable.bg);//default bg
+		        }
+	        }
         
-        String audioFileName = UsbongUtils.getAudioFilePathForThisScreenIfAvailable(udtea.currUsbongNode);
-        udtea.currUsbongAudioString=audioFileName;
-
-        String bgAudioFileName = UsbongUtils.getBGAudioFilePathForThisScreenIfAvailable(udtea.currUsbongNode);
-        udtea.currUsbongBGAudioString=bgAudioFileName;
-        
+	        String audioFileName = UsbongUtils.getAudioFilePathForThisScreenIfAvailable(udtea.currUsbongNode);
+	        udtea.currUsbongAudioString=audioFileName;
+	
+	        String bgAudioFileName = UsbongUtils.getBGAudioFilePathForThisScreenIfAvailable(udtea.currUsbongNode);
+	        udtea.currUsbongBGAudioString=bgAudioFileName;
+		}
+		
 		if ((!udtea.usedBackButton) && (!udtea.hasReturnedFromAnotherActivity)){
 			udtea.usbongNodeContainer.addElement(
 					udtea.currUsbongNode);

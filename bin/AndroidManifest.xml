@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="usbong.android"
-      android:versionCode="60"
-      android:versionName="Sept. 20, 2015"
+      android:versionCode="76"
+      android:versionName="20160213"
       android:installLocation="auto"      
 >
 
-    <uses-sdk android:minSdkVersion="10" 
+    <uses-sdk android:minSdkVersion="11" 
               android:targetSdkVersion="22" />
 	
     <supports-screens android:smallScreens="true"
@@ -16,6 +16,7 @@
               android:resizeable="true"
               android:anyDensity="true"/>
     
+    <uses-permission android:name="com.android.vending.BILLING" />
     <uses-permission android:name="android.permission.CAMERA"></uses-permission>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
     <uses-permission android:name="android.permission.RECORD_AUDIO"></uses-permission>
@@ -54,14 +55,31 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="UsbongMainActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name="UsbongDecisionTreeEngineActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name="UsbongMainActivity" android:screenOrientation="portrait"
+                  android:theme="@style/ThemeHoloWithActionBar"></activity>
+        <activity android:name="UsbongDecisionTreeEngineActivity" android:screenOrientation="portrait"
+            	  android:theme="@style/ThemeHoloWithActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="usbong.android.UsbongMainActivity" />
+            <intent-filter>
+		        <action android:name="android.intent.action.SEND" />
+		        <category android:name="android.intent.category.DEFAULT" />
+		        <data android:mimeType="application/utree" />
+	    	</intent-filter>
+        </activity>
         <activity android:name="CameraActivity" android:permission="android.permission.CAMERA" android:screenOrientation="nosensor"></activity>
 		<activity android:name="SettingsActivity" android:screenOrientation="portrait"></activity>
-		<activity android:name="RegisterActivity" android:screenOrientation="portrait"></activity>        
+		<activity android:name="RegisterActivity" android:screenOrientation="portrait"
+		    android:theme="@style/ThemeHoloWithActionBar"></activity>        
 		<activity android:name="TitleActivity" android:screenOrientation="portrait"></activity>        
 		<activity android:name=".features.node.PaintActivity" android:screenOrientation="portrait"></activity>        		
 		<activity android:name=".features.node.QRCodeReaderActivity" android:screenOrientation="portrait"></activity>        				
+		<activity android:name="usbong.android.MyYouTubeActivity"         
+		    android:theme="@style/ThemeHoloWithActionBar"
+        	android:configChanges="keyboardHidden|orientation|screenSize"
+        	android:windowSoftInputMode="adjustResize|stateVisible|stateAlwaysHidden">
+		</activity>					
 		<activity android:name="usbong.android.community.FitsListDisplay" android:screenOrientation="portrait"
 		    android:theme="@style/ThemeHoloWithActionBar">
             <meta-data
