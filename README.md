@@ -1,20 +1,18 @@
 # usbong
 Automatically exported from code.google.com/p/usbong
 
-"Usbong" helps people build apps. 
+"Usbong" runs apps built using "Usbong Builder."
 
-Usbong as an open source platform can be applied to several contexts, which means that if used appropriately, it can facilitate in creating an impact in the lives of people. The idea is that as long as the target context uses some form of:
+As long as you have a flowchart, even if you don't have a background in Computer Science or Engineering, you can build your own apps, or what we call "Trees".
 
-flowchart
-clinical pathway
-step-by-step guide
-cookbook recipe
-an interactive branching storybook (ala choose-your-own-adventure)
-
-that can be turned into a decision tree, the Usbong should enable people to transform that into a mobile application by putting together components (e.g. text inputs, checkboxes, radiobuttons, camera, voice recorders) using Usbong Builder (companion open source app) or Google Drive Spreadsheet.
-
-Data captured from the mobile device running Usbong are stored in the SD Card as .CSV, .JPG, and .3GP. Data can also be sent to a web server running on traditional servers or low-cost and low power-consuming devices like the plug computer.
-
-Alternatively, data can be sent to Gmail, G+, Facebook, Twitter, Evernote, Dropbox, among many others.
-
+# Official Company Website
 http://www.usbong.ph
+
+# Open Source Software License
+Copyright 2015 Usbong Social Systems, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+  
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
