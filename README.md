@@ -1,4 +1,4 @@
-# usbong
+# Usbong
 Automatically exported from code.google.com/p/usbong
 
 "Usbong" runs apps built using "Usbong Builder."
@@ -9,7 +9,7 @@ As long as you have a flowchart, even if you don't have a background in Computer
 http://www.usbong.ph
 
 # Open Source Software License
-Copyright 2015 Usbong Social Systems, Inc.
+Copyright 2016 Usbong Social Systems, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
