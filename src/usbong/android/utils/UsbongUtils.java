@@ -105,7 +105,7 @@ public class UsbongUtils {
 	
 	public final static String API_KEY = "AIzaSyB5mM_lk_bbdT5nUWQTO6S5FyZ9IgaxqXc"; //added by Mike, 20151120
 
-	public static String DEFAULT_UTREE_TO_LOAD="usbong_demo_tree"; //added by Mike, 27 Oct. 2015
+	public static String DEFAULT_UTREE_TO_LOAD="UsbongDemoTree"; //updated by Mike, 8 April 2016
 	public static String BASE_FILE_PATH = Environment.getExternalStorageDirectory()+"/usbong/";
 	public static String USBONG_TREES_FILE_PATH = BASE_FILE_PATH + "usbong_trees/";
 	//	public static String BASE_FILE_PATH = "/sdcard/usbong/";
@@ -426,7 +426,7 @@ public class UsbongUtils {
     }
 
     public static void storeUsbongAppAssetsFileIntoSDCard(Activity a, String filename) throws IOException {
-    	String destination = USBONG_TREES_FILE_PATH+"usbong_demo_tree.xml";
+    	String destination = USBONG_TREES_FILE_PATH+DEFAULT_UTREE_TO_LOAD+".xml";
 
     	//delete usbong_demo_tree.xml
     	File file = new File(destination);
@@ -434,7 +434,7 @@ public class UsbongUtils {
         	file.delete();    		
     	}
 
-    	destination = USBONG_TREES_FILE_PATH+"usbong_demo_tree.utree";
+    	destination = USBONG_TREES_FILE_PATH+DEFAULT_UTREE_TO_LOAD+".utree";
 
     	//replace usbong_demo_tree.xml with usbong_demo_tree.utree
     	file = new File(destination);
@@ -447,7 +447,7 @@ public class UsbongUtils {
 			file.mkdirs();
 
 	    	//arg#1 is the destination, arg#2 is the string 
-			storeOutputInSDCard(destination+"/usbong_demo_tree.xml", readTextFileInAssetsFolder(a,filename));		
+			storeOutputInSDCard(destination+"/"+DEFAULT_UTREE_TO_LOAD+".xml", readTextFileInAssetsFolder(a,filename));		
 			
 			file = new File(destination+"/res/");
 			file.mkdirs();
