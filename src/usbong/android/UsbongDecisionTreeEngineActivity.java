@@ -222,6 +222,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     //added by Mike, 20160408
     private ArrayList<Integer> selectedSettingsItems;
     private boolean[] selectedSettingsItemsInBoolean;
+    private AlertDialog inAppSettingsDialog;
 	
 //	@SuppressLint("InlinedApi")
     @Override
@@ -646,7 +647,8 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 				selectedSettingsItems.add(UsbongConstants.AUTO_NARRATE);			
 			}
 			if (UsbongUtils.IS_IN_AUTO_PLAY_MODE) {
-				selectedSettingsItems.add(UsbongConstants.AUTO_PLAY);			
+				selectedSettingsItems.add(UsbongConstants.AUTO_PLAY);	
+				selectedSettingsItems.add(UsbongConstants.AUTO_NARRATE); //if AUTO_PLAY is checked, AUTO_NARRATE should also be checked
 	    	}	        				
 		    
 		    selectedSettingsItemsInBoolean = new boolean[items.length];
@@ -657,7 +659,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 	    		selectedSettingsItemsInBoolean[selectedSettingsItems.get(i)] = true;
 		    }
 		    		    
-			AlertDialog inAppSettingsDialog = new AlertDialog.Builder(this)
+			inAppSettingsDialog = new AlertDialog.Builder(this)
 			.setTitle("Settings")
 			.setMultiChoiceItems(items, selectedSettingsItemsInBoolean, new DialogInterface.OnMultiChoiceClickListener() {
 			    @Override
@@ -667,9 +669,21 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 			    	if (isChecked) {
 			            // If the user checked the item, add it to the selected items
 			            selectedSettingsItems.add(indexSelected);
+			            if ((indexSelected==UsbongConstants.AUTO_PLAY) 
+				        		&& !selectedSettingsItems.contains(UsbongConstants.AUTO_NARRATE)) {
+			                final ListView list = inAppSettingsDialog.getListView();
+			                list.setItemChecked(UsbongConstants.AUTO_NARRATE, true);
+			            }				           
 			        } else if (selectedSettingsItems.contains(indexSelected)) {
-			            // Else, if the item is already in the array, remove it
-			            selectedSettingsItems.remove(Integer.valueOf(indexSelected));
+			        	if ((indexSelected==UsbongConstants.AUTO_NARRATE) 
+			        		&& selectedSettingsItems.contains(UsbongConstants.AUTO_PLAY)) {
+			                final ListView list = inAppSettingsDialog.getListView();
+			                list.setItemChecked(indexSelected, false);
+			        	}
+			        	else {        	
+				            // Else, if the item is already in the array, remove it
+				            selectedSettingsItems.remove(Integer.valueOf(indexSelected));
+			        	}
 			        }
 			        
 			        //updated selectedSettingsItemsInBoolean
