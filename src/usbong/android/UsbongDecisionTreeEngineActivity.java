@@ -18,10 +18,12 @@
 
 package usbong.android;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -53,6 +55,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -215,6 +218,10 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 	//added by Mike, 20160123
     IInAppBillingService mService;
     ServiceConnection mServiceConn;
+    
+    //added by Mike, 20160408
+    private ArrayList<Integer> selectedSettingsItems;
+    private boolean[] selectedSettingsItemsInBoolean;
 	
 //	@SuppressLint("InlinedApi")
     @Override
@@ -628,6 +635,98 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 				processSpeak(sb);
 				return true;
 			case(R.id.settings):
+			//Reference: http://stackoverflow.com/questions/16954196/alertdialog-with-checkbox-in-android;
+			//last accessed: 20160408; answer by: kamal; edited by: Empty2K12
+			final CharSequence[] items = {UsbongConstants.AUTO_NARRATE_STRING, UsbongConstants.AUTO_PLAY_STRING};
+			// arraylist to keep the selected items
+			selectedSettingsItems=new ArrayList<Integer>();
+			
+			//check saved settings
+			if (UsbongUtils.IS_IN_AUTO_NARRATE_MODE) {					
+				selectedSettingsItems.add(UsbongConstants.AUTO_NARRATE);			
+			}
+			if (UsbongUtils.IS_IN_AUTO_PLAY_MODE) {
+				selectedSettingsItems.add(UsbongConstants.AUTO_PLAY);			
+	    	}	        				
+		    
+		    selectedSettingsItemsInBoolean = new boolean[items.length];
+		    for(int k=0; k<items.length; k++) {
+	    		selectedSettingsItemsInBoolean[k] = false;			    		
+		    }
+		    for(int i=0; i<selectedSettingsItems.size(); i++) {
+	    		selectedSettingsItemsInBoolean[selectedSettingsItems.get(i)] = true;
+		    }
+		    		    
+			AlertDialog inAppSettingsDialog = new AlertDialog.Builder(this)
+			.setTitle("Settings")
+			.setMultiChoiceItems(items, selectedSettingsItemsInBoolean, new DialogInterface.OnMultiChoiceClickListener() {
+			    @Override
+			    public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
+			    	Log.d(">>>","onClick");
+
+			    	if (isChecked) {
+			            // If the user checked the item, add it to the selected items
+			            selectedSettingsItems.add(indexSelected);
+			        } else if (selectedSettingsItems.contains(indexSelected)) {
+			            // Else, if the item is already in the array, remove it
+			            selectedSettingsItems.remove(Integer.valueOf(indexSelected));
+			        }
+			        
+			        //updated selectedSettingsItemsInBoolean
+				    for(int k=0; k<items.length; k++) {
+			    		selectedSettingsItemsInBoolean[k] = false;			    		
+				    }
+				    for(int i=0; i<selectedSettingsItems.size(); i++) {
+			    		selectedSettingsItemsInBoolean[selectedSettingsItems.get(i)] = true;
+				    }
+			    }
+			}).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			    @Override
+			    public void onClick(DialogInterface dialog, int id) {
+					PrintWriter out = UsbongUtils.getFileFromSDCardAsWriter(UsbongUtils.BASE_FILE_PATH + "usbong.config");
+
+					Log.d(">>>>", "Save...");
+			        //  Your code when user clicked on OK
+			        //  You can write the code  to save the selected item here
+					for (int i=0; i<items.length; i++) {
+						Log.d(">>>>", i+"");
+						if (selectedSettingsItemsInBoolean[i]==true) {
+							if (i==UsbongConstants.AUTO_NARRATE) {
+					    		out.println("IS_IN_AUTO_NARRATE_MODE=ON");
+					    		UsbongUtils.IS_IN_AUTO_NARRATE_MODE=true;							
+							}								
+							else if (i==UsbongConstants.AUTO_PLAY) {
+					    		out.println("IS_IN_AUTO_PLAY_MODE=ON");
+					    		UsbongUtils.IS_IN_AUTO_PLAY_MODE=true;						
+					    		
+					    		//if auto_play is ON, auto_narrate is also ON
+					    		//however, it is possible to have auto_play OFF,
+					    		//while auto_narrate is ON
+					    		out.println("IS_IN_AUTO_NARRATE_MODE=ON");
+					    		UsbongUtils.IS_IN_AUTO_NARRATE_MODE=true;							
+							}	
+						}
+						else {
+							if (i==UsbongConstants.AUTO_NARRATE) {
+					    		out.println("IS_IN_AUTO_NARRATE_MODE=OFF");
+					    		UsbongUtils.IS_IN_AUTO_NARRATE_MODE=false;															
+							}							
+							else if (i==UsbongConstants.AUTO_PLAY) {
+					    		out.println("IS_IN_AUTO_PLAY_MODE=OFF");
+					    		UsbongUtils.IS_IN_AUTO_PLAY_MODE=false;	
+							}
+						}						
+					}					
+			    	out.close(); //remember to close
+			    }
+			}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			    @Override
+			    public void onClick(DialogInterface dialog, int id) {
+			        //  Your code when user clicked on Cancel
+			    }
+			}).create();
+			inAppSettingsDialog.show();
+/*			
 		    	new AlertDialog.Builder(UsbongDecisionTreeEngineActivity.this).setTitle("Settings")
 				.setMessage("Automatic voice-over narration:")
 //				.setView(requiredFieldAlertStringTextView)
@@ -643,6 +742,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 						UsbongUtils.isInAutoVoiceOverNarration=false;
 					}
 				}).show();
+*/				
 				return true;
 			case android.R.id.home: //added by Mike, 22 Sept. 2015
 	        	processReturnToMainMenuActivity();
@@ -856,6 +956,15 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 //				myMediaPlayer.setVolume(1.0f, 1.0f);
 				myMediaPlayer.start();
 //				myMediaPlayer.seekTo(0);
+				
+				//added by Mike, 20160408
+				myMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+		            public void onCompletion(MediaPlayer mp) {
+		            	if (UsbongUtils.IS_IN_AUTO_PLAY_MODE) {
+		            		processNextButtonPressed();
+		            	}
+		            }
+		        });
 			}
 			else {
 				//it's either com.svox.pico (default) or com.svox.classic (Japanese, etc)  
@@ -902,6 +1011,16 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 						break;
 */						
 				}
+/*				
+				//added by Mike, 20160408
+				mTts.setOnCompletionListener(new OnCompletionListener() {
+		            public void onCompletion(MediaPlayer mp) {
+		            	if (UsbongUtils.isInAutoPlay) {
+		            		processNextButtonPressed();
+		            	}
+		            }
+		        });
+*/
 			}
 		}
 		catch (Exception e) {
@@ -1679,7 +1798,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		Log.d(">>>>","inside: initUsbongScreen()");		
 		
 		myUsbongScreenProcessor.init();
-		if (UsbongUtils.isInAutoVoiceOverNarration) { //added by Mike, 24 Sept. 2015
+		if (UsbongUtils.IS_IN_AUTO_NARRATE_MODE) { //added by Mike, 24 Sept. 2015
 			processSpeak(new StringBuffer());
 		}
 		processPlayBGMusic(); //added by Mike, 25 Sept. 2015

@@ -69,4 +69,10 @@ public class UsbongConstants {
     public static final String UTREE_KEY = "UTREE_KEY";
     
     public static final String FROM_MY_YOUTUBE_ACTIVITY_TO_MAIN_MENU = "FROM_MY_YOUTUBE_ACTIVITY_TO_MAIN_MENU";
+    
+    //SETTINGS 
+    public static final int AUTO_NARRATE = 0;
+    public static final int AUTO_PLAY = 1;
+    public static final String AUTO_NARRATE_STRING = " Auto-Narrate";
+    public static final String AUTO_PLAY_STRING = " Auto-Play";    
 }

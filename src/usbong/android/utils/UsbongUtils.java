@@ -102,6 +102,8 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 public class UsbongUtils {		
 	public static boolean IS_IN_DEBUG_MODE=false;
 	public static boolean STORE_OUTPUT=true;
+	public static boolean IS_IN_AUTO_NARRATE_MODE=true;
+	public static boolean IS_IN_AUTO_PLAY_MODE=false;
 	
 	public final static String API_KEY = "AIzaSyB5mM_lk_bbdT5nUWQTO6S5FyZ9IgaxqXc"; //added by Mike, 20151120
 
@@ -116,9 +118,7 @@ public class UsbongUtils {
 	public static final int EMAIL_SENDING_SUCCESS=99;
 	public static final int FROM_MY_YOUTUBE_ACTIVITY = 1; //activity result, added by Mike, 20151124
 	public static final int FROM_MY_YOUTUBE_ACTIVITY_TO_MAIN_MENU = 2; //activity result, added by Mike, 20151129
-	
-	public static boolean isInAutoVoiceOverNarration=true;
-    	
+	    	
 	public static final int LANGUAGE_ENGLISH=0; 
 	public static final int LANGUAGE_FILIPINO=1;
 	public static final int LANGUAGE_JAPANESE=2;
@@ -224,7 +224,14 @@ public class UsbongUtils {
         	if (UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + "usbong.config") == null) { 
         		UsbongUtils.IS_IN_DEBUG_MODE=false;    			
 				PrintWriter out = UsbongUtils.getFileFromSDCardAsWriter(UsbongUtils.BASE_FILE_PATH + "usbong.config");    				
-				out.println("IS_IN_DEBUG_MODE=OFF");	    			
+				out.println("IS_IN_DEBUG_MODE=OFF");	   
+				
+				//added by Mike, 20160408
+				UsbongUtils.IS_IN_AUTO_NARRATE_MODE=true;							
+			    out.println("IS_IN_AUTO_NARRATE_MODE=ON");
+
+	    		UsbongUtils.IS_IN_AUTO_PLAY_MODE=false;						
+			    out.println("IS_IN_AUTO_PLAY_MODE=OFF");
 				out.close();
     		}
     		else {
@@ -240,6 +247,12 @@ public class UsbongUtils {
 	    				UsbongUtils.setDestinationServerURL(currLineString.replace("DESTINATION_URL=", ""));
 	    				System.out.println(">>>>>>>DestiantionServerURL: "+UsbongUtils.getDestinationServerURL());
 	    			}
+	    			else if (currLineString.equals("IS_IN_AUTO_NARRATE_MODE=ON")) {
+						UsbongUtils.IS_IN_AUTO_NARRATE_MODE=true;			
+					}
+					if (currLineString.equals("IS_IN_AUTO_PLAY_MODE=ON")) {
+						UsbongUtils.IS_IN_AUTO_PLAY_MODE=true;			
+					}
 	    			/*
 	    			else {
 	    				UsbongUtils.IS_IN_DEBUG_MODE=false;		
