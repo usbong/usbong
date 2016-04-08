@@ -697,41 +697,77 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 			}).setPositiveButton("OK", new DialogInterface.OnClickListener() {
 			    @Override
 			    public void onClick(DialogInterface dialog, int id) {
-					PrintWriter out = UsbongUtils.getFileFromSDCardAsWriter(UsbongUtils.BASE_FILE_PATH + "usbong.config");
+			    	 try {	    	
+			 			InputStreamReader reader = UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + "usbong.config");	
+			 			BufferedReader br = new BufferedReader(reader);    		
+			 	    	String currLineString;        	
 
-					Log.d(">>>>", "Save...");
-			        //  Your code when user clicked on OK
-			        //  You can write the code  to save the selected item here
-					for (int i=0; i<items.length; i++) {
-						Log.d(">>>>", i+"");
-						if (selectedSettingsItemsInBoolean[i]==true) {
-							if (i==UsbongConstants.AUTO_NARRATE) {
-					    		out.println("IS_IN_AUTO_NARRATE_MODE=ON");
-					    		UsbongUtils.IS_IN_AUTO_NARRATE_MODE=true;							
-							}								
-							else if (i==UsbongConstants.AUTO_PLAY) {
-					    		out.println("IS_IN_AUTO_PLAY_MODE=ON");
-					    		UsbongUtils.IS_IN_AUTO_PLAY_MODE=true;						
-					    		
-					    		//if auto_play is ON, auto_narrate is also ON
-					    		//however, it is possible to have auto_play OFF,
-					    		//while auto_narrate is ON
-					    		out.println("IS_IN_AUTO_NARRATE_MODE=ON");
-					    		UsbongUtils.IS_IN_AUTO_NARRATE_MODE=true;							
+			 	    	//write first to a temporary file
+						PrintWriter out = UsbongUtils.getFileFromSDCardAsWriter(UsbongUtils.BASE_FILE_PATH + "usbong.config" +"TEMP");
+
+			 	    	while((currLineString=br.readLine())!=null)
+			 	    	{ 	
+			 	    		Log.d(">>>", "currLineString: "+currLineString);
+							if ((currLineString.contains("IS_IN_AUTO_NARRATE_MODE="))
+							|| (currLineString.contains("IS_IN_AUTO_PLAY_MODE="))) {
+								continue;
 							}	
-						}
-						else {
-							if (i==UsbongConstants.AUTO_NARRATE) {
-					    		out.println("IS_IN_AUTO_NARRATE_MODE=OFF");
-					    		UsbongUtils.IS_IN_AUTO_NARRATE_MODE=false;															
-							}							
-							else if (i==UsbongConstants.AUTO_PLAY) {
-					    		out.println("IS_IN_AUTO_PLAY_MODE=OFF");
-					    		UsbongUtils.IS_IN_AUTO_PLAY_MODE=false;	
+							else {
+								out.println(currLineString);			 	    		
 							}
-						}						
-					}					
-			    	out.close(); //remember to close
+			 	    	}	        				
+
+						for (int i=0; i<items.length; i++) {
+							Log.d(">>>>", i+"");
+							if (selectedSettingsItemsInBoolean[i]==true) {
+								if (i==UsbongConstants.AUTO_NARRATE) {
+						    		out.println("IS_IN_AUTO_NARRATE_MODE=ON");
+						    		UsbongUtils.IS_IN_AUTO_NARRATE_MODE=true;							
+								}								
+								else if (i==UsbongConstants.AUTO_PLAY) {
+						    		out.println("IS_IN_AUTO_PLAY_MODE=ON");
+						    		UsbongUtils.IS_IN_AUTO_PLAY_MODE=true;						
+/*						    		
+						    		//if auto_play is ON, auto_narrate is also ON
+						    		//however, it is possible to have auto_play OFF,
+						    		//while auto_narrate is ON
+						    		out.println("IS_IN_AUTO_NARRATE_MODE=ON");
+						    		UsbongUtils.IS_IN_AUTO_NARRATE_MODE=true;
+*/						    									
+								}	
+							}
+							else {
+								if (i==UsbongConstants.AUTO_NARRATE) {
+						    		out.println("IS_IN_AUTO_NARRATE_MODE=OFF");
+						    		UsbongUtils.IS_IN_AUTO_NARRATE_MODE=false;															
+								}							
+								else if (i==UsbongConstants.AUTO_PLAY) {
+						    		out.println("IS_IN_AUTO_PLAY_MODE=OFF");
+						    		UsbongUtils.IS_IN_AUTO_PLAY_MODE=false;	
+								}
+							}				
+						}					
+				    	out.close(); //remember to close
+				    	
+				    	//copy temp file to actual usbong.config file
+			 			InputStreamReader reader2 = UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + "usbong.config"+"TEMP");	
+			 			BufferedReader br2 = new BufferedReader(reader2);    		
+			 	    	String currLineString2;        	
+
+			 	    	//write to actual usbong.config file
+						PrintWriter out2 = UsbongUtils.getFileFromSDCardAsWriter(UsbongUtils.BASE_FILE_PATH + "usbong.config");
+
+			 	    	while((currLineString2=br2.readLine())!=null)
+			 	    	{ 	
+							out2.println(currLineString2);			 	    		
+			 	    	}			 	    	
+			 	    	out2.close();
+			 	    	
+			 	    	UsbongUtils.deleteRecursive(new File(UsbongUtils.BASE_FILE_PATH + "usbong.config"+"TEMP"));
+			 		}
+			 		catch(Exception e) {
+			 			e.printStackTrace();
+			 		}			 		
 			    }
 			}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 			    @Override
