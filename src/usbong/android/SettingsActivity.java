@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
+import usbong.android.utils.UsbongConstants;
 import usbong.android.utils.UsbongUtils;
 
 import android.app.Activity;
@@ -29,10 +30,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ListView;
 
 public class SettingsActivity extends Activity {
 	private CheckBox myDebugModeCheckBox;
+	private CheckBox myAutoNarrateModeCheckBox;
+	private CheckBox myAutoPlayModeCheckBox;
 	private CheckBox myDestinationURLCheckBox;
 	private EditText myDestinationURLEditText;
 	private CheckBox myStoreOutputCheckBox;
@@ -58,7 +64,32 @@ public class SettingsActivity extends Activity {
 		        }
 		    }
 		});
+
+		//added by Mike, 20160410
+		myAutoNarrateModeCheckBox = (CheckBox)findViewById(R.id.settings_auto_narrate_mode_checkbox);		
+		myAutoNarrateModeCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton arg0, boolean isChecked) {
+				// TODO Auto-generated method stub
+				if (!isChecked) {
+		            if (myAutoPlayModeCheckBox.isChecked()) {
+		            	myAutoNarrateModeCheckBox.setChecked(true);
+		            }
+		        } 
+			}
+		});
 		
+		myAutoPlayModeCheckBox = (CheckBox)findViewById(R.id.settings_auto_play_mode_checkbox);		
+		myAutoPlayModeCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton arg0, boolean isChecked) {
+				// TODO Auto-generated method stub
+				if (isChecked) {
+	            	myAutoNarrateModeCheckBox.setChecked(true);
+		        } 
+			}
+		});
+	
 	    try {	    	
 			InputStreamReader reader = UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + "usbong.config");	
 			BufferedReader br = new BufferedReader(reader);    		
@@ -69,6 +100,14 @@ public class SettingsActivity extends Activity {
 	    	{ 	
 				if (currLineString.equals("IS_IN_DEBUG_MODE=ON")) {
 					myDebugModeCheckBox.setChecked(true);				
+				}
+				
+				//added by Mike, 20160410
+				if (currLineString.equals("IS_IN_AUTO_NARRATE_MODE=ON")) {
+					myAutoNarrateModeCheckBox.setChecked(true);				
+				}
+				if (currLineString.equals("IS_IN_AUTO_PLAY_MODE=ON")) {
+					myAutoPlayModeCheckBox.setChecked(true);				
 				}
 				
 				if (currLineString.equals("STORE_OUTPUT=OFF")) {
@@ -134,6 +173,24 @@ public class SettingsActivity extends Activity {
 		    		UsbongUtils.setDebugMode(false);
 				}
 
+				if (myAutoNarrateModeCheckBox.isChecked()) {
+		    		out.println("IS_IN_AUTO_NARRATE_MODE=ON");
+		    		UsbongUtils.IS_IN_AUTO_NARRATE_MODE=true;							
+				}					
+				else {
+		    		out.println("IS_IN_AUTO_NARRATE_MODE=OFF");
+		    		UsbongUtils.IS_IN_AUTO_NARRATE_MODE=false;							
+				}					
+				
+				if (myAutoPlayModeCheckBox.isChecked()) {
+		    		out.println("IS_IN_AUTO_PLAY_MODE=ON");
+		    		UsbongUtils.IS_IN_AUTO_PLAY_MODE=true;		
+				}
+				else {
+		    		out.println("IS_IN_AUTO_PLAY_MODE=OFF");
+		    		UsbongUtils.IS_IN_AUTO_PLAY_MODE=false;							
+				}
+				
 				if (myStoreOutputCheckBox.isChecked()) {
 		    		out.println("STORE_OUTPUT=ON");
 		    		UsbongUtils.setStoreOutput(true);

@@ -28,6 +28,32 @@
 		      android:layout_width="fill_parent"
 		      android:layout_height="fill_parent"
 		      android:layout_weight="1">  		
+				<TextView android:id="@+id/settings_auto_narrate_mode_textview"
+						style="@style/UsbongSettingsTextView"
+					    android:text="Auto-narrate Mode"					    
+					    />		
+				<CheckBox android:id="@+id/settings_auto_narrate_mode_checkbox"
+						style="@style/UsbongSettingsCheckBox"
+				/>
+			</LinearLayout>			
+			<LinearLayout
+		      android:orientation="horizontal"
+		      android:layout_width="fill_parent"
+		      android:layout_height="fill_parent"
+		      android:layout_weight="1">  		
+				<TextView android:id="@+id/settings_auto_play_mode_textview"
+						style="@style/UsbongSettingsTextView"
+					    android:text="Auto-play Mode"					    
+					    />		
+				<CheckBox android:id="@+id/settings_auto_play_mode_checkbox"
+						style="@style/UsbongSettingsCheckBox"
+				/>
+			</LinearLayout>			
+			<LinearLayout
+		      android:orientation="horizontal"
+		      android:layout_width="fill_parent"
+		      android:layout_height="fill_parent"
+		      android:layout_weight="1">  		
 				<TextView android:id="@+id/settings_destination_url_textview"
 						style="@style/UsbongSettingsTextView"
 					    android:text="Destination URL"
