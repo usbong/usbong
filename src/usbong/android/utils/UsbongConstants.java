@@ -75,4 +75,6 @@ public class UsbongConstants {
     public static final int AUTO_PLAY = 1;
     public static final String AUTO_NARRATE_STRING = " Auto-Narrate";
     public static final String AUTO_PLAY_STRING = " Auto-Play";    
+    
+    public static final String MY_UTTERANCE_ID = "myUsbongTTSId";
 }

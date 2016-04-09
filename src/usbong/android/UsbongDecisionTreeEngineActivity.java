@@ -60,6 +60,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -70,6 +71,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -169,6 +171,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 	
 	private static UsbongDecisionTreeEngineActivity instance;
     private static TextToSpeech mTts;
+    private HashMap<String, String> mTtsParams;
 
 	public ListView treesListView;
 	
@@ -227,13 +230,16 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 //	@SuppressLint("InlinedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);		
 
         super.onCreate(savedInstanceState);    
         
         Log.d(">>>>", "insideOnCreate(...)");
                 
         instance=this;
+        
+        //added by Mike, 20160410
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         UsbongUtils.myAssetManager = getAssets();
         
@@ -1021,14 +1027,17 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 //commented out by Mike, 11 Oct. 2015
 //				mTts.setEngineByPackageName("com.svox.pico"); //note: this method is already deprecated
 				
+				mTtsParams = new HashMap<String, String>();
+				mTtsParams.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, UsbongConstants.MY_UTTERANCE_ID);
+				
 				switch (currLanguageBeingUsed) {
 					case UsbongUtils.LANGUAGE_FILIPINO:				    
 						mTts.setLanguage(new Locale("spa", "ESP"));
 						if (Build.VERSION.RELEASE.startsWith("5")) { 
-							mTts.speak(UsbongUtils.convertFilipinoToSpanishAccentFriendlyText(sb.toString()), TextToSpeech.QUEUE_FLUSH, null,null); //QUEUE_ADD			
+							mTts.speak(UsbongUtils.convertFilipinoToSpanishAccentFriendlyText(sb.toString()), TextToSpeech.QUEUE_FLUSH, null, UsbongConstants.MY_UTTERANCE_ID); //QUEUE_ADD			
 						}
 						else {
-							mTts.speak(UsbongUtils.convertFilipinoToSpanishAccentFriendlyText(sb.toString()), TextToSpeech.QUEUE_FLUSH, null); //QUEUE_ADD										
+							mTts.speak(UsbongUtils.convertFilipinoToSpanishAccentFriendlyText(sb.toString()), TextToSpeech.QUEUE_FLUSH, mTtsParams); //QUEUE_ADD										
 						}
 						break;
 					case UsbongUtils.LANGUAGE_JAPANESE:
@@ -1036,11 +1045,11 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 //						mTts.setEngineByPackageName("com.svox.classic"); //note: this method is already deprecated
 						mTts.setLanguage(new Locale("ja", "JP"));
 						if (Build.VERSION.RELEASE.startsWith("5")) { 
-							mTts.speak(sb.toString(), TextToSpeech.QUEUE_FLUSH, null,null); //QUEUE_ADD			
+							mTts.speak(sb.toString(), TextToSpeech.QUEUE_FLUSH, null, UsbongConstants.MY_UTTERANCE_ID); //QUEUE_ADD			
 							
 						}
 						else {
-							mTts.speak(sb.toString(), TextToSpeech.QUEUE_FLUSH, null); //QUEUE_ADD			
+							mTts.speak(sb.toString(), TextToSpeech.QUEUE_FLUSH, mTtsParams); //QUEUE_ADD			
 						}
 						break;						
 					/*case UsbongUtils.LANGUAGE_ENGLISH:*/
@@ -1048,10 +1057,10 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 						Log.d(">>>>sb.toString()",sb.toString());
 						mTts.setLanguage(new Locale("en", "US"));
 						if (Build.VERSION.RELEASE.startsWith("5")) { 
-							mTts.speak(sb.toString(), TextToSpeech.QUEUE_FLUSH, null,null); //QUEUE_ADD			
+							mTts.speak(sb.toString(), TextToSpeech.QUEUE_FLUSH, null, UsbongConstants.MY_UTTERANCE_ID); //QUEUE_ADD			
 						}
 						else {
-							mTts.speak(sb.toString(), TextToSpeech.QUEUE_FLUSH, null); //QUEUE_ADD										
+							mTts.speak(sb.toString(), TextToSpeech.QUEUE_FLUSH, mTtsParams); //QUEUE_ADD										
 						}
 						break;
 /*						
@@ -1061,16 +1070,34 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 						break;
 */						
 				}
-/*				
-				//added by Mike, 20160408
-				mTts.setOnCompletionListener(new OnCompletionListener() {
-		            public void onCompletion(MediaPlayer mp) {
-		            	if (UsbongUtils.isInAutoPlay) {
-		            		processNextButtonPressed();
+				
+				//added by Mike, 20160410
+				mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+					@Override
+					public void onDone(String utteranceId) {
+		            	if (utteranceId.equals(UsbongConstants.MY_UTTERANCE_ID)) {
+							if (UsbongUtils.IS_IN_AUTO_PLAY_MODE) {
+			            		instance.runOnUiThread(new Runnable() {
+			            		     @Override
+			            		     public void run() {
+						            	processNextButtonPressed();
+			            		    }
+			            		});			            		
+			            	}						
 		            	}
-		            }
+					}
+
+					@Override
+					@Deprecated
+					public void onError(String utteranceId) {
+						// TODO Auto-generated method stub
+					}
+
+					@Override
+					public void onStart(String utteranceId) {
+						// TODO Auto-generated method stub						
+					}
 		        });
-*/
 			}
 		}
 		catch (Exception e) {
