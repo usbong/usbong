@@ -1332,6 +1332,9 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		invalidateOptionsMenu(); //should be after isInTreeLoader=false; added by Mike, 24 Sept. 2015
 		myTree = s;
 		UsbongUtils.clearTempFolder();
+		
+		//load hints (if there are any) and put them in a hashtable
+		
         initParser();
 	}
 	

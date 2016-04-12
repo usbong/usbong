@@ -32,13 +32,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.StringTokenizer;
-import java.util.TimeZone;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -2680,5 +2680,66 @@ public class UsbongUtils {
     	}
     	
     	return myPrompts;
+    }
+    
+    //added by Mike, 20160411
+    public static Hashtable<String,Hashtable<String,String>> putHintsInHashtable(String myTree) {
+    	ArrayList<String> myTransArrayList = UsbongUtils.getAvailableTranslationsArrayList(myTree);
+        final int myTransArrayListSize = myTransArrayList.size();
+     
+//    	List<Hashtable<String,String>> myHashTable=new ArrayList<Hashtable<String,String>>(myTransArrayListSize);
+    	Hashtable<String,Hashtable<String,String>> myHashtable = new Hashtable<String, Hashtable<String,String>>();
+    	
+		for (int i = 0; i < myTransArrayListSize; i++) {		   
+	    	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/hints/" + myTransArrayList.get(i) +".xml";
+	    	File file = new File(filePath);
+			if(!file.exists())
+			{
+				file = new File(UsbongUtils.USBONG_TREES_FILE_PATH+"temp/"+myTreeFileName+".utree/hints/" + myTransArrayList.get(i) +".xml");
+
+				if(!file.exists()) 
+				{						
+					continue;
+				}
+			}
+			//if this point is reached, this means that hint file exists
+			
+	        Hashtable<String,String> wordsHashtable = new Hashtable<String,String>();			
+			myHashtable.put(myTransArrayList.get(i),wordsHashtable); //first parameter is for the language name, the second is the hashtable of the actual words
+			
+			try {			  
+				  XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+			      factory.setNamespaceAware(true);
+				  XmlPullParser parser = factory.newPullParser();		 		  
+					  
+			      InputStream in = null;
+			      InputStreamReader reader;
+			      try {
+			          in = new BufferedInputStream(new FileInputStream(file));
+			      }  
+			      catch(Exception e) {
+			    	  e.printStackTrace();
+			      }
+			      reader = new InputStreamReader(in,"UTF-8"); 
+				  
+				  parser.setInput(reader);	
+				  
+				  //Reference: http://developer.android.com/training/basics/network-ops/xml.html;
+				  //last accessed: 24 Oct. 2012
+				  while(parser.next() != XmlPullParser.END_DOCUMENT) {
+					  if (parser.getEventType() != XmlPullParser.START_TAG) {
+				            continue;
+				      }
+					  
+					  if (parser.getName().equals("string")) {
+					    	 wordsHashtable.put(parser.getAttributeValue(null, "name").trim().toLowerCase(), parser.getText());
+					  }
+				  }
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+		}		
+    	return myHashtable;
     }
 }
