@@ -1332,9 +1332,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		invalidateOptionsMenu(); //should be after isInTreeLoader=false; added by Mike, 24 Sept. 2015
 		myTree = s;
 		UsbongUtils.clearTempFolder();
-		
-		//load hints (if there are any) and put them in a hashtable
-		
+    	
         initParser();
 	}
 	
@@ -1406,6 +1404,13 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		  
 		  parser.setInput(isr);	
 
+			
+		  //load hints (if there are any) and put them in a hashtable
+		  //do this after isr = UsbongUtils.getTreeFromSDCardAsReader(myTree);
+		  //because UsbongUtils.getTreeFromSDCardAsReader(myTree) unzips the .utree file into the temp folder
+		  //added by Mike, 20160413
+		  UsbongUtils.putHintsInHashtable(myTree);
+		  
 		  while(parser.nextTag() != XmlPullParser.END_DOCUMENT) {
 			  //if this tag does not have an attribute; e.g. END_TAG
 			  if (parser.getAttributeCount()==-1) {

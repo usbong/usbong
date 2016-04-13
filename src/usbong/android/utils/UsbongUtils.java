@@ -162,6 +162,8 @@ public class UsbongUtils {
 //	public static YouTubePlayer myYouTubePlayer;
     private static String myYouTubeVideoId;
 
+    //added by Mike, 20160413
+    public static Hashtable<String,Hashtable<String,String>> myHashtableOfWordHints;
 	
 	//added by Mike, 22 Sept. 2015
 	public static String getCurrLanguage(){
@@ -1090,7 +1092,8 @@ public class UsbongUtils {
 			}
 		}
 		//if this point is reached, this means that the .utree has a 'trans' folder
-				
+		Log.d(">>>>","reached this point; has trans folder");
+
 		try 
 		{  							
 			UsbongFileFilter myFileFilter = new UsbongFileFilter("xml");			
@@ -1793,38 +1796,27 @@ public class UsbongUtils {
 		return myView;
     }
     
-    //added by Mike, Oct. 3, 2014
-    public static View applyHintsInView(Activity a, View myView, int type) {
-    	Log.d(">>>>>>","1");
-//    	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/hints/hints.xml"; //@todo: change hints.xml to the setLanguage 
-    	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/hints/" + getCurrLanguage() +".xml";
-    	
-    	File file = new File(filePath);
-		if(!file.exists())
-		{
-	    	Log.d(">>>>>>","2.1");
-			file = new File(UsbongUtils.USBONG_TREES_FILE_PATH+"temp/"+myTreeFileName+".utree/hints/" + getCurrLanguage() +".xml");
+    //edited by Mike, 20160413
+    public static View applyHintsInView(Activity a, View myView, int type) {    	    	
+    	Log.d(">>>>", "getCurrLanguage(): "+getCurrLanguage());
 
-			if(!file.exists()) 
-			{						
-		    	Log.d(">>>>>>","2.2");
-//				return myView; //just send the original view
-			    switch(type) {
-					case IS_RADIOBUTTON:
-						((RadioButton)myView).setText(Html.fromHtml((((RadioButton)myView).getText().toString())));					
-						return myView;
-					case IS_CHECKBOX:
-						((CheckBox)myView).setText(Html.fromHtml((((CheckBox)myView).getText().toString())));					
-						return myView;
-				    default: //case IS_TEXTVIEW:
-						((TextView)myView).setText(Html.fromHtml(((TextView)myView).getText().toString()));					
-						return myView;
-			    }
-			}
+    	if((myHashtableOfWordHints==null) || (!myHashtableOfWordHints.containsKey(getCurrLanguage()))) {						
+		    switch(type) {
+				case IS_RADIOBUTTON:
+					((RadioButton)myView).setText(Html.fromHtml((((RadioButton)myView).getText().toString())));					
+					return myView;
+				case IS_CHECKBOX:
+					((CheckBox)myView).setText(Html.fromHtml((((CheckBox)myView).getText().toString())));					
+					return myView;
+			    default: //case IS_TEXTVIEW:
+					((TextView)myView).setText(Html.fromHtml(((TextView)myView).getText().toString()));					
+					return myView;
+		    }
 		}
 		//if this point is reached, this means that hint file exists
-
-    	Log.d(">>>>>>","2");
+    	Hashtable<String,String> myHashtableForCurrLang = myHashtableOfWordHints.get(getCurrLanguage());
+		
+    	Log.d(">>>>", "found Hashtable");
     	
     	if (tokenizedStringList==null) {
     		tokenizedStringList = new ArrayList<String>();
@@ -1934,116 +1926,79 @@ public class UsbongUtils {
     		Log.d(">>",""+tokenizedStringList.get(i));    	
     	}
 
-    	Log.d(">>>>>>","3");
-
 		try {
-			  boolean foundMatch=false;
+		  boolean foundMatch=false;
+		  
+		  for(int i=0; i<tokenizedStringList.size(); i++) {				  
+			  foundMatch=false;
 			  
-			  for(int i=0; i<tokenizedStringList.size(); i++) {				  
-				  XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-			      factory.setNamespaceAware(true);
-				  XmlPullParser parser = factory.newPullParser();		 		  
-				  
-			      InputStream in = null;
-			      InputStreamReader reader;
-			      try {
-			          in = new BufferedInputStream(new FileInputStream(file));
-			      }  
-			      catch(Exception e) {
-			    	  e.printStackTrace();
-			      }
-			      reader = new InputStreamReader(in,"UTF-8"); 
-				  
-				  parser.setInput(reader);	
-
-				  foundMatch=false;
-				  
-				  //Reference: http://developer.android.com/training/basics/network-ops/xml.html;
-				  //last accessed: 24 Oct. 2012
-				  while(parser.next() != XmlPullParser.END_DOCUMENT) {
-					  if (parser.getEventType() != XmlPullParser.START_TAG) {
-				            continue;
-				      }
-					  
-					  if (parser.getName().equals("string")) {
-	
-//						  Log.d(">>>>>parser.getAttributeValue(null, 'name'): ",parser.getAttributeValue(null, "name"));
-//						  Log.d(">>>>>tokenizedStringList.get("+i+"): ",tokenizedStringList.get(i));
-	
-						  //pattern taken from stackoverflow
-						  //http://stackoverflow.com/questions/7552253/how-to-remove-special-characters-from-a-string;
-						  //last accessed: 19 Sept. 2015
-						  if (parser.getAttributeValue(null, "name").trim().toLowerCase().equals(tokenizedStringList.get(i).trim().toLowerCase().replaceAll("[^\\w\\s]", ""))) {
-							  if (parser.next() == XmlPullParser.TEXT) {
-//								  Log.d(">>>>>parser.getText();: ",parser.getText());
-//								  return parser.getText();
-								  
-								  final String hintText = parser.getText();
-								  final UsbongDecisionTreeEngineActivity finalUdtea = (UsbongDecisionTreeEngineActivity)a;
-								  
-							      SpannableString link = makeLinkSpan(tokenizedStringList.get(i), new View.OnClickListener() {          
-							            @Override
-							            public void onClick(View v) {
-									    	new AlertDialog.Builder(finalUdtea).setTitle("Word Hint!")
-						            		.setMessage(hintText)
-											.setPositiveButton("OK", new DialogInterface.OnClickListener() {					
-												@Override
-												public void onClick(DialogInterface dialog, int which) {	            				
-												}
-											}).show();
-							            }
-							      });					
+			  Log.d(">>>>", "tokenizedString: "+tokenizedStringList.get(i).trim().toLowerCase().replaceAll("[^\\w\\s]", ""));
+			  
+			  String tokenizedString = tokenizedStringList.get(i).trim().toLowerCase().replaceAll("[^\\w\\s]", "");
+			  
+			  if (myHashtableForCurrLang.contains(tokenizedString)) {					  								  
+				  final String hintText = myHashtableForCurrLang.get(tokenizedString);
+				  final UsbongDecisionTreeEngineActivity finalUdtea = (UsbongDecisionTreeEngineActivity)a;
+							  
+			      SpannableString link = makeLinkSpan(tokenizedStringList.get(i), new View.OnClickListener() {          
+			            @Override
+			            public void onClick(View v) {
+					    	new AlertDialog.Builder(finalUdtea).setTitle("Word Hint!")
+		            		.setMessage(hintText)
+							.setPositiveButton("OK", new DialogInterface.OnClickListener() {					
+								@Override
+								public void onClick(DialogInterface dialog, int which) {	            				
+								}
+							}).show();
+			            }
+			      });					
 //							      Log.d(">>>","has match: "+tokenizedStringList.get(i));
-							      foundMatch=true;
+			      foundMatch=true;
 
-							      switch(type) {
-									case IS_RADIOBUTTON:
-										((RadioButton)myView).append(link);
-										makeLinksFocusable(((RadioButton)myView), IS_RADIOBUTTON);
-										continue;
-									case IS_CHECKBOX:
-										((CheckBox)myView).append(link);
-									    makeLinksFocusable(((CheckBox)myView), IS_CHECKBOX); 
-										continue;				
-									default://case IS_TEXTVIEW:
-										((TextView)myView).append(link);
-									    makeLinksFocusable(((TextView)myView), IS_TEXTVIEW); 
-										continue;
-							      }							      							      
-							  }
-						  }
-					  }
-				  }				  
-				  if (!foundMatch) {					  
-				        Log.d(">>>","i: "+i+" "+tokenizedStringList.get(i));
-				        output.append(tokenizedStringList.get(i));
-				        Log.d(">>> type",""+type);
-				        
-			        	switch(type) {
-							case IS_RADIOBUTTON:
-								((RadioButton)myView).append(Html.fromHtml(tokenizedStringList.get(i)));
-								//makeLinksFocusable(((RadioButton)myView), IS_RADIOBUTTON);
-								continue;
-							case IS_CHECKBOX:
-								((CheckBox)myView).append(Html.fromHtml(tokenizedStringList.get(i)));
+			      switch(type) {
+					case IS_RADIOBUTTON:
+						((RadioButton)myView).append(link);
+						makeLinksFocusable(((RadioButton)myView), IS_RADIOBUTTON);
+						continue;
+					case IS_CHECKBOX:
+						((CheckBox)myView).append(link);
+					    makeLinksFocusable(((CheckBox)myView), IS_CHECKBOX); 
+						continue;				
+					default://case IS_TEXTVIEW:
+						((TextView)myView).append(link);
+					    makeLinksFocusable(((TextView)myView), IS_TEXTVIEW); 
+						continue;
+			      }							      							      
+			  }
+			  if (!foundMatch) {					  
+			        Log.d(">>>","i: "+i+" "+tokenizedStringList.get(i));
+			        output.append(tokenizedStringList.get(i));
+			        Log.d(">>> type",""+type);
+			        
+		        	switch(type) {
+						case IS_RADIOBUTTON:
+							((RadioButton)myView).append(Html.fromHtml(tokenizedStringList.get(i)));
+							//makeLinksFocusable(((RadioButton)myView), IS_RADIOBUTTON);
+							continue;
+						case IS_CHECKBOX:
+							((CheckBox)myView).append(Html.fromHtml(tokenizedStringList.get(i)));
 //							    makeLinksFocusable(((CheckBox)myView), IS_CHECKBOX); 
-								continue;				
-							default://case IS_TEXTVIEW:
+							continue;				
+						default://case IS_TEXTVIEW:
 //								Log.d(">>>>>myView before Html.fromHtml...",((TextView)myView).getText().toString());
-								((TextView)myView).append(Html.fromHtml(tokenizedStringList.get(i)));
+							((TextView)myView).append(Html.fromHtml(tokenizedStringList.get(i)));
 
 //								((TextView)myView).setText(Html.fromHtml(((TextView)myView).getText().toString()+tokenizedStringList.get(i)));
-								
-								Log.d(">>>>>myView",((TextView)myView).getText().toString());
+							
+							Log.d(">>>>>myView",((TextView)myView).getText().toString());
 //								((CheckBox)myView).setText(mySpanned, TextView.BufferType.SPANNABLE);
 //								((TextView)myView).setMovementMethod(LinkMovementMethod.getInstance());
 //							    makeLinksFocusable(((TextView)myView), IS_TEXTVIEW); 
-								continue;
-					      }							      						      
-					  }
-				  }	
-			  
-		} 
+							continue;
+				   }							      						      
+			  }
+		  }	
+		}
 		catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -2681,21 +2636,65 @@ public class UsbongUtils {
     	
     	return myPrompts;
     }
+
+    //added by Mike, 20160414
+    //this is like getAvailableTranslationsArrayList(String treeFile)
+	public static ArrayList<String> getAvailableHintsArrayList(String treeFile)
+	{
+		List<String> ret = new ArrayList<String>();
+				
+		String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + treeFile+".utree/hints/";
+		File file = new File(filePath);
+		if(!file.exists())
+		{
+			file = new File(UsbongUtils.USBONG_TREES_FILE_PATH+"temp/"+treeFile+".utree/hints/");
+
+			if(!file.exists()) {						
+				return null;
+			}
+		}
+		//if this point is reached, this means that the .utree has a 'trans' folder
+		Log.d(">>>>","reached this point; has hints folder");
+
+		try 
+		{  							
+			UsbongFileFilter myFileFilter = new UsbongFileFilter("xml");			
+			String[] listOfHints = file.list(myFileFilter); //file.list();
+			int totalHints = listOfHints.length;
+			
+			for(int i=0; i<totalHints; i++) {
+				ret.add(listOfHints[i].replace(".xml", "")); //remove the ".xml" at the end
+				Log.d(">>>>>>listOfHints[i]:",listOfHints[i]);
+			}			
+    	}
+    	catch(Exception e) {
+    		System.out.println("ERROR in reading FILE.");
+    		e.printStackTrace();
+    	}
+		
+		return (ArrayList<String>) ret;
+	}
     
     //added by Mike, 20160411
-    public static Hashtable<String,Hashtable<String,String>> putHintsInHashtable(String myTree) {
-    	ArrayList<String> myTransArrayList = UsbongUtils.getAvailableTranslationsArrayList(myTree);
-        final int myTransArrayListSize = myTransArrayList.size();
-     
-//    	List<Hashtable<String,String>> myHashTable=new ArrayList<Hashtable<String,String>>(myTransArrayListSize);
-    	Hashtable<String,Hashtable<String,String>> myHashtable = new Hashtable<String, Hashtable<String,String>>();
+    public static void putHintsInHashtable(String myTree) {
+    	Log.d(">>>>", "myTree: "+myTree);
     	
-		for (int i = 0; i < myTransArrayListSize; i++) {		   
-	    	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/hints/" + myTransArrayList.get(i) +".xml";
+    	ArrayList<String> myHintsArrayList = UsbongUtils.getAvailableHintsArrayList(myTree);
+        if (myHintsArrayList==null) {
+        	Log.d(">>>>", "no hints found");
+        	return; //this means that there are no translations/hints for the given myTree
+        }
+    	
+    	final int myHintsArrayListSize = myHintsArrayList.size();
+    	Log.d(">>>>", "myHintsArrayListSize: "+myHintsArrayListSize);
+        myHashtableOfWordHints = new Hashtable<String, Hashtable<String,String>>();
+    	
+		for (int i = 0; i < myHintsArrayListSize; i++) {		   
+	    	String filePath = UsbongUtils.USBONG_TREES_FILE_PATH + myTreeFileName+".utree/hints/" + myHintsArrayList.get(i) +".xml";
 	    	File file = new File(filePath);
 			if(!file.exists())
 			{
-				file = new File(UsbongUtils.USBONG_TREES_FILE_PATH+"temp/"+myTreeFileName+".utree/hints/" + myTransArrayList.get(i) +".xml");
+				file = new File(UsbongUtils.USBONG_TREES_FILE_PATH+"temp/"+myTreeFileName+".utree/hints/" + myHintsArrayList.get(i) +".xml");
 
 				if(!file.exists()) 
 				{						
@@ -2705,7 +2704,6 @@ public class UsbongUtils {
 			//if this point is reached, this means that hint file exists
 			
 	        Hashtable<String,String> wordsHashtable = new Hashtable<String,String>();			
-			myHashtable.put(myTransArrayList.get(i),wordsHashtable); //first parameter is for the language name, the second is the hashtable of the actual words
 			
 			try {			  
 				  XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
@@ -2732,14 +2730,18 @@ public class UsbongUtils {
 				      }
 					  
 					  if (parser.getName().equals("string")) {
-					    	 wordsHashtable.put(parser.getAttributeValue(null, "name").trim().toLowerCase(), parser.getText());
+						  String name = parser.getAttributeValue(null, "name").trim().toLowerCase().replaceAll("[^\\w\\s]", "");
+						  if (parser.next() == XmlPullParser.TEXT) {
+					    	 wordsHashtable.put(name, parser.getText());
+						  }
 					  }
 				  }
+				  
+			      myHashtableOfWordHints.put(myHintsArrayList.get(i),wordsHashtable); //first parameter is for the language name, the second is the hashtable of the actual words
 			}
 			catch(Exception e) {
 				e.printStackTrace();
 			}
 		}		
-    	return myHashtable;
     }
 }
