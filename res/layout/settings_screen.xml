@@ -30,7 +30,7 @@
 		      android:layout_weight="1">  		
 				<TextView android:id="@+id/settings_auto_narrate_mode_textview"
 						style="@style/UsbongSettingsTextView"
-					    android:text="Auto-narrate Mode"					    
+					    android:text="Auto-Narrate Mode"					    
 					    />		
 				<CheckBox android:id="@+id/settings_auto_narrate_mode_checkbox"
 						style="@style/UsbongSettingsCheckBox"
@@ -43,9 +43,22 @@
 		      android:layout_weight="1">  		
 				<TextView android:id="@+id/settings_auto_play_mode_textview"
 						style="@style/UsbongSettingsTextView"
-					    android:text="Auto-play Mode"					    
+					    android:text="Auto-Play Mode"					    
 					    />		
 				<CheckBox android:id="@+id/settings_auto_play_mode_checkbox"
+						style="@style/UsbongSettingsCheckBox"
+				/>
+			</LinearLayout>			
+			<LinearLayout
+		      android:orientation="horizontal"
+		      android:layout_width="fill_parent"
+		      android:layout_height="fill_parent"
+		      android:layout_weight="1">  		
+				<TextView android:id="@+id/settings_auto_loop_mode_textview"
+						style="@style/UsbongSettingsTextView"
+					    android:text="Auto-Loop Mode"					    
+					    />		
+				<CheckBox android:id="@+id/settings_auto_loop_mode_checkbox"
 						style="@style/UsbongSettingsCheckBox"
 				/>
 			</LinearLayout>			

@@ -104,6 +104,7 @@ public class UsbongUtils {
 	public static boolean STORE_OUTPUT=true;
 	public static boolean IS_IN_AUTO_NARRATE_MODE=true;
 	public static boolean IS_IN_AUTO_PLAY_MODE=false;
+	public static boolean IS_IN_AUTO_LOOP_MODE=false;
 	
 	public final static String API_KEY = "AIzaSyB5mM_lk_bbdT5nUWQTO6S5FyZ9IgaxqXc"; //added by Mike, 20151120
 

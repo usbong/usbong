@@ -644,7 +644,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 			case(R.id.settings):
 			//Reference: http://stackoverflow.com/questions/16954196/alertdialog-with-checkbox-in-android;
 			//last accessed: 20160408; answer by: kamal; edited by: Empty2K12
-			final CharSequence[] items = {UsbongConstants.AUTO_NARRATE_STRING, UsbongConstants.AUTO_PLAY_STRING};
+			final CharSequence[] items = {UsbongConstants.AUTO_NARRATE_STRING, UsbongConstants.AUTO_PLAY_STRING, UsbongConstants.AUTO_LOOP_STRING};
 			// arraylist to keep the selected items
 			selectedSettingsItems=new ArrayList<Integer>();
 			
@@ -656,6 +656,9 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 				selectedSettingsItems.add(UsbongConstants.AUTO_PLAY);	
 				selectedSettingsItems.add(UsbongConstants.AUTO_NARRATE); //if AUTO_PLAY is checked, AUTO_NARRATE should also be checked
 	    	}	        				
+			if (UsbongUtils.IS_IN_AUTO_LOOP_MODE) {					
+				selectedSettingsItems.add(UsbongConstants.AUTO_LOOP);			
+			}
 		    
 		    selectedSettingsItemsInBoolean = new boolean[items.length];
 		    for(int k=0; k<items.length; k++) {
@@ -715,7 +718,8 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 			 	    	{ 	
 			 	    		Log.d(">>>", "currLineString: "+currLineString);
 							if ((currLineString.contains("IS_IN_AUTO_NARRATE_MODE="))
-							|| (currLineString.contains("IS_IN_AUTO_PLAY_MODE="))) {
+							|| (currLineString.contains("IS_IN_AUTO_PLAY_MODE="))
+							|| (currLineString.contains("IS_IN_AUTO_LOOP_MODE="))) {
 								continue;
 							}	
 							else {
@@ -741,6 +745,10 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 						    		UsbongUtils.IS_IN_AUTO_NARRATE_MODE=true;
 */						    									
 								}	
+								else if (i==UsbongConstants.AUTO_LOOP) {
+						    		out.println("IS_IN_AUTO_LOOP_MODE=ON");
+						    		UsbongUtils.IS_IN_AUTO_LOOP_MODE=true;						
+								}
 							}
 							else {
 								if (i==UsbongConstants.AUTO_NARRATE) {
@@ -750,6 +758,10 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 								else if (i==UsbongConstants.AUTO_PLAY) {
 						    		out.println("IS_IN_AUTO_PLAY_MODE=OFF");
 						    		UsbongUtils.IS_IN_AUTO_PLAY_MODE=false;	
+								}
+								else if (i==UsbongConstants.AUTO_LOOP) {
+						    		out.println("IS_IN_AUTO_LOOP_MODE=OFF");
+						    		UsbongUtils.IS_IN_AUTO_LOOP_MODE=false;	
 								}
 							}				
 						}					
@@ -1331,8 +1343,9 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		isInTreeLoader=false;		
 		invalidateOptionsMenu(); //should be after isInTreeLoader=false; added by Mike, 24 Sept. 2015
 		myTree = s;
-		UsbongUtils.clearTempFolder();
-    	
+		UsbongUtils.clearTempFolder();		
+		currUsbongNode=""; //added by Mike, 20160415
+		
         initParser();
 	}
 	
@@ -1967,11 +1980,11 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		wasNextButtonPressed=true;
 		hasUpdatedDecisionTrackerContainer=false;
 		
-		if (mTts.isSpeaking()) {
+		if ((mTts!=null) && (mTts.isSpeaking())) {
 			mTts.stop();
 		}
-		//added by Mike, 21 July 2015
-		if (myMediaPlayer.isPlaying()) {
+		//edited by Mike, 20160415
+		if ((myMediaPlayer!=null) && (myMediaPlayer.isPlaying())) {
 			myMediaPlayer.stop();
 		}
 
@@ -1997,7 +2010,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		}
 
     	//UsbongConstants.END_STATE_SCREEN = last screen
-    	if (currScreen==UsbongConstants.END_STATE_SCREEN) {
+    	if (currScreen==UsbongConstants.END_STATE_SCREEN) {    		
     		int usbongAnswerContainerSize = usbongAnswerContainer.size();
     		StringBuffer outputStringBuffer = new StringBuffer();
     		for(int i=0; i<usbongAnswerContainerSize;i++) {
@@ -2035,7 +2048,14 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     		//added by Mike, Sept. 10, 2014
     		UsbongUtils.clearTempFolder();
 
-    		finish();
+    		//added by Mike, 20160415
+    		if (UsbongUtils.IS_IN_AUTO_LOOP_MODE) {
+    			initParser(myTree);
+    			return;
+    		}
+    		else {
+    			finish();
+    		}
     	}
     	else {			
     		if (currScreen==UsbongConstants.YES_NO_DECISION_SCREEN) {

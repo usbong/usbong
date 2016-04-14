@@ -39,6 +39,7 @@ public class SettingsActivity extends Activity {
 	private CheckBox myDebugModeCheckBox;
 	private CheckBox myAutoNarrateModeCheckBox;
 	private CheckBox myAutoPlayModeCheckBox;
+	private CheckBox myAutoLoopModeCheckBox;
 	private CheckBox myDestinationURLCheckBox;
 	private EditText myDestinationURLEditText;
 	private CheckBox myStoreOutputCheckBox;
@@ -89,6 +90,9 @@ public class SettingsActivity extends Activity {
 		        } 
 			}
 		});
+		
+		//added by Mike, 20160410
+		myAutoLoopModeCheckBox = (CheckBox)findViewById(R.id.settings_auto_loop_mode_checkbox);		
 	
 	    try {	    	
 			InputStreamReader reader = UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + "usbong.config");	
@@ -108,6 +112,9 @@ public class SettingsActivity extends Activity {
 				}
 				if (currLineString.equals("IS_IN_AUTO_PLAY_MODE=ON")) {
 					myAutoPlayModeCheckBox.setChecked(true);				
+				}
+				if (currLineString.equals("IS_IN_AUTO_LOOP_MODE=ON")) {
+					myAutoLoopModeCheckBox.setChecked(true);				
 				}
 				
 				if (currLineString.equals("STORE_OUTPUT=OFF")) {
@@ -190,7 +197,16 @@ public class SettingsActivity extends Activity {
 		    		out.println("IS_IN_AUTO_PLAY_MODE=OFF");
 		    		UsbongUtils.IS_IN_AUTO_PLAY_MODE=false;							
 				}
-				
+
+				if (myAutoLoopModeCheckBox.isChecked()) {
+		    		out.println("IS_IN_AUTO_LOOP_MODE=ON");
+		    		UsbongUtils.IS_IN_AUTO_LOOP_MODE=true;							
+				}					
+				else {
+		    		out.println("IS_IN_AUTO_LOOP_MODE=OFF");
+		    		UsbongUtils.IS_IN_AUTO_LOOP_MODE=false;							
+				}					
+
 				if (myStoreOutputCheckBox.isChecked()) {
 		    		out.println("STORE_OUTPUT=ON");
 		    		UsbongUtils.setStoreOutput(true);
