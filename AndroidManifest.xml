@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="usbong.android"
       android:versionCode="79"
-      android:versionName="20160410"
+      android:versionName="20160414"
       android:installLocation="auto"      
 >
 

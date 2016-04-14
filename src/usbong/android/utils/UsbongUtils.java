@@ -1936,7 +1936,7 @@ public class UsbongUtils {
 			  
 			  String tokenizedString = tokenizedStringList.get(i).trim().toLowerCase().replaceAll("[^\\w\\s]", "");
 			  
-			  if (myHashtableForCurrLang.contains(tokenizedString)) {					  								  
+			  if (myHashtableForCurrLang.containsKey(tokenizedString)) {					  								  
 				  final String hintText = myHashtableForCurrLang.get(tokenizedString);
 				  final UsbongDecisionTreeEngineActivity finalUdtea = (UsbongDecisionTreeEngineActivity)a;
 							  
