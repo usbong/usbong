@@ -128,7 +128,9 @@ public class UsbongUtils {
 	public static final int LANGUAGE_ILONGGO=5;
 	public static final int LANGUAGE_KAPAMPANGAN=6;
 	public static final int LANGUAGE_FRENCH=7;
-	public static final int LANGUAGE_SPANISH=8;
+	public static final int LANGUAGE_MANDARIN_SIMPLIFIED=8;
+	public static final int LANGUAGE_MANDARIN_TRADITIONAL=9;
+	public static final int LANGUAGE_SPANISH=10;
 	
 	private static String currLanguage;
 	
@@ -213,7 +215,7 @@ public class UsbongUtils {
 		return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches(); //updated by Mike, 24 Sept. 2015
 	}
 
-	//added by Mike, 27 Oct. 2015
+	//edited by Mike, 20160417
 	public static void initUsbongConfigFile() {
         try 
         {
@@ -235,6 +237,11 @@ public class UsbongUtils {
 
 	    		UsbongUtils.IS_IN_AUTO_PLAY_MODE=false;						
 			    out.println("IS_IN_AUTO_PLAY_MODE=OFF");
+
+			    //added by Mike, 20160417
+	    		UsbongUtils.IS_IN_AUTO_LOOP_MODE=false;						
+			    out.println("IS_IN_AUTO_LOOP_MODE=OFF");
+
 				out.close();
     		}
     		else {
@@ -253,8 +260,11 @@ public class UsbongUtils {
 	    			else if (currLineString.equals("IS_IN_AUTO_NARRATE_MODE=ON")) {
 						UsbongUtils.IS_IN_AUTO_NARRATE_MODE=true;			
 					}
-					if (currLineString.equals("IS_IN_AUTO_PLAY_MODE=ON")) {
+	    			else if (currLineString.equals("IS_IN_AUTO_PLAY_MODE=ON")) {
 						UsbongUtils.IS_IN_AUTO_PLAY_MODE=true;			
+					}
+	    			else if (currLineString.equals("IS_IN_AUTO_LOOP_MODE=ON")) {
+						UsbongUtils.IS_IN_AUTO_LOOP_MODE=true;			
 					}
 	    			/*
 	    			else {
@@ -2575,7 +2585,7 @@ public class UsbongUtils {
 
     //added by JP, 26 May 2015
 	public static String parseYouTubeLink(String l) {
-		String pattern = "(?<=watch\\?v=|/videos/|embed\\/|youtu.be\\/|\\/v\\/|watch\\?v%3D|%2Fvideos%2F|embed%‌​2F|youtu.be%2F|%2Fv%2F)[^#\\&\\?\n]*";
+		String pattern = "(?<=watch\\?v=|/videos/|embed\\/|youtu.be\\/|\\/v\\/|watch\\?v%3D|%2Fvideos%2F|embed%遯ｶ螽ｯ�ｽ2F|youtu.be%2F|%2Fv%2F)[^#\\&\\?\n]*";
 
 		Pattern compiledPattern = Pattern.compile(pattern);
 	    Matcher matcher = compiledPattern.matcher(l);

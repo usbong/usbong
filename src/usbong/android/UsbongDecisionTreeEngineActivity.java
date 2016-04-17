@@ -101,8 +101,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 	public final String myPackageName="usbong.android";
 	
 	public int currLanguageBeingUsed;
-	
-	
+		
 	public int currScreen=UsbongConstants.TEXTFIELD_SCREEN;
 	
 	public static final int PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE=0;
@@ -218,14 +217,17 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 	public static YouTubePlayer myYouTubePlayer;
 	private UdteaObject myUdteaObject;
 	
-	//added by Mike, 20160123
-    IInAppBillingService mService;
-    ServiceConnection mServiceConn;
+	//edited by Mike, 20160417
+    private IInAppBillingService mService;
+    private ServiceConnection mServiceConn;
     
-    //added by Mike, 20160408
-    private ArrayList<Integer> selectedSettingsItems;
-    private boolean[] selectedSettingsItemsInBoolean;
+	//edited by Mike, 20160417
+    public static ArrayList<Integer> selectedSettingsItems;
+    public static boolean[] selectedSettingsItemsInBoolean;
     private AlertDialog inAppSettingsDialog;
+    
+    //added by Mike, 20160415
+    private boolean isAutoLoopedTree;
 	
 //	@SuppressLint("InlinedApi")
     @Override
@@ -247,6 +249,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);        
 
         currUsbongNode=""; //added by Mike, 20151126
+        isAutoLoopedTree=false; //added by Mike, 20160415
         
         //if return is null, then currScreen=0
 //        currScreen=Integer.parseInt(getIntent().getStringExtra("currScreen")); 
@@ -285,7 +288,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		//added by Mike, 25 Sept. 2015
 		myBGMediaPlayer = new MediaPlayer();
 		myBGMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-		myBGMediaPlayer.setVolume(1.0f, 1.0f);
+		myBGMediaPlayer.setVolume(0.5f, 0.5f);
 		
 		//added by Mike, 22 July 2015
 		AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -303,6 +306,10 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     	
     	try{    		
     		UsbongUtils.createUsbongFileStructure();
+    		
+  			//added by Mike, 20160417
+  			UsbongUtils.initUsbongConfigFile();
+
     		//create the usbong_demo_tree and store it in sdcard/usbong/usbong_trees
     		UsbongUtils.storeUsbongAppAssetsFileIntoSDCard(this, UsbongUtils.DEFAULT_UTREE_TO_LOAD+".xml");
     	}
@@ -547,8 +554,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		StringBuffer sb = new StringBuffer();
 		switch(item.getItemId())
 		{
-			case(R.id.set_language):
-				
+			case(R.id.set_language):				
 //				final Dialog dialog = new Dialog(this);
 				final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
 				// Get the layout inflater
@@ -1005,6 +1011,14 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 			Log.d(">>>>currUsbongAudioString: ",""+currUsbongAudioString);
 			Log.d(">>>>currLanguageBeingUsed: ",UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed));
 
+			//added by Mike, 2 Oct. 2015
+			//exception for Mandarin
+			//make simplified and traditional refer to the same audio folder
+			if ((currLanguageBeingUsed==UsbongUtils.LANGUAGE_MANDARIN_SIMPLIFIED) ||
+					(currLanguageBeingUsed==UsbongUtils.LANGUAGE_MANDARIN_TRADITIONAL)) {
+				currLanguageBeingUsed=UsbongUtils.LANGUAGE_MANDARIN;
+			}
+			
 			String filePath=UsbongUtils.getAudioFilePathFromUTree(currUsbongAudioString, UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed));
 //			Log.d(">>>>filePath: ",filePath);
 			if (filePath!=null) {
@@ -1343,6 +1357,16 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		isInTreeLoader=false;		
 		invalidateOptionsMenu(); //should be after isInTreeLoader=false; added by Mike, 24 Sept. 2015
 		myTree = s;
+		
+		//added by Mike, 20160417
+		if (mTts!=null) {
+			mTts.stop(); 			
+		} 
+		//added by Mike, 20160417
+		if (myMediaPlayer!=null) {
+			myMediaPlayer.stop();
+		} 
+
 		UsbongUtils.clearTempFolder();		
 		currUsbongNode=""; //added by Mike, 20160415
 		
@@ -1432,11 +1456,12 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 			  //if this is the first process-definition tag
 			  else if (parser.getAttributeCount()>1){ 
 				  if ((currUsbongNode.equals("")) && (parser.getName().equals("process-definition"))) {
-					  //@todo: remove this id thing, immediately use the String; otherwise it'll be cumbersome to keep on adding language ids
-					  currLanguageBeingUsed=UsbongUtils.getLanguageID(parser.getAttributeValue(null, "lang"));
-					  UsbongUtils.setDefaultLanguage(UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed));
-					  UsbongUtils.setCurrLanguage(parser.getAttributeValue(null, "lang")); //added by Mike, 22 Sept. 2015
-					  
+					  if (!isAutoLoopedTree) {
+						  //@todo: remove this id thing, immediately use the String; otherwise it'll be cumbersome to keep on adding language ids
+						  currLanguageBeingUsed=UsbongUtils.getLanguageID(parser.getAttributeValue(null, "lang"));
+						  UsbongUtils.setDefaultLanguage(UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed));
+						  UsbongUtils.setCurrLanguage(parser.getAttributeValue(null, "lang")); //added by Mike, 22 Sept. 2015
+					  }
 //					  System.out.println("currLanguageBeingUsed: "+currLanguageBeingUsed);
 					  	
 					  //added by Mike, Feb. 2, 2013
@@ -1500,8 +1525,9 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 						  parseYesNoAnswers(parser);
 					  }
 					  else if (parser.getName().equals("end-state")) { 
-						  //temporarily do this
-						  currScreen=UsbongConstants.END_STATE_SCREEN;
+ 						  currScreen=UsbongConstants.END_STATE_SCREEN;
+ 						  processNextButtonPressed();
+ 						  return;
 					  }
 					  else if (parser.getName().equals("task-node")) { 
 						    StringTokenizer st = new StringTokenizer(currUsbongNode, "~");
@@ -2050,6 +2076,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 
     		//added by Mike, 20160415
     		if (UsbongUtils.IS_IN_AUTO_LOOP_MODE) {
+    			isAutoLoopedTree=true;
     			initParser(myTree);
     			return;
     		}

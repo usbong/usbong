@@ -1005,9 +1005,11 @@ public class UsbongScreenProcessor
 				mySendToWebserverYesRadioButton.setChecked(true);		        	
 			}
 		} else if (udtea.currScreen == UsbongConstants.END_STATE_SCREEN) {
+			//this is not reached anymore, comment added by Mike, 20160417
+
 			//updated by Mike, 20160210
 			//skip displaying of END_STATE_SCREEN, but perform end-state processes
-			udtea.processNextButtonPressed();
+//			udtea.processNextButtonPressed();
 /*
 			udtea.setContentView(R.layout.end_state_screen);
 			TextView endStateTextView = (TextView)udtea.findViewById(R.id.end_state_textview);
