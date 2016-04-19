@@ -220,7 +220,7 @@ public class UsbongUtils {
         try 
         {
         	System.out.println(">>>>>> Creating file structure.");
-        	UsbongUtils.createUsbongFileStructure();
+        	UsbongUtils.createFilePath(BASE_FILE_PATH);
         	
         	//default values
         	UsbongUtils.IS_IN_DEBUG_MODE=false;
@@ -353,6 +353,14 @@ public class UsbongUtils {
 		return timeStamp;
     }
         
+	public static void createFilePath(String filePath) throws IOException {
+		File directory = new File(filePath);		
+		if (!directory.exists() && !directory.mkdirs()) 
+    	{
+    		throw new IOException("File Path to file could not be created.");
+    	}    			
+	}
+
 	public static void createUsbongFileStructure() throws IOException {
 		//code below doesn't seem to work
 //		String baseFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "usbong/";
