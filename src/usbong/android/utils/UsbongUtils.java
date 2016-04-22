@@ -285,7 +285,7 @@ public class UsbongUtils {
 	}
 	
 	//20160420
-	public static boolean checkIfLocalLanguage(String s) {		
+	public static boolean isLocalLanguage(String s) {		
 		switch (s) {
 /*			case "Filipino":
 				return true;
@@ -301,7 +301,7 @@ public class UsbongUtils {
 	}
 	
 	//20160422
-	public static boolean checkIfLanguageIsAnException(String s) {
+	public static boolean isLanguageIsAnException(String s) {
 		switch (s) {
 			case "English":
 				return true;
@@ -311,7 +311,7 @@ public class UsbongUtils {
 		return false;
 	}
 	
-	public static boolean checkIfInDebugMode() {
+	public static boolean isInDebugMode() {
 	    try {	    	
 			InputStreamReader reader = UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + "usbong.config");	
 			BufferedReader br = new BufferedReader(reader);    		

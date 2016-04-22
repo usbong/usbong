@@ -383,7 +383,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
         padding_in_px = (int) (padding_in_dp * scale + 0.5f);
 	    
         //added by Mike, 25 June 2013
-        UsbongUtils.setDebugMode(UsbongUtils.checkIfInDebugMode());
+        UsbongUtils.setDebugMode(UsbongUtils.isInDebugMode());
         
         //added by Mike, 25 Feb. 2014
         UsbongUtils.setStoreOutput(UsbongUtils.checkIfStoreOutput());
@@ -594,12 +594,12 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 					private AlertDialog myAlertDialog;
 					@Override
 				    public boolean isEnabled(int position) {
-						if (UsbongUtils.checkIfLanguageIsAnException(this.getItem(position).toString())) {
+						if (UsbongUtils.isLanguageIsAnException(this.getItem(position).toString())) {
 							return true;
 						}
 						
 						if (!UsbongUtils.hasUnlockedLocalLanguages) {
-							if (UsbongUtils.checkIfLocalLanguage(this.getItem(position).toString())) {
+							if (UsbongUtils.isLocalLanguage(this.getItem(position).toString())) {
 								if ((myAlertDialog==null) || (!myAlertDialog.isShowing())) {
 									myAlertDialog = purchaseLanguagesListDialog.show();
 								}
@@ -609,7 +609,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 						
 						if (!UsbongUtils.hasUnlockedForeignLanguages) {
 							//if it is not a local language, then it is a foreign language
-							if (!UsbongUtils.checkIfLocalLanguage(this.getItem(position).toString())) {
+							if (!UsbongUtils.isLocalLanguage(this.getItem(position).toString())) {
 								if ((myAlertDialog==null) || (!myAlertDialog.isShowing())) {
 									myAlertDialog = purchaseLanguagesListDialog.show();
 								}
@@ -629,9 +629,32 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		        myTransArrayList.add(0, UsbongUtils.getDefaultLanguage());
 		        final int myTransArrayListSize = myTransArrayList.size();
 		        
+		        /*		        
 				for (int i = 0; i < myTransArrayListSize; i++) {
-				    arrayAdapter.add(myTransArrayList.get(i));
+				    arrayAdapter.add(myTransArrayList.get(i));				    
 				}
+*/
+				for (int i = 0; i < myTransArrayListSize; i++) {
+					if (UsbongUtils.isLanguageIsAnException(myTransArrayList.get(i))) {
+						arrayAdapter.add(myTransArrayList.get(i));				    
+						continue;
+					}
+					else {
+						if (!UsbongUtils.hasUnlockedLocalLanguages) {
+							if (UsbongUtils.isLocalLanguage(myTransArrayList.get(i))) {
+								arrayAdapter.add(myTransArrayList.get(i)+" (Locked)");				    								
+								continue;
+							}
+						}
+						if (!UsbongUtils.hasUnlockedForeignLanguages) {
+							if (!UsbongUtils.isLocalLanguage(myTransArrayList.get(i))) {
+								arrayAdapter.add(myTransArrayList.get(i)+" (Locked)");				    								
+								continue;							
+							}
+						}
+
+					}
+				}				
 
 				//init purchase languages list
 				final AlertDialog.Builder purchaseLanguagesListDialog = new AlertDialog.Builder(this);
