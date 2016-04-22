@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 Usbong Social Systems, Inc.
+ * Copyright 2011-2016 Usbong Social Systems, Inc.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,6 @@
 /*
  * @authors: Michael B. Syson, JP Talusan
  */
-
 package usbong.android;
 
 import java.io.BufferedReader;
@@ -228,6 +227,10 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     
     //added by Mike, 20160415
     private boolean isAutoLoopedTree;
+    
+    //added by Mike, 20160420
+    private static AlertDialog.Builder purchaseLanguagesListDialog;
+    private static PurchaseLanguageBundleListAdapter myPurchaseLanguageBundleListAdapter;
 	
 //	@SuppressLint("InlinedApi")
     @Override
@@ -353,7 +356,26 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 	    serviceIntent.setPackage("com.android.vending");
 	    bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
 	    //-----------------------------------------------------------------
-	    
+	    //added by Mike, 20160421
+		//init purchase languages list
+        purchaseLanguagesListDialog = new AlertDialog.Builder(getInstance());
+        myPurchaseLanguageBundleListAdapter = new PurchaseLanguageBundleListAdapter(getInstance());
+		purchaseLanguagesListDialog.setTitle("Purchase");	
+		purchaseLanguagesListDialog.setSingleChoiceItems(myPurchaseLanguageBundleListAdapter,0,
+		        new DialogInterface.OnClickListener() {
+		            public void onClick(DialogInterface dialog, int which) {								            	
+//		                Log.i("Selected Item : ", (String) myPurchaseLanguageBundleListAdapter.getItem(which));
+//		                dialog.dismiss();
+		                
+		            }
+		        });				            	
+    	purchaseLanguagesListDialog.setNegativeButton("Cancel",
+		        new DialogInterface.OnClickListener() {
+		            public void onClick(DialogInterface dialog, int which) {
+		                dialog.dismiss();
+		            }
+		        });
+    	
         //reference: Labeeb P's answer from stackoverflow;
         //http://stackoverflow.com/questions/4275797/view-setpadding-accepts-only-in-px-is-there-anyway-to-setpadding-in-dp;
         //last accessed: 23 May 2013
@@ -566,9 +588,37 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 */
 //				dialog.setView(inflater.inflate(R.layout.set_language_dialog, null));
 
-				final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+		    	final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
 				        this,
-				        android.R.layout.simple_list_item_single_choice);
+				        android.R.layout.simple_list_item_single_choice) {
+					private AlertDialog myAlertDialog;
+					@Override
+				    public boolean isEnabled(int position) {
+						if (UsbongUtils.checkIfLanguageIsAnException(this.getItem(position).toString())) {
+							return true;
+						}
+						
+						if (!UsbongUtils.hasUnlockedLocalLanguages) {
+							if (UsbongUtils.checkIfLocalLanguage(this.getItem(position).toString())) {
+								if ((myAlertDialog==null) || (!myAlertDialog.isShowing())) {
+									myAlertDialog = purchaseLanguagesListDialog.show();
+								}
+								return false;
+							}
+						}
+						
+						if (!UsbongUtils.hasUnlockedForeignLanguages) {
+							//if it is not a local language, then it is a foreign language
+							if (!UsbongUtils.checkIfLocalLanguage(this.getItem(position).toString())) {
+								if ((myAlertDialog==null) || (!myAlertDialog.isShowing())) {
+									myAlertDialog = purchaseLanguagesListDialog.show();
+								}
+								return false;
+							}
+						}
+				    	return true;
+				    }
+				};
 				
 		        ArrayList<String> myTransArrayList = UsbongUtils.getAvailableTranslationsArrayList(myTree);
 

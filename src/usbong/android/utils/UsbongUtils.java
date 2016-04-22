@@ -111,6 +111,11 @@ public class UsbongUtils {
 	public static String DEFAULT_UTREE_TO_LOAD="UsbongDemoTree"; //updated by Mike, 8 April 2016
 	public static String BASE_FILE_PATH = Environment.getExternalStorageDirectory()+"/usbong/";
 	public static String USBONG_TREES_FILE_PATH = BASE_FILE_PATH + "usbong_trees/";
+	
+	//added by Mike, 20160420
+	public static boolean hasUnlockedLocalLanguages=false; //except Filipino
+	public static boolean hasUnlockedForeignLanguages=false; //except English
+		
 	//	public static String BASE_FILE_PATH = "/sdcard/usbong/";
 	private static String timeStamp;
 	private static String dateTimeStamp;
@@ -277,6 +282,33 @@ public class UsbongUtils {
         	System.out.println("ERROR creating usbong file structure! ");
         	e.printStackTrace();
         }
+	}
+	
+	//20160420
+	public static boolean checkIfLocalLanguage(String s) {		
+		switch (s) {
+/*			case "Filipino":
+				return true;
+*/				
+			case "Bisaya":
+				return true;
+			case "Ilonggo":
+				return true;
+			case "Kapampangan":
+				return true;				
+		}				
+		return false;
+	}
+	
+	//20160422
+	public static boolean checkIfLanguageIsAnException(String s) {
+		switch (s) {
+			case "English":
+				return true;
+			case "Filipino":
+				return true;
+		}				
+		return false;
 	}
 	
 	public static boolean checkIfInDebugMode() {
