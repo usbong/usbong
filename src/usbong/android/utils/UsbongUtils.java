@@ -136,6 +136,7 @@ public class UsbongUtils {
 	public static final int LANGUAGE_MANDARIN_SIMPLIFIED=8;
 	public static final int LANGUAGE_MANDARIN_TRADITIONAL=9;
 	public static final int LANGUAGE_SPANISH=10;
+	public static final int LANGUAGE_KOREAN=11;
 	
 	private static String currLanguage;
 	
@@ -1267,6 +1268,9 @@ public class UsbongUtils {
 	    	if (s.equals("Spanish")) {
 	    		return LANGUAGE_SPANISH;
 	    	}
+	    	if (s.equals("Korean")) {
+	    		return LANGUAGE_KOREAN;
+	    	}
     	}
     	return LANGUAGE_ENGLISH;
     }
@@ -1289,6 +1293,8 @@ public class UsbongUtils {
     			return "French";
     		case LANGUAGE_SPANISH:
     			return "Spanish";
+    		case LANGUAGE_KOREAN:
+    			return "Korean";
     		default:
     			return "English";
     	}
