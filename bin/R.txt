@@ -457,6 +457,7 @@ int drawable usbong_logo 0x7f020067
 int drawable usbong_logo_old 0x7f020068
 int id CameraImage 0x7f050084
 int id PaintImage 0x7f050081
+int id about 0x7f0500e1
 int id about_button 0x7f050076
 int id account_email 0x7f050087
 int id account_name 0x7f050086

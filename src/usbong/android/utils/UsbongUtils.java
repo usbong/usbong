@@ -65,9 +65,11 @@ import usbong.android.R;
 import usbong.android.UsbongDecisionTreeEngineActivity;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -75,7 +77,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
+import android.os.IBinder;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.TextPaint;
@@ -90,6 +94,7 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.android.vending.billing.IInAppBillingService;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -106,6 +111,8 @@ public class UsbongUtils {
 	public static boolean IS_IN_AUTO_PLAY_MODE=false;
 	public static boolean IS_IN_AUTO_LOOP_MODE=false;
 	
+	public static boolean hasUnlockedAllLanguages=true;
+	
 	public final static String API_KEY = "AIzaSyB5mM_lk_bbdT5nUWQTO6S5FyZ9IgaxqXc"; //added by Mike, 20151120
 
 	public static String DEFAULT_UTREE_TO_LOAD="UsbongDemoTree"; //updated by Mike, 8 April 2016
@@ -115,7 +122,10 @@ public class UsbongUtils {
 	//added by Mike, 20160420
 	public static boolean hasUnlockedLocalLanguages=false; //except Filipino
 	public static boolean hasUnlockedForeignLanguages=false; //except English
-		
+	
+	//added by Mike, 20160504
+	public static Activity myActivityInstance;
+	
 	//	public static String BASE_FILE_PATH = "/sdcard/usbong/";
 	private static String timeStamp;
 	private static String dateTimeStamp;
@@ -174,6 +184,14 @@ public class UsbongUtils {
     //added by Mike, 20160413
     public static Hashtable<String,Hashtable<String,String>> myHashtableOfWordHints;
 	
+	//added by Mike, 20160426
+    private static IInAppBillingService mService;
+    private static ServiceConnection mServiceConn;
+    private static Bundle ownedItems;
+
+    public static boolean hasLoadedPurchaseLanguageBundleList=false;
+	private static int ownedItemsResponse=-1; //added by Mike, 20160507
+    
 	//added by Mike, 22 Sept. 2015
 	public static String getCurrLanguage(){
 		return currLanguage;
@@ -221,6 +239,130 @@ public class UsbongUtils {
 		return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches(); //updated by Mike, 24 Sept. 2015
 	}
 
+	//-----------------------------------------------------------------
+    //setup In-App Billing Service
+    //reference: http://developer.android.com/google/play/billing/billing_integrate.html
+    //last accessed: 20160123
+    //added by Mike, 20160426
+    //-----------------------------------------------------------------
+	public static void initInAppBillingService(Activity a) {
+		//added by Mike, 20160504
+		myActivityInstance = a;
+		
+	    mServiceConn = new ServiceConnection() {
+	       @Override
+	       public void onServiceDisconnected(ComponentName name) {
+	           mService = null;
+	       }
+
+	       @Override
+	       public void onServiceConnected(ComponentName name,
+	          IBinder service) {
+	           mService = IInAppBillingService.Stub.asInterface(service);
+	       }
+	    };
+	    
+    	//added by Mike, 20160504
+	    Intent serviceIntent =
+	    	      new Intent("com.android.vending.billing.InAppBillingService.BIND");
+	    serviceIntent.setPackage("com.android.vending");
+	    myActivityInstance.bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
+
+	    try {
+	    	//added by Mike, 20160425
+	    	if (mService != null) {
+            	ownedItems = mService.getPurchases(3, myActivityInstance.getPackageName(), "inapp", null);
+/*            	
+            	ownedItemsResponse = -1;
+            	ownedItemsResponse = ownedItems.getInt("RESPONSE_CODE");
+*/
+    	    	new Thread(new Runnable() {
+    			    public void run() {
+    			    	//while (ownedItemsResponse==-1) {
+    			    	while (ownedItems==null) {
+    			            android.os.SystemClock.sleep(3000); 						    		
+    			            Log.d(">>>","sleeping");
+    			    	}
+    		    		return; //end this background thread
+    			    }
+    			}).start();
+	    	}	    	
+	    }
+	    catch (Exception e) {
+	    	e.printStackTrace();
+	    }
+	}
+	
+	public static Bundle getInAppOwnedItems() {
+		return ownedItems;
+	}
+
+	public static IInAppBillingService getInAppMService() {
+		return mService;
+	}
+
+	public static void unbindInAppService(Activity a) {
+		if (mService != null) {
+	        a.unbindService(mServiceConn);
+	    }
+	}
+/*	
+	public static void checkForInAppOwnedItems(Activity myActivity) {
+		if (ownedItems!=null) {
+	    	//create a separate thread; don't use the main thread
+	    	Handler handler = new Handler();
+    		final Runnable r = new Runnable() {
+    		    public void run() {
+                    try {
+                	    int response=-1;
+                    	response = ownedItems.getInt("RESPONSE_CODE");
+            			
+            			if (response == 0) { //SUCCESS
+        				   ArrayList<String> ownedSkus =
+        				      ownedItems.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
+        				   ArrayList<String>  purchaseDataList =
+        				      ownedItems.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
+        				   ArrayList<String>  signatureList =
+        				      ownedItems.getStringArrayList("INAPP_DATA_SIGNATURE_LIST");
+
+        				   for (int i = 0; i < purchaseDataList.size(); ++i) {
+        				      String purchaseData = purchaseDataList.get(i);
+        				      String signature = signatureList.get(i);
+        				      String sku = ownedSkus.get(i);
+
+        			    	  if (sku.contains("local")) {
+        				        hasUnlockedLocalLanguages=true;
+        			    	  }
+        			    	  else { //foreign
+        				        hasUnlockedForeignLanguages=true;
+        			    	  }
+        				   }
+        				}
+                    } catch (Exception e) {
+                    	e.printStackTrace();
+                    }
+    		    }
+    		};
+    		handler.postDelayed(r, 1000);
+	    }
+	    else {
+	        //Reference: http://stackoverflow.com/questions/23024831/android-shared-preferences-example
+	        //; last accessed: 20150609
+	        //answer by Elenasys
+	        //added by Mike, 20160425
+	        SharedPreferences prefs = myActivity.getSharedPreferences(UsbongConstants.MY_PURCHASED_ITEMS, android.content.Context.MODE_PRIVATE);
+	        if (prefs!=null) {
+	        	if (prefs.getString(UsbongConstants.ALL_LOCAL_LANGUAGES_PRODUCT_ID, null)!=null) {
+		        	hasUnlockedLocalLanguages=true;
+	        	}
+
+	        	if (prefs.getString(UsbongConstants.ALL_FOREIGN_LANGUAGES_PRODUCT_ID, null)!=null) {
+		        	hasUnlockedForeignLanguages=true;
+	        	}
+	        }
+	    }
+	}
+*/	
 	//edited by Mike, 20160417
 	public static void initUsbongConfigFile() {
         try 
@@ -285,30 +427,30 @@ public class UsbongUtils {
         }
 	}
 	
-	//20160420
-	public static boolean isLocalLanguage(String s) {		
-		switch (s) {
-/*			case "Filipino":
-				return true;
-*/				
-			case "Bisaya":
-				return true;
-			case "Ilonggo":
-				return true;
-			case "Kapampangan":
-				return true;				
-		}				
+	//updated by Mike, 20160504
+	//must comply with JDK 1.6
+	public static boolean isLocalLanguage(String s) {
+		if (s.equals("Bisaya")) {
+			return true;
+		}
+		else if (s.equals("Ilonggo")) {
+			return true;
+		}
+		else if (s.equals("Kapampangan")) {
+			return true;
+		}
 		return false;
 	}
 	
-	//20160422
+	//updated by Mike, 20160504
+	//must comply with JDK 1.6
 	public static boolean isLanguageIsAnException(String s) {
-		switch (s) {
-			case "English":
-				return true;
-			case "Filipino":
-				return true;
-		}				
+		if (s.equals("English")) {
+			return true;
+		}
+		else if (s.equals("Filipino")) {
+			return true;
+		}
 		return false;
 	}
 	

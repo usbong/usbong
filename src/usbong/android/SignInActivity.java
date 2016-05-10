@@ -172,8 +172,7 @@ public class SignInActivity extends Activity {
 				} catch (URISyntaxException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				}
-				
+				}				
 				
 			    if (etUsername.getText().toString().equals("")) {
 					Toast.makeText(getApplicationContext(), "Please enter a username.", Toast.LENGTH_LONG).show();											    	

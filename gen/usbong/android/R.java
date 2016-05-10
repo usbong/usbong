@@ -1954,6 +1954,7 @@ containing a value of this type.
     public static final class id {
         public static final int CameraImage=0x7f050084;
         public static final int PaintImage=0x7f050081;
+        public static final int about=0x7f0500e1;
         public static final int about_button=0x7f050076;
         public static final int account_email=0x7f050087;
         public static final int account_name=0x7f050086;

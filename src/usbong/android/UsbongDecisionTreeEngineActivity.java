@@ -45,7 +45,7 @@ import usbong.android.utils.UsbongConstants;
 import usbong.android.utils.UsbongScreenProcessor;
 import usbong.android.utils.UsbongUtils;
 import android.app.AlertDialog;
-import android.content.ComponentName;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -55,9 +55,10 @@ import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
+import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.support.v7.app.AppCompatActivity;
@@ -210,6 +211,8 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     
 	protected InputStreamReader isr;
 
+	private ProgressDialog myProgressDialog;
+
 	private int currSelectedItemForSetLanguage=0;
 	
     private YouTubePlayerFragment myYouTubePlayerFragment;
@@ -231,7 +234,13 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     //added by Mike, 20160420
     private static AlertDialog.Builder purchaseLanguagesListDialog;
     private static PurchaseLanguageBundleListAdapter myPurchaseLanguageBundleListAdapter;
-	
+//	private static DialogInterface purchaseLanguagesListDialogInterface;
+	private static AlertDialog purchaseLanguageListAlertDialog;
+    private static AlertDialog.Builder setLanguageDialog;
+	private static AlertDialog mySetLanguageAlertDialog;
+
+	private ArrayAdapter<String> arrayAdapter; //added by Mike, 20160507
+		
 //	@SuppressLint("InlinedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -242,6 +251,12 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
         Log.d(">>>>", "insideOnCreate(...)");
                 
         instance=this;
+        
+        //added by Mike, 20160510
+        if (UsbongUtils.hasUnlockedAllLanguages) {
+        	UsbongUtils.hasUnlockedLocalLanguages=true;
+        	UsbongUtils.hasUnlockedForeignLanguages=true;        	
+        }
         
         //added by Mike, 20160410
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -254,22 +269,30 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
         currUsbongNode=""; //added by Mike, 20151126
         isAutoLoopedTree=false; //added by Mike, 20160415
         
+        //added by Mike, 29 Sept. 2015
+		myProgressDialog = ProgressDialog.show(instance, "Loading...",
+				  "This takes only a short while.", true, false);				  
+		new MyBackgroundTask().execute();   	    	       
+    }
+    
+    public void init() {
         //if return is null, then currScreen=0
-//        currScreen=Integer.parseInt(getIntent().getStringExtra("currScreen")); 
-        //modified by JPT, May 25, 2015        
-        try {
+//      currScreen=Integer.parseInt(getIntent().getStringExtra("currScreen")); 
+      //modified by JPT, May 25, 2015        
+      try {
 	        if(getIntent().getStringExtra("currScreen") != null) {
 	        	currScreen=Integer.parseInt(getIntent().getStringExtra("currScreen")); 
 	        }
-        }
-        catch(java.lang.ClassCastException e) { //if currScreen is an int not a String
+      }
+      catch(java.lang.ClassCastException e) { //if currScreen is an int not a String
 //	        if(getIntent().getIntExtra("currScreen", currScreen) != -1) {
 	        	currScreen=getIntent().getIntExtra("currScreen", currScreen); 
 //	        }        	
-        }
-        
-//    	currScreen=getIntent().getIntExtra("currScreen", currScreen); 
+      }
+      
+//  	currScreen=getIntent().getIntExtra("currScreen", currScreen); 
 
+        
         //default..
         currLanguageBeingUsed=UsbongUtils.LANGUAGE_ENGLISH;
 		UsbongUtils.setCurrLanguage("English"); //added by Mike, 22 Sept. 2015
@@ -308,13 +331,15 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     	currAnswer="";    	    	
     	
     	try{    		
-    		UsbongUtils.createUsbongFileStructure();
-    		
+    		//commented out by Mike, 4 Oct. 2015
+  			UsbongUtils.createUsbongFileStructure();
+  			
   			//added by Mike, 20160417
   			UsbongUtils.initUsbongConfigFile();
-
+ 
     		//create the usbong_demo_tree and store it in sdcard/usbong/usbong_trees
-    		UsbongUtils.storeUsbongAppAssetsFileIntoSDCard(this, UsbongUtils.DEFAULT_UTREE_TO_LOAD+".xml");
+//    		UsbongUtils.storeAssetsFileIntoSDCard(this,"usbong_demo_tree.xml");
+    		UsbongUtils.storeAssetsFileIntoSDCard(this,"pagtsing.utree");
     	}
     	catch(IOException ioe) {
     		ioe.printStackTrace();
@@ -332,50 +357,50 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 
 	    //added by Mike, March 4, 2013
 	    usbongAnswerContainerCounter=0;
+/*	    	    
+	    ArrayList<String> skuList = new ArrayList<String> ();
+	    skuList.add(UsbongConstants.ALL_LOCAL_LANGUAGES_PRODUCT_ID);
+	    skuList.add(UsbongConstants.ALL_FOREIGN_LANGUAGES_PRODUCT_ID);
+	    Bundle querySkus = new Bundle();
+	    querySkus.putStringArrayList("ITEM_ID_LIST", skuList);
+*/	    
+	    
+	    new AsyncTask<String, Integer, Boolean>() {
+			@Override
+			protected void onPostExecute(Boolean result) {
+			    //added by Mike, 20160421
+				//init purchase languages list
+		        purchaseLanguagesListDialog = new AlertDialog.Builder(getInstance());
+		        myPurchaseLanguageBundleListAdapter = new PurchaseLanguageBundleListAdapter(getInstance(), UsbongUtils.getInAppOwnedItems(), UsbongUtils.getInAppMService());
+		        purchaseLanguagesListDialog.setTitle("Purchase");	
+				purchaseLanguagesListDialog.setSingleChoiceItems(myPurchaseLanguageBundleListAdapter,0,
+				        new DialogInterface.OnClickListener() {
+				            public void onClick(DialogInterface dialog, int which) {								            	
+	//			                Log.i("Selected Item : ", (String) myPurchaseLanguageBundleListAdapter.getItem(which));
+				                dialog.dismiss();	//edited by Mike, 20160508	            	
+	//			            	purchaseLanguagesListDialogInterface = dialog;
+				            }
+				        });				            	
+		    	purchaseLanguagesListDialog.setNegativeButton("Cancel",
+				        new DialogInterface.OnClickListener() {
+				            public void onClick(DialogInterface dialog, int which) {
+				                dialog.dismiss();
+				            }
+				        });  		
+			}
 
-	    //-----------------------------------------------------------------
-	    //setup In-App Billing Service
-	    //reference: http://developer.android.com/google/play/billing/billing_integrate.html
-	    //last accessed: 20160123
-	    //added by Mike, 20160123
-	    //-----------------------------------------------------------------
-	    mServiceConn = new ServiceConnection() {
-	       @Override
-	       public void onServiceDisconnected(ComponentName name) {
-	           mService = null;
-	       }
-
-	       @Override
-	       public void onServiceConnected(ComponentName name,
-	          IBinder service) {
-	           mService = IInAppBillingService.Stub.asInterface(service);
-	       }
-	    };
-	    Intent serviceIntent =
-	    	      new Intent("com.android.vending.billing.InAppBillingService.BIND");
-	    serviceIntent.setPackage("com.android.vending");
-	    bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
-	    //-----------------------------------------------------------------
-	    //added by Mike, 20160421
-		//init purchase languages list
-        purchaseLanguagesListDialog = new AlertDialog.Builder(getInstance());
-        myPurchaseLanguageBundleListAdapter = new PurchaseLanguageBundleListAdapter(getInstance());
-		purchaseLanguagesListDialog.setTitle("Purchase");	
-		purchaseLanguagesListDialog.setSingleChoiceItems(myPurchaseLanguageBundleListAdapter,0,
-		        new DialogInterface.OnClickListener() {
-		            public void onClick(DialogInterface dialog, int which) {								            	
-//		                Log.i("Selected Item : ", (String) myPurchaseLanguageBundleListAdapter.getItem(which));
-//		                dialog.dismiss();
-		                
-		            }
-		        });				            	
-    	purchaseLanguagesListDialog.setNegativeButton("Cancel",
-		        new DialogInterface.OnClickListener() {
-		            public void onClick(DialogInterface dialog, int which) {
-		                dialog.dismiss();
-		            }
-		        });
-    	
+			@Override
+			protected Boolean doInBackground(String... params) {
+			    try {
+			    	UsbongUtils.initInAppBillingService(getInstance());
+			    }
+			    catch (Exception e) {
+			    	e.printStackTrace();
+			    }
+				return true;		
+			}	
+	    }.execute();
+	    	        	
         //reference: Labeeb P's answer from stackoverflow;
         //http://stackoverflow.com/questions/4275797/view-setpadding-accepts-only-in-px-is-there-anyway-to-setpadding-in-dp;
         //last accessed: 23 May 2013
@@ -386,29 +411,23 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
         UsbongUtils.setDebugMode(UsbongUtils.isInDebugMode());
         
         //added by Mike, 25 Feb. 2014
-        UsbongUtils.setStoreOutput(UsbongUtils.checkIfStoreOutput());
+//        UsbongUtils.setStoreOutput(UsbongUtils.checkIfStoreOutput());
+        UsbongUtils.setStoreOutput(false); //don't store output, added by Mike, 27 Sept. 2015
         
         myUsbongScreenProcessor = new UsbongScreenProcessor(UsbongDecisionTreeEngineActivity.getInstance());
         myUsbongVariableMemory = new HashMap<String, String>();
 
         //added by Mike, March 26, 2014
 		try {
-			UsbongUtils.createNewOutputFolderStructure();
+			Log.d(">>>>", ""+UsbongUtils.STORE_OUTPUT);
+			if (UsbongUtils.STORE_OUTPUT) { //added by Mike, 27 Sept. 2015
+				UsbongUtils.createNewOutputFolderStructure();				
+			}
 		}
 		catch(Exception e) {
 			e.printStackTrace();
-		}
-        
-//    	initTreeLoader();
-		//added by JPT, May 25, 2015
-/*		
-		if(getIntent().getStringExtra(Constants.UTREE_KEY) != null) {
-			Log.d("DecisionTree", getIntent().getStringExtra(Constants.UTREE_KEY));
-			initParser(getIntent().getStringExtra(Constants.UTREE_KEY));
-		} else {			
-	    	initTreeLoader();
-		}
-*/
+		}		
+
 		//added by JPT, Jul 13, 2015
 		Intent intent = getIntent();
  	   	String action = intent.getAction();
@@ -483,10 +502,80 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
   		   Log.d(">>>>>>","else");
 
     		myUdteaObject = new UdteaObject(); //added by Mike, 20151126
-	    	initTreeLoader();
+	    	
+            Handler mainHandler = new Handler(getInstance().getBaseContext().getMainLooper());
+            Runnable myRunnable = new Runnable() {
+            	@Override
+            	public void run() {
+            		initTreeLoader();
+            	}
+            };
+            mainHandler.post(myRunnable);
 	    }
- 	}
- 	    	
+/*        
+				//added by Mike, 30 April 2015
+				isInTreeLoader=false;		
+				myTree = UsbongUtils.DEFAULT_UTREE_TO_LOAD; //edited by Mike, 20160418
+
+				UsbongUtils.clearTempFolder();
+*/		        
+    }
+
+    
+    //added by Mike, 29 Sept. 2015
+    //Reference: http://stackoverflow.com/questions/13017122/how-to-show-progressdialog-across-launching-a-new-activity;
+    //last accessed: 29 Sept. 2015; answer by: Slartibartfast, 23 Oct. 2012
+    class MyBackgroundTask extends AsyncTask<String, Integer, Boolean> {
+		@Override
+		protected void onPreExecute() {
+			Log.d(">>>>","onPreExectue()");
+		}
+		
+		@Override
+		protected void onPostExecute(Boolean result) {
+			Log.d(">>>>","onPostExecute()");
+	    	new Thread(new Runnable() {
+			    public void run() {
+/*			    	
+			    	while (!UsbongUtils.hasLoadedPurchaseLanguageBundleList) {
+			            android.os.SystemClock.sleep(3000); 						    		
+			            Log.d(">>>","sleeping");
+			    	}
+*/			    	
+		            Log.d(">>>","DONE!");
+		            Handler mainHandler = new Handler(getInstance().getBaseContext().getMainLooper());
+		            Runnable myRunnable = new Runnable() {
+		            	@Override
+		            	public void run() {
+						    instance.initTreeLoader(); //edited by Mike, 20160510
+ 						    if (instance.myProgressDialog != null) {
+						        instance.myProgressDialog.dismiss();
+						    }				            		
+		            	}
+		            };
+		            mainHandler.post(myRunnable);
+		    		return; //end this background thread
+			    }
+			}).start();
+/*
+		    initParser();
+		    if (instance.myProgressDialog != null) {
+		        instance.myProgressDialog.dismiss();
+		    }		
+*/		    
+		}
+		
+		@Override
+		protected Boolean doInBackground(String... params) {		
+			Log.d(">>>>","doInBackground()");
+			init();
+		    //Do all your slow tasks here but don't set anything on UI
+		    //ALL UI activities on the main thread 		
+		    return true;
+		
+		}		
+	}
+    
 /*    
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -565,6 +654,146 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		}*/
 		return false;
 	}
+			
+	public void initSetLanguage() {
+//		UsbongUtils.checkForInAppOwnedItems(getInstance());
+		
+//		final Dialog dialog = new Dialog(this);
+		setLanguageDialog = new AlertDialog.Builder(this);
+		// Get the layout inflater
+//    	LayoutInflater inflater = this.getLayoutInflater();
+		setLanguageDialog.setTitle("Select Language");
+
+		arrayAdapter = new ArrayAdapter<String>(
+		        this,
+		        android.R.layout.simple_list_item_single_choice) {
+//			private AlertDialog myAlertDialog;
+			@Override
+		    public boolean isEnabled(int position) {
+				if (UsbongUtils.isLanguageIsAnException(this.getItem(position).toString())) {
+					return true;
+				}
+
+				if (!UsbongUtils.hasUnlockedLocalLanguages) {
+					if (UsbongUtils.isLocalLanguage(this.getItem(position).toString())) {
+						if ((purchaseLanguageListAlertDialog==null) || (!purchaseLanguageListAlertDialog.isShowing())) {
+							//added by Mike, 20160508
+							mySetLanguageAlertDialog.dismiss();
+//							myAlertDialog = purchaseLanguagesListDialog.show();						
+							purchaseLanguageListAlertDialog = purchaseLanguagesListDialog.show();						
+						}
+						return false;
+					}
+				}
+				
+				if (!UsbongUtils.hasUnlockedForeignLanguages) {
+					//if it is not a local language, then it is a foreign language
+					if (!UsbongUtils.isLocalLanguage(this.getItem(position).toString())) {
+						if ((purchaseLanguageListAlertDialog==null) || (!purchaseLanguageListAlertDialog.isShowing())) {
+							//added by Mike, 20160508
+							mySetLanguageAlertDialog.dismiss();
+//							myAlertDialog = purchaseLanguagesListDialog.show();
+							purchaseLanguageListAlertDialog = purchaseLanguagesListDialog.show();						
+						}
+						return false;
+					}
+				}
+		    	return true;
+		    }
+		};				
+		
+        ArrayList<String> myTransArrayList = UsbongUtils.getAvailableTranslationsArrayList(myTree);
+
+		        if (myTransArrayList==null) {
+		        	myTransArrayList = new ArrayList<String>();
+		        }
+		        //add the language setting of the xml tree to the list
+		        myTransArrayList.add(0, UsbongUtils.getDefaultLanguage());
+		        final int myTransArrayListSize = myTransArrayList.size();	        
+/*		        
+				for (int i = 0; i < myTransArrayListSize; i++) {
+				    arrayAdapter.add(myTransArrayList.get(i));				    
+				}
+*/
+        //make sure is empty every time 
+        //added by Mike, 20160427
+        arrayAdapter.clear();
+        
+		for (int i = 0; i < myTransArrayListSize; i++) {
+			if (UsbongUtils.isLanguageIsAnException(myTransArrayList.get(i))) {
+				arrayAdapter.add(myTransArrayList.get(i));				    
+				continue;
+			}
+			else {
+				if (!UsbongUtils.hasUnlockedLocalLanguages) {
+					if (UsbongUtils.isLocalLanguage(myTransArrayList.get(i))) {
+						arrayAdapter.add(myTransArrayList.get(i)+" (Locked)");				    								
+						continue;
+					}
+				}
+				else {
+					if (UsbongUtils.isLocalLanguage(myTransArrayList.get(i))) {
+						arrayAdapter.add(myTransArrayList.get(i));				    								
+						continue;
+					}							
+				}
+				
+				if (!UsbongUtils.hasUnlockedForeignLanguages) {
+					if (!UsbongUtils.isLocalLanguage(myTransArrayList.get(i))) {
+						arrayAdapter.add(myTransArrayList.get(i)+" (Locked)");				    								
+						continue;							
+					}
+				}
+				else {
+					if (!UsbongUtils.isLocalLanguage(myTransArrayList.get(i))) {
+						arrayAdapter.add(myTransArrayList.get(i));				    								
+						continue;							
+					}							
+				}
+			}
+		}
+		
+		//20160420				
+		// Unlock Languages button
+		setLanguageDialog.setPositiveButton("Unlock Languages",
+		        new DialogInterface.OnClickListener() {
+		            public void onClick(DialogInterface dialog, int which) {
+						purchaseLanguageListAlertDialog = purchaseLanguagesListDialog.show();
+		            	dialog.dismiss();
+		            }
+		        });
+		// cancel button
+		setLanguageDialog.setNegativeButton("Cancel",
+		        new DialogInterface.OnClickListener() {
+		            public void onClick(DialogInterface dialog, int which) {
+		                dialog.dismiss();
+		            }
+		        });
+		setLanguageDialog.setSingleChoiceItems(arrayAdapter,currSelectedItemForSetLanguage,//setAdapter(arrayAdapter,
+		        new DialogInterface.OnClickListener() {
+		            public void onClick(DialogInterface dialog, int which) {
+		                Log.i("Selected Item : ", arrayAdapter.getItem(which));
+		                currSelectedItemForSetLanguage = which;
+		                
+						UsbongUtils.setLanguage(arrayAdapter.getItem(currSelectedItemForSetLanguage));
+
+						currLanguageBeingUsed = UsbongUtils.getLanguageID(UsbongUtils.getSetLanguage());
+						UsbongUtils.setCurrLanguage(UsbongUtils.getSetLanguage()); //added by Mike, 22 Sept. 2015
+						
+						//added by Mike, 4 June 2015
+						//remove the current element in the node container and start anew
+						//so that when end-user presses back, the previous screen will appear,
+						//and not cause the same screen to reappear.
+						if (!usbongNodeContainer.isEmpty()) {
+							usbongNodeContainer.removeElementAt(usbongNodeContainerCounter);                            
+			                usbongNodeContainerCounter--;
+						}						
+						initParser();
+		                dialog.dismiss();
+		            }
+		        });
+		mySetLanguageAlertDialog = setLanguageDialog.show();
+	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
@@ -576,146 +805,11 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		StringBuffer sb = new StringBuffer();
 		switch(item.getItemId())
 		{
-			case(R.id.set_language):				
-//				final Dialog dialog = new Dialog(this);
-				final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-				// Get the layout inflater
-//		    	LayoutInflater inflater = this.getLayoutInflater();
-		    	dialog.setTitle("Select Language");
-/*			
-				dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-				dialog.setContentView(R.layout.set_language_dialog);
-*/
-//				dialog.setView(inflater.inflate(R.layout.set_language_dialog, null));
-
-		    	final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-				        this,
-				        android.R.layout.simple_list_item_single_choice) {
-					private AlertDialog myAlertDialog;
-					@Override
-				    public boolean isEnabled(int position) {
-						if (UsbongUtils.isLanguageIsAnException(this.getItem(position).toString())) {
-							return true;
-						}
-						
-						if (!UsbongUtils.hasUnlockedLocalLanguages) {
-							if (UsbongUtils.isLocalLanguage(this.getItem(position).toString())) {
-								if ((myAlertDialog==null) || (!myAlertDialog.isShowing())) {
-									myAlertDialog = purchaseLanguagesListDialog.show();
-								}
-								return false;
-							}
-						}
-						
-						if (!UsbongUtils.hasUnlockedForeignLanguages) {
-							//if it is not a local language, then it is a foreign language
-							if (!UsbongUtils.isLocalLanguage(this.getItem(position).toString())) {
-								if ((myAlertDialog==null) || (!myAlertDialog.isShowing())) {
-									myAlertDialog = purchaseLanguagesListDialog.show();
-								}
-								return false;
-							}
-						}
-				    	return true;
-				    }
-				};
-				
-		        ArrayList<String> myTransArrayList = UsbongUtils.getAvailableTranslationsArrayList(myTree);
-
-		        if (myTransArrayList==null) {
-		        	myTransArrayList = new ArrayList<String>();
-		        }
-		        //add the language setting of the xml tree to the list
-		        myTransArrayList.add(0, UsbongUtils.getDefaultLanguage());
-		        final int myTransArrayListSize = myTransArrayList.size();
-		        
-		        /*		        
-				for (int i = 0; i < myTransArrayListSize; i++) {
-				    arrayAdapter.add(myTransArrayList.get(i));				    
-				}
-*/
-				for (int i = 0; i < myTransArrayListSize; i++) {
-					if (UsbongUtils.isLanguageIsAnException(myTransArrayList.get(i))) {
-						arrayAdapter.add(myTransArrayList.get(i));				    
-						continue;
-					}
-					else {
-						if (!UsbongUtils.hasUnlockedLocalLanguages) {
-							if (UsbongUtils.isLocalLanguage(myTransArrayList.get(i))) {
-								arrayAdapter.add(myTransArrayList.get(i)+" (Locked)");				    								
-								continue;
-							}
-						}
-						if (!UsbongUtils.hasUnlockedForeignLanguages) {
-							if (!UsbongUtils.isLocalLanguage(myTransArrayList.get(i))) {
-								arrayAdapter.add(myTransArrayList.get(i)+" (Locked)");				    								
-								continue;							
-							}
-						}
-
-					}
-				}				
-
-				//init purchase languages list
-				final AlertDialog.Builder purchaseLanguagesListDialog = new AlertDialog.Builder(this);
-				purchaseLanguagesListDialog.setTitle("Purchase");
-				
-				final PurchaseLanguageBundleListAdapter myPurchaseLanguageBundleListAdapter = new PurchaseLanguageBundleListAdapter(this);
-				
-				// Unlock Languages button
-				dialog.setPositiveButton("Unlock Languages",
-				        new DialogInterface.OnClickListener() {
-				            public void onClick(DialogInterface dialog, int which) {
-				            	purchaseLanguagesListDialog.setSingleChoiceItems(myPurchaseLanguageBundleListAdapter,0,
-								        new DialogInterface.OnClickListener() {
-								            public void onClick(DialogInterface dialog, int which) {
-								            	/*
-								                Log.i("Selected Item : ", (String) myPurchaseLanguageBundleListAdapter.getItem(which));
-								                dialog.dismiss();
-								                */
-								            }
-								        });				            	
-				            	purchaseLanguagesListDialog.setNegativeButton("Cancel",
-								        new DialogInterface.OnClickListener() {
-								            public void onClick(DialogInterface dialog, int which) {
-								                dialog.dismiss();
-								            }
-								        });
-				            	purchaseLanguagesListDialog.show();
-				            }
-				        });
-
-				// cancel button
-				dialog.setNegativeButton("Cancel",
-				        new DialogInterface.OnClickListener() {
-				            public void onClick(DialogInterface dialog, int which) {
-				                dialog.dismiss();
-				            }
-				        });
-				dialog.setSingleChoiceItems(arrayAdapter,currSelectedItemForSetLanguage,//setAdapter(arrayAdapter,
-				        new DialogInterface.OnClickListener() {
-				            public void onClick(DialogInterface dialog, int which) {
-				                Log.i("Selected Item : ", arrayAdapter.getItem(which));
-				                currSelectedItemForSetLanguage = which;
-				                
-								UsbongUtils.setLanguage(arrayAdapter.getItem(currSelectedItemForSetLanguage));
-
-								currLanguageBeingUsed = UsbongUtils.getLanguageID(UsbongUtils.getSetLanguage());
-								UsbongUtils.setCurrLanguage(UsbongUtils.getSetLanguage()); //added by Mike, 22 Sept. 2015
-								
-								//added by Mike, 4 June 2015
-								//remove the current element in the node container and start anew
-								//so that when end-user presses back, the previous screen will appear,
-								//and not cause the same screen to reappear.
-								if (!usbongNodeContainer.isEmpty()) {
-									usbongNodeContainer.removeElementAt(usbongNodeContainerCounter);                            
-					                usbongNodeContainerCounter--;
-								}						
-								initParser();
-				                dialog.dismiss();
-				            }
-				        });
-				dialog.show();
+			case(R.id.set_language):	
+				initSetLanguage();
+				//refresh the menu options
+				supportInvalidateOptionsMenu(); //added by Mike, 20160507
+				invalidateOptionsMenu();
 				return true;
 			case(R.id.speak):
 				processSpeak(sb);
@@ -754,142 +848,151 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 			    public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
 			    	Log.d(">>>","onClick");
 
-			    	if (isChecked) {
-			            // If the user checked the item, add it to the selected items
-			            selectedSettingsItems.add(indexSelected);
-			            if ((indexSelected==UsbongConstants.AUTO_PLAY) 
-				        		&& !selectedSettingsItems.contains(UsbongConstants.AUTO_NARRATE)) {
-			                final ListView list = inAppSettingsDialog.getListView();
-			                list.setItemChecked(UsbongConstants.AUTO_NARRATE, true);
-			            }				           
-			        } else if (selectedSettingsItems.contains(indexSelected)) {
-			        	if ((indexSelected==UsbongConstants.AUTO_NARRATE) 
-			        		&& selectedSettingsItems.contains(UsbongConstants.AUTO_PLAY)) {
-			                final ListView list = inAppSettingsDialog.getListView();
-			                list.setItemChecked(indexSelected, false);
-			        	}
-			        	else {        	
-				            // Else, if the item is already in the array, remove it
-				            selectedSettingsItems.remove(Integer.valueOf(indexSelected));
-			        	}
-			        }
-			        
-			        //updated selectedSettingsItemsInBoolean
-				    for(int k=0; k<items.length; k++) {
-			    		selectedSettingsItemsInBoolean[k] = false;			    		
+				    	if (isChecked) {
+				            // If the user checked the item, add it to the selected items
+				            selectedSettingsItems.add(indexSelected);
+				            if ((indexSelected==UsbongConstants.AUTO_PLAY) 
+					        		&& !selectedSettingsItems.contains(UsbongConstants.AUTO_NARRATE)) {
+				                final ListView list = inAppSettingsDialog.getListView();
+				                list.setItemChecked(UsbongConstants.AUTO_NARRATE, true);
+				            }				           
+				        } else if (selectedSettingsItems.contains(indexSelected)) {
+				        	if ((indexSelected==UsbongConstants.AUTO_NARRATE) 
+				        		&& selectedSettingsItems.contains(UsbongConstants.AUTO_PLAY)) {
+				                final ListView list = inAppSettingsDialog.getListView();
+				                list.setItemChecked(indexSelected, false);
+				        	}
+				        	else {        	
+					            // Else, if the item is already in the array, remove it
+					            selectedSettingsItems.remove(Integer.valueOf(indexSelected));
+				        	}
+				        }
+				        
+				        //updated selectedSettingsItemsInBoolean
+					    for(int k=0; k<items.length; k++) {
+				    		selectedSettingsItemsInBoolean[k] = false;			    		
+					    }
+					    for(int i=0; i<selectedSettingsItems.size(); i++) {
+				    		selectedSettingsItemsInBoolean[selectedSettingsItems.get(i)] = true;
+					    }
 				    }
-				    for(int i=0; i<selectedSettingsItems.size(); i++) {
-			    		selectedSettingsItemsInBoolean[selectedSettingsItems.get(i)] = true;
-				    }
-			    }
-			}).setPositiveButton("OK", new DialogInterface.OnClickListener() {
-			    @Override
-			    public void onClick(DialogInterface dialog, int id) {
-			    	 try {	    	
-			 			InputStreamReader reader = UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + "usbong.config");	
-			 			BufferedReader br = new BufferedReader(reader);    		
-			 	    	String currLineString;        	
+				}).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				    @Override
+				    public void onClick(DialogInterface dialog, int id) {
+				    	 try {	    	
+				 			InputStreamReader reader = UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + "usbong.config");	
+				 			BufferedReader br = new BufferedReader(reader);    		
+				 	    	String currLineString;        	
 
 			 	    	//write first to a temporary file
 						PrintWriter out = UsbongUtils.getFileFromSDCardAsWriter(UsbongUtils.BASE_FILE_PATH + "usbong.config" +"TEMP");
 
-			 	    	while((currLineString=br.readLine())!=null)
-			 	    	{ 	
-			 	    		Log.d(">>>", "currLineString: "+currLineString);
-							if ((currLineString.contains("IS_IN_AUTO_NARRATE_MODE="))
-							|| (currLineString.contains("IS_IN_AUTO_PLAY_MODE="))
-							|| (currLineString.contains("IS_IN_AUTO_LOOP_MODE="))) {
-								continue;
-							}	
-							else {
-								out.println(currLineString);			 	    		
-							}
-			 	    	}	        				
-
-						for (int i=0; i<items.length; i++) {
-							Log.d(">>>>", i+"");
-							if (selectedSettingsItemsInBoolean[i]==true) {
-								if (i==UsbongConstants.AUTO_NARRATE) {
-						    		out.println("IS_IN_AUTO_NARRATE_MODE=ON");
-						    		UsbongUtils.IS_IN_AUTO_NARRATE_MODE=true;							
-								}								
-								else if (i==UsbongConstants.AUTO_PLAY) {
-						    		out.println("IS_IN_AUTO_PLAY_MODE=ON");
-						    		UsbongUtils.IS_IN_AUTO_PLAY_MODE=true;						
-/*						    		
-						    		//if auto_play is ON, auto_narrate is also ON
-						    		//however, it is possible to have auto_play OFF,
-						    		//while auto_narrate is ON
-						    		out.println("IS_IN_AUTO_NARRATE_MODE=ON");
-						    		UsbongUtils.IS_IN_AUTO_NARRATE_MODE=true;
-*/						    									
+				 	    	while((currLineString=br.readLine())!=null)
+				 	    	{ 	
+				 	    		Log.d(">>>", "currLineString: "+currLineString);
+								if ((currLineString.contains("IS_IN_AUTO_NARRATE_MODE="))
+								|| (currLineString.contains("IS_IN_AUTO_PLAY_MODE="))
+								|| (currLineString.contains("IS_IN_AUTO_LOOP_MODE="))) {
+									continue;
 								}	
-								else if (i==UsbongConstants.AUTO_LOOP) {
-						    		out.println("IS_IN_AUTO_LOOP_MODE=ON");
-						    		UsbongUtils.IS_IN_AUTO_LOOP_MODE=true;						
+								else {
+									out.println(currLineString);			 	    		
 								}
-							}
-							else {
-								if (i==UsbongConstants.AUTO_NARRATE) {
-						    		out.println("IS_IN_AUTO_NARRATE_MODE=OFF");
-						    		UsbongUtils.IS_IN_AUTO_NARRATE_MODE=false;															
-								}							
-								else if (i==UsbongConstants.AUTO_PLAY) {
-						    		out.println("IS_IN_AUTO_PLAY_MODE=OFF");
-						    		UsbongUtils.IS_IN_AUTO_PLAY_MODE=false;	
+				 	    	}	        				
+
+							for (int i=0; i<items.length; i++) {
+								Log.d(">>>>", i+"");
+								if (selectedSettingsItemsInBoolean[i]==true) {
+									if (i==UsbongConstants.AUTO_NARRATE) {
+							    		out.println("IS_IN_AUTO_NARRATE_MODE=ON");
+							    		UsbongUtils.IS_IN_AUTO_NARRATE_MODE=true;							
+									}								
+									else if (i==UsbongConstants.AUTO_PLAY) {
+							    		out.println("IS_IN_AUTO_PLAY_MODE=ON");
+							    		UsbongUtils.IS_IN_AUTO_PLAY_MODE=true;						
+	/*						    		
+							    		//if auto_play is ON, auto_narrate is also ON
+							    		//however, it is possible to have auto_play OFF,
+							    		//while auto_narrate is ON
+							    		out.println("IS_IN_AUTO_NARRATE_MODE=ON");
+							    		UsbongUtils.IS_IN_AUTO_NARRATE_MODE=true;
+	*/						    									
+									}	
+									else if (i==UsbongConstants.AUTO_LOOP) {
+							    		out.println("IS_IN_AUTO_LOOP_MODE=ON");
+							    		UsbongUtils.IS_IN_AUTO_LOOP_MODE=true;						
+									}
 								}
-								else if (i==UsbongConstants.AUTO_LOOP) {
-						    		out.println("IS_IN_AUTO_LOOP_MODE=OFF");
-						    		UsbongUtils.IS_IN_AUTO_LOOP_MODE=false;	
-								}
-							}				
-						}					
-				    	out.close(); //remember to close
-				    	
-				    	//copy temp file to actual usbong.config file
-			 			InputStreamReader reader2 = UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + "usbong.config"+"TEMP");	
-			 			BufferedReader br2 = new BufferedReader(reader2);    		
-			 	    	String currLineString2;        	
+								else {
+									if (i==UsbongConstants.AUTO_NARRATE) {
+							    		out.println("IS_IN_AUTO_NARRATE_MODE=OFF");
+							    		UsbongUtils.IS_IN_AUTO_NARRATE_MODE=false;															
+									}							
+									else if (i==UsbongConstants.AUTO_PLAY) {
+							    		out.println("IS_IN_AUTO_PLAY_MODE=OFF");
+							    		UsbongUtils.IS_IN_AUTO_PLAY_MODE=false;	
+									}
+									else if (i==UsbongConstants.AUTO_LOOP) {
+							    		out.println("IS_IN_AUTO_LOOP_MODE=OFF");
+							    		UsbongUtils.IS_IN_AUTO_LOOP_MODE=false;	
+									}
+								}				
+							}					
+					    	out.close(); //remember to close
+					    	
+					    	//copy temp file to actual usbong.config file
+				 			InputStreamReader reader2 = UsbongUtils.getFileFromSDCardAsReader(UsbongUtils.BASE_FILE_PATH + "usbong.config"+"TEMP");	
+				 			BufferedReader br2 = new BufferedReader(reader2);    		
+				 	    	String currLineString2;        	
 
 			 	    	//write to actual usbong.config file
 						PrintWriter out2 = UsbongUtils.getFileFromSDCardAsWriter(UsbongUtils.BASE_FILE_PATH + "usbong.config");
 
-			 	    	while((currLineString2=br2.readLine())!=null)
-			 	    	{ 	
-							out2.println(currLineString2);			 	    		
-			 	    	}			 	    	
-			 	    	out2.close();
-			 	    	
-			 	    	UsbongUtils.deleteRecursive(new File(UsbongUtils.BASE_FILE_PATH + "usbong.config"+"TEMP"));
-			 		}
-			 		catch(Exception e) {
-			 			e.printStackTrace();
-			 		}			 		
-			    }
-			}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-			    @Override
-			    public void onClick(DialogInterface dialog, int id) {
-			        //  Your code when user clicked on Cancel
-			    }
-			}).create();
-			inAppSettingsDialog.show();
-/*			
-		    	new AlertDialog.Builder(UsbongDecisionTreeEngineActivity.this).setTitle("Settings")
-				.setMessage("Automatic voice-over narration:")
-//				.setView(requiredFieldAlertStringTextView)
-		    	.setPositiveButton("Turn On", new DialogInterface.OnClickListener() {					
+				 	    	while((currLineString2=br2.readLine())!=null)
+				 	    	{ 	
+								out2.println(currLineString2);			 	    		
+				 	    	}			 	    	
+				 	    	out2.close();
+				 	    	
+				 	    	UsbongUtils.deleteRecursive(new File(UsbongUtils.BASE_FILE_PATH + "usbong.config"+"TEMP"));
+				 		}
+				 		catch(Exception e) {
+				 			e.printStackTrace();
+				 		}			 		
+				    }
+				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				    @Override
+				    public void onClick(DialogInterface dialog, int id) {
+				        //  Your code when user clicked on Cancel
+				    }
+				}).create();
+				inAppSettingsDialog.show();
+	/*			
+			    	new AlertDialog.Builder(UsbongDecisionTreeEngineActivity.this).setTitle("Settings")
+					.setMessage("Automatic voice-over narration:")
+//					.setView(requiredFieldAlertStringTextView)
+			    	.setPositiveButton("Turn On", new DialogInterface.OnClickListener() {					
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							UsbongUtils.isInAutoVoiceOverNarration=true;
+						}
+			    	})
+				    .setNegativeButton("Turn Off", new DialogInterface.OnClickListener() {					
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							UsbongUtils.isInAutoVoiceOverNarration=false;
+						}
+					}).show();
+	*/				
+				return true;
+			case(R.id.about):
+				new AlertDialog.Builder(UsbongDecisionTreeEngineActivity.this).setTitle("About")
+				.setMessage(UsbongUtils.readTextFileInAssetsFolder(UsbongDecisionTreeEngineActivity.this,"credits.txt")) //don't add a '/', otherwise the file would not be found
+				.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						UsbongUtils.isInAutoVoiceOverNarration=true;
 					}
-		    	})
-			    .setNegativeButton("Turn Off", new DialogInterface.OnClickListener() {					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						UsbongUtils.isInAutoVoiceOverNarration=false;
-					}
-				}).show();
-*/				
+				}).show();				
 				return true;
 			case android.R.id.home: //added by Mike, 22 Sept. 2015
 	        	processReturnToMainMenuActivity();
@@ -2019,12 +2122,17 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     }
     
     public void processBackButtonPressed() {
-		if (mTts.isSpeaking()) {
-			mTts.stop();
-		}
-		//added by Mike, 21 July 2015
-		if (myMediaPlayer.isPlaying()) {
-			myMediaPlayer.stop();
+    	try {
+			if (mTts.isSpeaking()) {
+				mTts.stop();
+			}
+			//added by Mike, 21 July 2015
+			if (myMediaPlayer.isPlaying()) {
+				myMediaPlayer.stop();
+			}
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		usedBackButton=true;
@@ -2079,35 +2187,40 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		wasNextButtonPressed=true;
 		hasUpdatedDecisionTrackerContainer=false;
 		
-		if ((mTts!=null) && (mTts.isSpeaking())) {
-			mTts.stop();
-		}
-		//edited by Mike, 20160415
-		if ((myMediaPlayer!=null) && (myMediaPlayer.isPlaying())) {
-			myMediaPlayer.stop();
-		}
-
-		if (currAudioRecorder!=null) {
-			try {					
-				//if stop button is pressable
-				if (stopButton.isEnabled()) { 
-					currAudioRecorder.stop();
+		try {
+			if ((mTts!=null) && (mTts.isSpeaking())) {
+				mTts.stop();
+			}
+			//edited by Mike, 20160415
+			if ((myMediaPlayer!=null) && (myMediaPlayer.isPlaying())) {
+				myMediaPlayer.stop();
+			}
+	
+			if (currAudioRecorder!=null) {
+				try {					
+					//if stop button is pressable
+					if (stopButton.isEnabled()) { 
+						currAudioRecorder.stop();
+					}
+					if (currAudioRecorder.isPlaying()){
+						currAudioRecorder.stopPlayback();
+					}					
 				}
-				if (currAudioRecorder.isPlaying()){
-					currAudioRecorder.stopPlayback();
-				}					
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+				String path = currAudioRecorder.getPath();
+	//			System.out.println(">>>>>>>>>>>>>>>>>>>currAudioRecorder: "+currAudioRecorder);
+				if (!attachmentFilePaths.contains(path)) {
+					attachmentFilePaths.add(path);
+	//				System.out.println(">>>>>>>>>>>>>>>>adding path: "+path);
+				}							
 			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-			String path = currAudioRecorder.getPath();
-//			System.out.println(">>>>>>>>>>>>>>>>>>>currAudioRecorder: "+currAudioRecorder);
-			if (!attachmentFilePaths.contains(path)) {
-				attachmentFilePaths.add(path);
-//				System.out.println(">>>>>>>>>>>>>>>>adding path: "+path);
-			}							
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
 		}
-
+		
     	//UsbongConstants.END_STATE_SCREEN = last screen
     	if (currScreen==UsbongConstants.END_STATE_SCREEN) {    		
     		int usbongAnswerContainerSize = usbongAnswerContainer.size();
