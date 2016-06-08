@@ -68,6 +68,7 @@ public class PurchaseLanguageBundleListAdapter extends BaseAdapter
 			UsbongUtils.hasUnlockedLocalLanguages=true;
 			UsbongUtils.hasUnlockedForeignLanguages=true;
 */			
+		    UsbongUtils.hasLoadedPurchaseLanguageBundleList=true;
 	    }
 	    else {
 			//added by Mike, 20160425

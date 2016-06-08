@@ -1218,7 +1218,9 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 				//added by Mike, 20160408
 				myMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
 		            public void onCompletion(MediaPlayer mp) {
-		            	if (UsbongUtils.IS_IN_AUTO_PLAY_MODE) {
+		            	//added by Mike, 20160608
+		            	if ((UsbongUtils.IS_IN_AUTO_PLAY_MODE) &&
+		            			(UsbongUtils.isAnAutoPlayException(instance))){
 		            		processNextButtonPressed();
 		            	}
 		            }
@@ -1278,7 +1280,9 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 					@Override
 					public void onDone(String utteranceId) {
 		            	if (utteranceId.equals(UsbongConstants.MY_UTTERANCE_ID)) {
-							if (UsbongUtils.IS_IN_AUTO_PLAY_MODE) {
+		            		//added by Mike, 20160608
+		            		if ((UsbongUtils.IS_IN_AUTO_PLAY_MODE) &&
+			            			(UsbongUtils.isAnAutoPlayException(instance))){
 			            		instance.runOnUiThread(new Runnable() {
 			            		     @Override
 			            		     public void run() {

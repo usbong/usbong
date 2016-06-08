@@ -239,6 +239,20 @@ public class UsbongUtils {
 		return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches(); //updated by Mike, 24 Sept. 2015
 	}
 
+	//added by Mike, 20160608
+	public static boolean isAnAutoPlayException(UsbongDecisionTreeEngineActivity a) {
+		//this would cover:
+		//		public static final int TEXT_DISPLAY_SCREEN=9;	
+		//		public static final int IMAGE_DISPLAY_SCREEN=10;
+		//		public static final int TEXT_IMAGE_DISPLAY_SCREEN=11;
+		//		public static final int IMAGE_TEXT_DISPLAY_SCREEN=12;
+		//		public static final int CLASSIFICATION_SCREEN=13;		
+		if ((a.currScreen>=UsbongConstants.TEXT_DISPLAY_SCREEN) && (a.currScreen<=UsbongConstants.CLASSIFICATION_SCREEN)) {
+			return true;
+		}
+		return false;
+	}
+	
 	//-----------------------------------------------------------------
     //setup In-App Billing Service
     //reference: http://developer.android.com/google/play/billing/billing_integrate.html
