@@ -2604,8 +2604,10 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		    			catch(Exception e) {
 		    				//if the user hasn't ticked any radio button yet
 		    				//put the currUsbongNode to default
-			    			currUsbongNode = UsbongUtils.getLinkFromRadioButton(nextUsbongNodeIfYes); //nextUsbongNodeIfNo will also do, since this is "Any"
+//			    			currUsbongNode = UsbongUtils.getLinkFromRadioButton(nextUsbongNodeIfYes); //nextUsbongNodeIfNo will also do, since this is "Any"
 			    			//of course, showPleaseAnswerAlert() will be called			    			  
+		    				//edited by Mike, 20160613
+		    				//don't change the currUsbongNode anymore if no radio button has been ticked    				
 		    			}		    			
 
 //		    			usbongAnswerContainer.addElement(myRadioGroup.getCheckedRadioButtonId()+";");
