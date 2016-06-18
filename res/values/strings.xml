@@ -35,11 +35,17 @@
 	<string name="alertStringValueFilipino">Alerto!</string>
 	<string name="alertStringValueJapanese">ご注意下さい！</string>	
 	<string name="alertStringValueMandarin">请注意一下！</string>	
-		
+
+	<string name="areYouSureYouWantToReturnToTitleScreen">Are you sure you want to return to the Title Screen?</string>
+	<string name="areYouSureYouWantToReturnToTitleScreenEnglish">Are you sure you want to return to the Title Screen?</string>
+	<string name="areYouSureYouWantToReturnToTitleScreenFilipino">Sigurado ka bang nais mong bumalik sa Title Screen?</string>
+	<string name="areYouSureYouWantToReturnToTitleScreenJapanese">タイトル画面へ本当に戻りたいですか？</string>
+	<string name="areYouSureYouWantToReturnToTitleScreenMandarin">你肯定想回去标题屏幕吗？</string>
+					
 	<string name="areYouSureYouWantToReturnToMainMenuEnglish">Are you sure you want to return to Main Menu?</string>
 	<string name="areYouSureYouWantToReturnToMainMenuFilipino">Sigurado ka bang nais mong bumalik sa Main Menu?</string>
 	<string name="areYouSureYouWantToReturnToMainMenuJapanese">メイン・メニューへ本当に戻りたいですか？</string>
-	<string name="areYouSureYouWantToReturnToMainMenuMandarin">你肯定回去选单吗？</string>
+	<string name="areYouSureYouWantToReturnToMainMenuMandarin">你肯定想回去选单吗？</string>
 				
 	<string name="noStringValueEnglish">No</string>
 	<string name="yesStringValueEnglish">Yes</string>  
@@ -200,8 +206,8 @@
     <string name="sign_in_label">Sign-in</string>
     <string name="manage_account_label">Manage account</string>
     <string name="sign_out_label">Sign-out</string>
-
+    
     <string name="buy">buy</string>        
     <string name="price">price</string>        
-    <string name="name">name</string>
+    <string name="name">name</string>    
 </resources>
