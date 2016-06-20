@@ -1,6 +1,6 @@
 --Usbong (BETA)--
-ver: 2.0.3
-date: 20160618
+ver: 2.0.4
+date: 20160620
 
 Usbong's mission is to defeat poverty by uplifting human lives. Our vision is a community where there is lasting peace. Our flagship open source product is also called, "Usbong". Together with its companion app, Usbong Builder, even non-technical people can build their own Android/iOS apps.
 
