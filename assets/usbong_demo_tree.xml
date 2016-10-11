@@ -44,36 +44,36 @@
    </task-node>
    
    <task-node name="checkList~1~Choose all that apply:">
-       <task name="I like RPG"></task>
-       <task name="I know the game Zork"></task>
-       <task name="Morrowind is one of the best games I played"></task>
+       <task name="I like RPGs."></task>
+       <task name="I know the game Zork."></task>
+       <task name="Chrono Trigger is one of the best games I played."></task>
        <task name="I don't like games with a linear story"></task>
        <transition to="I see you like non-linear games too. Do you want to see the rest of the demo of Usbong's features?" name="Yes"></transition>
-       <transition to="Okay, maybe you don't like non-linear games. Do you want to see the rest of the demo of Usbong's features?" name="No"></transition>
+       <transition to="OKay, maybe you don't like non-linear games. Do you want to see the rest of the demo of Usbong's features?" name="No"></transition>
    </task-node>
    
    <decision name="I see you like non-linear games too. Do you want to see the rest of the demo of Usbong's features?">
        <transition to="link~Choose your class:" name="Yes"></transition>
-       <transition to="textDisplay~Ok. Bye!" name="No"></transition>
+       <transition to="textDisplay~OK. Bye!" name="No"></transition>
    </decision>
    
-   <decision name="Okay, maybe you don't like non-linear games. Do you want to see the rest of the demo of Usbong's features?">
+   <decision name="OKay, maybe you don't like non-linear games. Do you want to see the rest of the demo of Usbong's features?">
        <transition to="link~Choose your class:" name="Yes"></transition>
-       <transition to="textDisplay~Ok. Bye!" name="No"></transition>
+       <transition to="textDisplay~OK. Bye!" name="No"></transition>
    </decision>
    
-   <task-node name="textDisplay~Ok. Bye!">
+   <task-node name="textDisplay~OK. Bye!">
        <transition to="end-state1" name="No"></transition>
    </task-node>
    
    <task-node name="link~Choose your class:">
-      <task name="textDisplay~You have chosen to be a warrior. You specialize in Strength.~Warrior"></task>
+      <task name="textDisplay~You have chosen to be a Warrior. You specialize in Strength.~Warrior"></task>
       <task name="textDisplay~You have chosen to be a Rogue. You specialize in Stealth.~Rogue"></task>
       <task name="textDisplay~You have chosen to be a Mage. You specialize in Magic.~Mage"></task>
       <transition to="textDisplay~You have chosen to be a Mage. You specialize in Magic.~Mage" name="Any"></transition>
    </task-node>
 
-   <task-node name="textDisplay~You have chosen to be a warrior. You specialize in Strength.">
+   <task-node name="textDisplay~You have chosen to be a Warrior. You specialize in Strength.">
       <transition to="textField~What's your name?" name="Any"></transition>
    </task-node>
 
@@ -107,14 +107,14 @@
     </task-node>
 
     <task-node name="textDisplay~Correct!">
-        <transition to="textAreaWithAnswer~Type Hello in the first line, then World in the second.Answer=Hello{br}World" name="Any"></transition>
+        <transition to="textAreaWithAnswer~Type Hello in the first line, then World in the second.Answer=Hello\nWorld" name="Any"></transition>
     </task-node>
 
     <task-node name="textDisplay~Incorrect!">
-        <transition to="textAreaWithAnswer~Type Hello in the first line, then World in the second.Answer=Hello{br}World" name="Any"></transition>
+        <transition to="textAreaWithAnswer~Type Hello in the first line, then World in the second.Answer=Hello\nWorld" name="Any"></transition>
     </task-node>
 
-    <task-node name="textAreaWithAnswer~Type Hello in the first line, then World in the second.Answer=Hello{br}World">
+    <task-node name="textAreaWithAnswer~Type Hello in the first line, then World in the second.Answer=Hello\nWorld">
         <transition to="textDisplay~You did it!" name="Yes"></transition>
         <transition to="textDisplay~There's something wrong with your input." name="No"></transition>
     </task-node>

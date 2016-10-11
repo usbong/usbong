@@ -5,13 +5,13 @@
 	>
 	<ScrollView style="@style/UsbongDefaultScrollView"
 	>		 	
-	<LinearLayout style="@style/UsbongDefaultMainLayout">
-		<TextView android:id="@+id/text_display_textview"
-		    style="@style/UsbongDefaultTextView"	    	
-		    android:text="@string/default_textview" 
-		    android:layout_alignParentBottom="true"	    			
-		/>
-	</LinearLayout>
+		<LinearLayout style="@style/UsbongDefaultMainLayout">
+			<TextView android:id="@+id/text_display_textview"
+			    style="@style/UsbongDefaultTextView"	    	
+			    android:text="@string/default_textview" 
+			    android:layout_alignParentBottom="true"	    			
+			/>
+		</LinearLayout>
 	</ScrollView>	    	    
 	<LinearLayout
 		style="@style/UsbongDefaultBackNextButtonLayout">	

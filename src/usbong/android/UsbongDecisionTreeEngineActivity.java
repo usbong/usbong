@@ -338,8 +338,8 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
   			UsbongUtils.initUsbongConfigFile();
  
     		//create the usbong_demo_tree and store it in sdcard/usbong/usbong_trees
-//    		UsbongUtils.storeAssetsFileIntoSDCard(this,"usbong_demo_tree.xml");
-    		UsbongUtils.storeAssetsFileIntoSDCard(this,"pagtsing.utree");
+    		UsbongUtils.storeAssetsFileIntoSDCard(this,"usbong_demo_tree.xml");
+//    		UsbongUtils.storeAssetsFileIntoSDCard(this,"usbong_demo_tree.utree");
     	}
     	catch(IOException ioe) {
     		ioe.printStackTrace();

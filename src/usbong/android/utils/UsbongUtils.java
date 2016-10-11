@@ -445,16 +445,16 @@ public class UsbongUtils {
         }
 	}
 	
-	//updated by Mike, 20160504
+	//updated by Mike, 20160926
 	//must comply with JDK 1.6
 	public static boolean isLocalLanguage(String s) {
-		if (s.equals("Bisaya")) {
+		if (s.contains("Bisaya")) {
 			return true;
 		}
-		else if (s.equals("Ilonggo")) {
+		else if (s.contains("Ilonggo")) {
 			return true;
 		}
-		else if (s.equals("Kapampangan")) {
+		else if (s.contains("Kapampangan")) {
 			return true;
 		}
 		return false;
