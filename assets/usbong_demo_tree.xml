@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<process-definition xmlns="" name="Usbong iOS">
+<process-definition xmlns="" name="usbong_demo_tree_android">
    <start-state name="start-state1">
       <transition to="textDisplay~Hi! This is an example tree built for the Usbong app."></transition>
    </start-state>
@@ -47,7 +47,7 @@
        <task name="I like RPGs."></task>
        <task name="I know the game Zork."></task>
        <task name="Chrono Trigger is the best game I've ever played."></task>
-       <task name="I don't like games with a linear story"></task>
+       <task name="I don't like games with a linear story."></task>
        <transition to="I see you like non-linear games too. Do you want to see the rest of the demo of Usbong's features?" name="Yes"></transition>
        <transition to="OK, maybe you don't like non-linear games. Do you want to see the rest of the demo of Usbong's features?" name="No"></transition>
    </task-node>

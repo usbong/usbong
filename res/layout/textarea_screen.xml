@@ -9,7 +9,7 @@
 			<TextView android:id="@+id/textarea_textview"
 			    style="@style/UsbongDefaultTextView"	    	
 			    android:text="@string/default_textview" 
-		    	android:layout_marginTop="16px"/>	    
+		    />	    
 			<EditText android:id="@+id/textarea_edittext"
 				style="@style/UsbongTextAreaEditText"	
 			    android:layout_alignParentBottom="true"
