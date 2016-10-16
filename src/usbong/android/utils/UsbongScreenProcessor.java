@@ -385,6 +385,12 @@ public class UsbongScreenProcessor
 					myTextAreaWithAnswerScreenStringToken = myTextAreaWithAnswerScreenStringTokenizer.nextToken(); 
 				}
 			}
+			
+			//added by Mike, 20161016
+/*
+			myTextAreaWithAnswerScreenStringToken=myTextAreaWithAnswerScreenStringToken.replace("{", "<");
+			myTextAreaWithAnswerScreenStringToken=myTextAreaWithAnswerScreenStringToken.replace("}", ">");
+*/			
 			udtea.myTextAreaWithAnswerScreenAnswer=myTextAreaWithAnswerScreenStringToken.toString();
 			udtea.currUsbongNodeWithoutAnswer=udtea.currUsbongNodeWithoutAnswer.substring(0, udtea.currUsbongNodeWithoutAnswer.length()-udtea.myTextAreaWithAnswerScreenAnswer.length()-1); //do a -1 for the last tilde    			
 			TextView myTextAreaWithAnswerScreenTextView = (TextView)udtea.findViewById(R.id.textarea_textview);

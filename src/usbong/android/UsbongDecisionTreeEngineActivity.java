@@ -2780,12 +2780,13 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 						StringTokenizer myPossibleAnswersStringTokenizer = new StringTokenizer(myTextAreaWithAnswerScreenAnswer, "||");
 						if (myPossibleAnswersStringTokenizer != null) {
 							while (myPossibleAnswersStringTokenizer.hasMoreTokens()) { //get last element (i.e. Mike in "textAreaWithAnswer~Who is the founder of Usbong (nickname)?Answer=Mike||mike")
-								myPossibleAnswers.add(myPossibleAnswersStringTokenizer.nextToken()); 
+								myPossibleAnswers.add(myPossibleAnswersStringTokenizer.nextToken().replace("{br}", "\n")); 								
 							}
 						}
 						int size = myPossibleAnswers.size();
 						for(int i=0; i<size; i++) {
-//							Log.d(">>>>>>myPossibleAnswers: ",myPossibleAnswers.elementAt(i));
+							Log.d(">>>>>>myPossibleAnswers: ",myPossibleAnswers.elementAt(i));
+							Log.d(">>>>>>myTextAreaScreenEditText.getText().toString().trim(): ",myTextAreaScreenEditText.getText().toString().trim());
 							if (myPossibleAnswers.elementAt(i).equals(myTextAreaScreenEditText.getText().toString().trim())) {
 								currUsbongNode = nextUsbongNodeIfYes; 	
 					    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y,"+myTextAreaScreenEditText.getText().toString().trim()+";", usbongAnswerContainerCounter);
