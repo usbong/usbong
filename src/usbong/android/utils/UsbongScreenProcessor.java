@@ -358,7 +358,7 @@ public class UsbongScreenProcessor
 					myTextFieldWithAnswerScreenStringToken = myTextFieldWithAnswerScreenStringTokenizer.nextToken(); 
 				}
 			}
-			udtea.myTextFieldWithAnswerScreenAnswer=myTextFieldWithAnswerScreenStringToken.toString();
+			udtea.myTextFieldWithAnswerScreenAnswer=myTextFieldWithAnswerScreenStringToken.toString();			
 			udtea.currUsbongNodeWithoutAnswer=udtea.currUsbongNodeWithoutAnswer.substring(0, udtea.currUsbongNodeWithoutAnswer.length()-udtea.myTextFieldWithAnswerScreenAnswer.length()-1); //do a -1 for the last tilde    			
 			TextView myTextFieldWithAnswerScreenTextView = (TextView)udtea.findViewById(R.id.textfield_textview);
 			myTextFieldWithAnswerScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myTextFieldWithAnswerScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNodeWithoutAnswer);

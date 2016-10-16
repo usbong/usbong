@@ -30,10 +30,10 @@
 	   <task name="simpleEncrypt"/>
 	   <task name="sendToWebServer"/>
 	   <task name="sendToCloudService"/>
-       <transition to="radioButtons~I love to play games" name="Any"></transition>
+       <transition to="radioButtons~I love to play games." name="Any"></transition>
    </task-node>
    
-   <task-node name="radioButtons~I love to play games">
+   <task-node name="radioButtons~I love to play games.">
        <task name="Strongly Disagree"></task>
        <task name="Moderately Disagree"></task>
        <task name="Slightly Disagree"></task>
@@ -46,10 +46,10 @@
    <task-node name="checkList~1~Choose all that apply:">
        <task name="I like RPGs."></task>
        <task name="I know the game Zork."></task>
-       <task name="Chrono Trigger is one of the best games I've ever played."></task>
+       <task name="Chrono Trigger is the best game I've ever played."></task>
        <task name="I don't like games with a linear story"></task>
        <transition to="I see you like non-linear games too. Do you want to see the rest of the demo of Usbong's features?" name="Yes"></transition>
-       <transition to="OKay, maybe you don't like non-linear games. Do you want to see the rest of the demo of Usbong's features?" name="No"></transition>
+       <transition to="OK, maybe you don't like non-linear games. Do you want to see the rest of the demo of Usbong's features?" name="No"></transition>
    </task-node>
    
    <decision name="I see you like non-linear games too. Do you want to see the rest of the demo of Usbong's features?">
@@ -57,7 +57,7 @@
        <transition to="textDisplay~OK. Bye!" name="No"></transition>
    </decision>
    
-   <decision name="OKay, maybe you don't like non-linear games. Do you want to see the rest of the demo of Usbong's features?">
+   <decision name="OK, maybe you don't like non-linear games. Do you want to see the rest of the demo of Usbong's features?">
        <transition to="link~Choose your class:" name="Yes"></transition>
        <transition to="textDisplay~OK. Bye!" name="No"></transition>
    </decision>

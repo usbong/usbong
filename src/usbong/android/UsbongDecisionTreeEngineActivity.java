@@ -1111,12 +1111,14 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		        sb.append(photoCaptureButton.getText()+". ");
 	    		break;
 			case UsbongConstants.TEXTFIELD_SCREEN:
-			case UsbongConstants.TEXTFIELD_WITH_ANSWER_SCREEN:						
 			case UsbongConstants.TEXTFIELD_WITH_UNIT_SCREEN:
 			case UsbongConstants.TEXTFIELD_NUMERICAL_SCREEN:
 			case UsbongConstants.TEXTAREA_SCREEN:
-			case UsbongConstants.TEXTAREA_WITH_ANSWER_SCREEN:						
 				sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
+		        break;    	
+			case UsbongConstants.TEXTFIELD_WITH_ANSWER_SCREEN:						
+			case UsbongConstants.TEXTAREA_WITH_ANSWER_SCREEN:						
+				sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNodeWithoutAnswer)).getText().toString()+". ");
 		        break;    	
 			case UsbongConstants.CLASSIFICATION_SCREEN:
 		        sb.append(((TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), new TextView(this), UsbongUtils.IS_TEXTVIEW, currUsbongNode)).getText().toString()+". ");
