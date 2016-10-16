@@ -18,6 +18,7 @@
          android:layout_height="wrap_content" 
          android:calendarViewShown="false"
          style="@style/DatePickerTheme"
+         android:background="#282828"
          >
     	</DatePicker>
 	</LinearLayout>

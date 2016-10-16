@@ -628,7 +628,6 @@ public class UsbongScreenProcessor
 			Configuration userConfig = new Configuration();
 			Settings.System.getConfiguration( udtea.getContentResolver(), userConfig );
 			Calendar date = Calendar.getInstance( userConfig.locale);
-
 			
 /*			
 			//Reference: http://www.androidpeople.com/android-spinner-default-value;
