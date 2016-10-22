@@ -1944,48 +1944,32 @@ public class UsbongUtils {
 		return myText;
     }    
     
-    //added by Mike, Feb. 4, 2013
-    //modified by Mike, Oct. 5, 2014
-    public static String/*Spanned*/ applyTagsInString(Activity a, String myCurrUsbongNode) {
+    //added by Mike, 20130204
+    //updated by Mike, 20161022
+    public static String applyTagsInString(Activity a, String myCurrUsbongNode) {
     	String styledText;
 
     	if (USE_UNESCAPE) {
-//    		Log.d(">>>>>","UNESCAPE=true");
-//        	styledText = StringEscapeUtils.unescapeJava(UsbongUtils.trimUsbongNodeName(myCurrUsbongNode));
-        	//added by Mike, Feb. 9, 2015
+        	//added by Mike, 20160209
     		styledText = (UsbongUtils.trimUsbongNodeName(myCurrUsbongNode)).replace("\n", "{br}");        	  
         }
         else {
-//    		Log.d(">>>>>","UNESCAPE=false");
         	styledText = UsbongUtils.trimUsbongNodeName(myCurrUsbongNode);
         }
 
-//    	Log.d(">>>styledText 1",styledText);
     	styledText = performTranslation(styledText);
 
-//    	Log.d(">>>styledText 2",styledText);
     	styledText = replaceAllCurlyBracesWithGreaterThanLessThanSign(styledText);
 
-//    	Log.d(">>>styledText 3",styledText);
 
-    	//added by Mike, March 26, 2014
+    	//added by Mike, 20140326
     	processStoreVariableMethod(a, myCurrUsbongNode); //does not return anything
 
-    	//added by Mike, March 26, 2014
+    	//added by Mike, 20140326
     	styledText = processLoadTagsInString(a, styledText);
 
-    	//keep the curly braces for <indent>
-//    	styledText = styledText.replaceAll("<indent>", "{indent}");//"\u0020\u0020\u0020\u0020\u0020");					
     	styledText = processIndent(styledText);
 
-//    	styledText = applyHintsInString(a, styledText);    	
-//    	Log.d(">>>>>styledText",styledText);
-/*    	
-    	Spanned mySpanned = Html.fromHtml(styledText);	
-    	Log.d(">>>>>mySpanned",mySpanned.toString());
-    	
-    	return mySpanned;
-*/
     	return styledText; //do "Html.fromHtml(styledText);" later
     }
 
