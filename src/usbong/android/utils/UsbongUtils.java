@@ -1958,9 +1958,7 @@ public class UsbongUtils {
         }
 
     	styledText = performTranslation(styledText);
-
     	styledText = replaceAllCurlyBracesWithGreaterThanLessThanSign(styledText);
-
 
     	//added by Mike, 20140326
     	processStoreVariableMethod(a, myCurrUsbongNode); //does not return anything
