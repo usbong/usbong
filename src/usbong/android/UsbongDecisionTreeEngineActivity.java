@@ -365,6 +365,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 	    querySkus.putStringArrayList("ITEM_ID_LIST", skuList);
 */	    
 	    
+/*//commented out by Mike, 20161121	    
 	    new AsyncTask<String, Integer, Boolean>() {
 			@Override
 			protected void onPostExecute(Boolean result) {
@@ -400,7 +401,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 				return true;		
 			}	
 	    }.execute();
-	    	        	
+*/	    	        	
         //reference: Labeeb P's answer from stackoverflow;
         //http://stackoverflow.com/questions/4275797/view-setpadding-accepts-only-in-px-is-there-anyway-to-setpadding-in-dp;
         //last accessed: 23 May 2013
@@ -2377,56 +2378,65 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		        RadioButton myNoRadioButton = (RadioButton)findViewById(R.id.no_radiobutton);
 
 		        if (myYesRadioButton.isChecked()) {
-					currUsbongNode = nextUsbongNodeIfYes; 
-//					usbongAnswerContainer.addElement("Y;");															
-		    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y;", usbongAnswerContainerCounter);
-					usbongAnswerContainerCounter++;
+		        	//added by Mike, 20161121
+		    	    new AsyncTask<String, Integer, Boolean>() {
+		    			@Override
+		    			protected void onPostExecute(Boolean result) {
+				    		//send to cloud-based service
+				    		Intent sendToCloudBasedServiceIntent = UsbongUtils.performSendToCloudBasedServiceProcess(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", attachmentFilePaths);
 
-					decisionTrackerContainer.addElement(usbongAnswerContainer.lastElement());
-//					wasNextButtonPressed=false; //no need to make this true, because "Y;" has already been added to decisionTrackerContainer
-					hasUpdatedDecisionTrackerContainer=true;
-					
-					StringBuffer sb = new StringBuffer();
-					for (int i=0; i<decisionTrackerContainer.size();i++) {
-						sb.append(decisionTrackerContainer.elementAt(i));
-					}
-					Log.d(">>>>>>>>>>>>>decisionTrackerContainer", sb.toString());								
-					
-		    		//edited by Mike, March 4, 2013
-		    		//"save" the output into the SDCard as "output.txt"
-//		    		int usbongAnswerContainerSize = usbongAnswerContainer.size();
-		    		int usbongAnswerContainerSize = usbongAnswerContainerCounter;
+				    		//answer from Llango J, stackoverflow
+				    		//Reference: http://stackoverflow.com/questions/7479883/problem-with-sending-email-goes-back-to-previous-activity;
+				    		//last accessed: 22 Oct. 2012
+				    		getInstance().startActivity(Intent.createChooser(sendToCloudBasedServiceIntent, "Send to Cloud-based Service:"));
+//				    		getInstance().initParser();				
+		    			}
 
-		    		StringBuffer outputStringBuffer = new StringBuffer();
-		    		for(int i=0; i<usbongAnswerContainerSize; i++) {
-		    			outputStringBuffer.append(usbongAnswerContainer.elementAt(i));
-		    		}
+		    			@Override
+		    			protected Boolean doInBackground(String... params) {
+				        	currUsbongNode = nextUsbongNodeIfYes; 
+//							usbongAnswerContainer.addElement("Y;");															
+				    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "Y;", usbongAnswerContainerCounter);
+							usbongAnswerContainerCounter++;
 
-		        	myOutputDirectory=UsbongUtils.getDateTimeStamp()+"/";
-	    			try {
-	    				UsbongUtils.createNewOutputFolderStructure();
-	    			}
-	    			catch(Exception e) {
-	    				e.printStackTrace();
-	    			}				        	
-		        	UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", outputStringBuffer.toString());
+							decisionTrackerContainer.addElement(usbongAnswerContainer.lastElement());
+//							wasNextButtonPressed=false; //no need to make this true, because "Y;" has already been added to decisionTrackerContainer
+							hasUpdatedDecisionTrackerContainer=true;
+							
+							StringBuffer sb = new StringBuffer();
+							for (int i=0; i<decisionTrackerContainer.size();i++) {
+								sb.append(decisionTrackerContainer.elementAt(i));
+							}
+							Log.d(">>>>>>>>>>>>>decisionTrackerContainer", sb.toString());								
+							
+				    		//edited by Mike, March 4, 2013
+				    		//"save" the output into the SDCard as "output.txt"
+//				    		int usbongAnswerContainerSize = usbongAnswerContainer.size();
+				    		int usbongAnswerContainerSize = usbongAnswerContainerCounter;
 
-		    		//send to cloud-based service
-		    		Intent sendToCloudBasedServiceIntent = UsbongUtils.performSendToCloudBasedServiceProcess(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", attachmentFilePaths);
-		    		/*emailIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-*/
-//		    		emailIntent.addFlags(RESULT_OK);
-//		    		startActivityForResult(Intent.createChooser(emailIntent, "Email:"),EMAIL_SENDING_SUCCESS);
-		    		//answer from Llango J, stackoverflow
-		    		//Reference: http://stackoverflow.com/questions/7479883/problem-with-sending-email-goes-back-to-previous-activity;
-		    		//last accessed: 22 Oct. 2012
-		    		startActivity(Intent.createChooser(sendToCloudBasedServiceIntent, "Send to Cloud-based Service:"));
+				    		StringBuffer outputStringBuffer = new StringBuffer();
+				    		for(int i=0; i<usbongAnswerContainerSize; i++) {
+				    			outputStringBuffer.append(usbongAnswerContainer.elementAt(i));
+				    		}
+
+				        	myOutputDirectory=UsbongUtils.getDateTimeStamp()+"/";
+			    			try {
+			    				UsbongUtils.createNewOutputFolderStructure();
+			    			}
+			    			catch(Exception e) {
+			    				e.printStackTrace();
+			    			}				        	
+				        	UsbongUtils.storeOutputInSDCard(UsbongUtils.BASE_FILE_PATH + myOutputDirectory + UsbongUtils.getDateTimeStamp() + ".csv", outputStringBuffer.toString());
+		    				return true;		
+		    			}	
+		    	    }.execute();
 		        }
 		        else if (myNoRadioButton.isChecked()) {
 					currUsbongNode = nextUsbongNodeIfNo; 
 //					usbongAnswerContainer.addElement("N;");															
 		    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "N;", usbongAnswerContainerCounter);
 					usbongAnswerContainerCounter++;
+		    		initParser();				
 		        }
 		        else { //if no radio button was checked				        	
 	        		if (!UsbongUtils.IS_IN_DEBUG_MODE) {
@@ -2441,31 +2451,10 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
 		    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
 					usbongAnswerContainerCounter++;
-//		    		initParser();				
-
-/*
-		        	if (!isAnOptionalNode) {
-	        			showRequiredFieldAlert(PLEASE_CHOOSE_AN_ANSWER_ALERT_TYPE);
-    					wasNextButtonPressed=false;
-    					hasUpdatedDecisionTrackerContainer=true;
-    					
-    					return;
-	        		}
-	        		else {
-			    		currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-//						usbongAnswerContainer.addElement("A;");															
-			    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A;", usbongAnswerContainerCounter);
-						usbongAnswerContainerCounter++;
-
-						initParser();				
-	        		}
-*/			        		
+		    		initParser();				
 		        }
-/*				        
-				currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
-				usbongAnswerContainer.addElement("Any;");															
-*/						
-				initParser();				
+
+//		        initParser();				
     		}	
     		else if (currScreen==UsbongConstants.MULTIPLE_CHECKBOXES_SCREEN) {
 //	    		requiredTotalCheckedBoxes	

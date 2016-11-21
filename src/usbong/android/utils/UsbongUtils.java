@@ -30,6 +30,7 @@ import java.io.PrintWriter;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
@@ -522,6 +523,9 @@ public class UsbongUtils {
 		//2015-10-31T14:49:20+08:00
 		dateTimeStamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ", Locale.US).format(new Date());
 		Log.d(">>>", "dateTimeStamp: "+dateTimeStamp);
+		
+		//2015-10-31T14-49-20
+//		dateTimeStamp = new SimpleDateFormat("yyyy-MM-dd'T'HH-mm-ss", Locale.US).format(new Date());    	
     }
 
     public static String getDateTimeStamp() {
@@ -999,7 +1003,8 @@ public class UsbongUtils {
     	int totalTokens = st.countTokens();
 		int counter = 0;		
 //		String myStringToken = "";
-		
+
+		//updated by Mike, 20161113
 		while (counter<totalTokens-2) { //up to third to the last only			
 			sb = sb.append(st.nextToken()+"~");				
 			counter++;
@@ -1516,6 +1521,7 @@ public class UsbongUtils {
 			
 			sendToCloudBasedServiceIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "usbong;"+UsbongUtils.getDateTimeStamp());
 			sendToCloudBasedServiceIntent.putExtra(android.content.Intent.EXTRA_TEXT, currLineString); //body
+//			sendToCloudBasedServiceIntent.putExtra(android.content.Intent.EXTRA_TEXT, new ArrayList<String>(Arrays.asList(currLineString.split(";")))); //body			
 //			sendToCloudBasedServiceIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"masarapmabuhay@gmail.com"});//"masarapmabuhay@gmail.com"); 	
 			
 			
@@ -1535,7 +1541,7 @@ public class UsbongUtils {
 		        if (fileIn.exists()) { //added by Mike, May 13, 2012		        		        
 			        Uri u = Uri.fromFile(fileIn);
 			        uris.add(u);
-			        System.out.println(">>>>>>>>>>>>>>>>>> u: "+u);
+			        System.out.println(">>>>>>>>>>>>>>>>>> u: "+u.toString());
 		        }
 		    }
 		    sendToCloudBasedServiceIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
