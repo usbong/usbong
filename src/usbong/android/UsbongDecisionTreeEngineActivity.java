@@ -413,7 +413,9 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
         
         //added by Mike, 25 Feb. 2014
 //        UsbongUtils.setStoreOutput(UsbongUtils.checkIfStoreOutput());
-        UsbongUtils.setStoreOutput(false); //don't store output, added by Mike, 27 Sept. 2015
+
+        //commented out by Mike, 20161122
+//        UsbongUtils.setStoreOutput(false); //don't store output, added by Mike, 27 Sept. 2015
         
         myUsbongScreenProcessor = new UsbongScreenProcessor(UsbongDecisionTreeEngineActivity.getInstance());
         myUsbongVariableMemory = new HashMap<String, String>();
@@ -2454,7 +2456,8 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 		    		initParser();				
 		        }
 
-//		        initParser();				
+		        //commented out by Mike, 20161122
+//		        initParser();
     		}	
     		else if (currScreen==UsbongConstants.MULTIPLE_CHECKBOXES_SCREEN) {
 //	    		requiredTotalCheckedBoxes	
@@ -2943,7 +2946,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
         	currAudioRecorder = new AudioRecorder("/usbong/" + timeStamp,currUsbongNode);
         }
 */        
-    	currAudioRecorder = new AudioRecorder("/usbong/" + timeStamp,currUsbongNode);
+    	currAudioRecorder = new AudioRecorder("/usbong/" + timeStamp,currUsbongNode + UsbongUtils.getDateTimeStamp()); //updated by Mike, 20161122
 
         // add a click listener to the button
         recordButton.setOnClickListener(new OnClickListener() {
@@ -3002,10 +3005,11 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     public void initTakePhotoScreen()
     {
 //    	myPictureName=currUsbongNode; //make the name of the picture the name of the currUsbongNode
-    	myPictureName=UsbongUtils.processStringToBeFilenameReady(currUsbongNode); //make the name of the picture the name of the currUsbongNode
+    	//updated by Mike, 20161122		
+    	myPictureName=UsbongUtils.processStringToBeFilenameReady(currUsbongNode) + UsbongUtils.getDateTimeStamp(); //make the name of the picture the name of the currUsbongNode
     	
 //		String path = "/sdcard/usbong/"+ UsbongUtils.getTimeStamp() +"/"+ myPictureName +".jpg";
-		String path = UsbongUtils.BASE_FILE_PATH + UsbongUtils.getDateTimeStamp()+"/"+ myPictureName +".jpg";		
+		String path = UsbongUtils.BASE_FILE_PATH + UsbongUtils.getDateTimeStamp()+"/"+ myPictureName +".jpg";
 		//only add path if it's not already in attachmentFilePaths
 		if (!attachmentFilePaths.contains(path)) {
 			attachmentFilePaths.add(path);
@@ -3043,12 +3047,13 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     public void initPaintScreen()
     {
 //    	myPaintName=currUsbongNode; //make the name of the picture the name of the currUsbongNode
-    	myPaintName=UsbongUtils.processStringToBeFilenameReady(currUsbongNode); //make the name of the picture the name of the currUsbongNode
+    	//updated by Mike, 20161122
+    	myPaintName=UsbongUtils.processStringToBeFilenameReady(currUsbongNode) + UsbongUtils.getDateTimeStamp(); //make the name of the picture the name of the currUsbongNode
     	    	
     	Log.d(">>>>>>myPaintName:",myPaintName);
     	
 //		String path = "/sdcard/usbong/"+ UsbongUtils.getTimeStamp() +"/"+ myPictureName +".jpg";
-		String path = UsbongUtils.BASE_FILE_PATH + UsbongUtils.getDateTimeStamp()+"/"+ myPaintName +".jpg";		
+		String path = UsbongUtils.BASE_FILE_PATH + UsbongUtils.getDateTimeStamp()+"/"+ myPaintName +".jpg";	
 
 		//only add path if it's not already in attachmentFilePaths
 		if (!attachmentFilePaths.contains(path)) {

@@ -408,7 +408,11 @@ public class UsbongUtils {
 			    //added by Mike, 20160417
 	    		UsbongUtils.IS_IN_AUTO_LOOP_MODE=false;						
 			    out.println("IS_IN_AUTO_LOOP_MODE=OFF");
-
+			    
+			    //added by Mike, 20161122
+	    		UsbongUtils.STORE_OUTPUT=false;						
+			    out.println("STORE_OUTPUT=OFF");
+			    
 				out.close();
     		}
     		else {
@@ -432,6 +436,10 @@ public class UsbongUtils {
 					}
 	    			else if (currLineString.equals("IS_IN_AUTO_LOOP_MODE=ON")) {
 						UsbongUtils.IS_IN_AUTO_LOOP_MODE=true;			
+					}
+	    			//added by Mike, 20161122
+	    			else if (currLineString.equals("STORE_OUTPUT=ON")) {
+						UsbongUtils.STORE_OUTPUT=true;			
 					}
 	    			/*
 	    			else {
@@ -577,6 +585,11 @@ public class UsbongUtils {
 		File directory = new File(BASE_FILE_PATH + UsbongUtils.getDateTimeStamp()+"/");
 		System.out.println(">>>> Directory: " + directory.getAbsolutePath());
 		
+		//added by Mike, 20161122
+		if (directory.exists()) {
+			return;
+		}
+			
 		if (!directory.exists() && !directory.mkdirs()) 
     	{
     		throw new IOException("Base File Path to file could not be created.");

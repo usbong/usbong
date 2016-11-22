@@ -1,6 +1,6 @@
 --Usbong (BETA)--
-ver: 2.0.6
-date: 20161016
+ver: 2.0.7
+date: 20161122
 
 Usbong Social Systems, Inc.
 
