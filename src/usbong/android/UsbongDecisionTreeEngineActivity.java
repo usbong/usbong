@@ -1358,6 +1358,9 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 //			commented out by Mike, 11 Oct. 2015
 //        	mTts = new TextToSpeech(this, this);        		
         }
+    	/*
+    	 * //considering commenting this out, Mike, 20161122
+    	 */
         else if (requestCode==UsbongUtils.EMAIL_SENDING_SUCCESS) {
     		finish();    		
 			Intent toUsbongMainActivityIntent = new Intent(UsbongDecisionTreeEngineActivity.this, UsbongMainActivity.class);
@@ -1366,7 +1369,8 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     		if (mTts!=null) {
     			mTts.shutdown();
     		}
-        }/*//requestCode seems to be always 0
+        }
+        /*//requestCode seems to be always 0
         else if (requestCode==UsbongUtils.FROM_MY_YOUTUBE_ACTIVITY_TO_MAIN_MENU) {
         	Log.d(">>>>>", "requestCode==UsbongUtils.FROM_MY_YOUTUBE_ACTIVITY_TO_MAIN_MENU");
         	processReturnToMainMenuActivityYes();
@@ -1464,6 +1468,9 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
             	return;
 */            	
         		break;
+        		//added by Mike, 20161122
+        	case UsbongConstants.SEND_TO_CLOUD_BASED_SERVICE_SCREEN:
+        		return;
         }
         initParser(); 
     }
@@ -2391,7 +2398,7 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 				    		//Reference: http://stackoverflow.com/questions/7479883/problem-with-sending-email-goes-back-to-previous-activity;
 				    		//last accessed: 22 Oct. 2012
 				    		getInstance().startActivity(Intent.createChooser(sendToCloudBasedServiceIntent, "Send to Cloud-based Service:"));
-//				    		getInstance().initParser();				
+				    		getInstance().initParser();				
 		    			}
 
 		    			@Override
@@ -2914,8 +2921,8 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
     			UsbongUtils.addElementToContainer(usbongAnswerContainer, "dcat_end,"+myDcatSummaryStringBuffer.toString()+";", usbongAnswerContainerCounter);
 		        usbongAnswerContainerCounter++;
 				
-				initParser();		    		}
-
+				initParser();		    		
+			}
     		else { //TODO: do this for now		    		
     			currUsbongNode = nextUsbongNodeIfYes; //nextUsbongNodeIfNo will also do, since this is "Any"
 //				usbongAnswerContainer.addElement("A;");															

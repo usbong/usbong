@@ -1533,8 +1533,9 @@ public class UsbongUtils {
 			sendToCloudBasedServiceIntent.setType("text/plain");
 			
 			sendToCloudBasedServiceIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "usbong;"+UsbongUtils.getDateTimeStamp());
-			sendToCloudBasedServiceIntent.putExtra(android.content.Intent.EXTRA_TEXT, currLineString); //body
-//			sendToCloudBasedServiceIntent.putExtra(android.content.Intent.EXTRA_TEXT, new ArrayList<String>(Arrays.asList(currLineString.split(";")))); //body			
+//			sendToCloudBasedServiceIntent.putExtra(android.content.Intent.EXTRA_TEXT, currLineString); //body
+			//updated by Mike, 20161122
+			sendToCloudBasedServiceIntent.putExtra(android.content.Intent.EXTRA_TEXT, new ArrayList<String>(Arrays.asList(currLineString.split(";")))); //body			
 //			sendToCloudBasedServiceIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"masarapmabuhay@gmail.com"});//"masarapmabuhay@gmail.com"); 	
 			
 			
