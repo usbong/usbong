@@ -32,6 +32,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.provider.Settings;
 import android.text.InputType;
 import android.util.Log;
@@ -74,6 +75,9 @@ public class UsbongScreenProcessor
 	public ProgressBar myLoadingProgressBar;
 	
 	public boolean hasGottenGPSLocation;
+	
+	public static int animate_counter=0;
+	public static ImageView myAnimateImageView;
 	
 	public UsbongScreenProcessor(){		
 	}
@@ -738,6 +742,35 @@ public class UsbongScreenProcessor
 				}
 			}).show();
 						
+		} else if (udtea.currScreen == UsbongConstants.ANIMATE_SCREEN) {
+			udtea.setContentView(R.layout.image_display_screen);
+			udtea.initBackNextButtons();
+			myAnimateImageView = (ImageView)udtea.findViewById(R.id.special_imageview);
+
+		    //example: <task-node name="animate~frame-0-4~Happy Mike">
+		    //becomes "frame-0-4"
+			String myResName = UsbongUtils.getResName(udtea.currUsbongNode);
+			
+			StringTokenizer animate_st = new StringTokenizer(myResName, "-");
+			final String frameName = animate_st.nextToken();
+			final int startFrame = Integer.parseInt(st.nextToken()); 
+			final int endFrame = Integer.parseInt(st.nextToken()); 
+
+//			animate_counter=0;
+	    	new Thread(new Runnable() {
+			    public void run() {
+					UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+animate_counter);
+/*
+					if (!UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+animate_counter)) {
+						//Reference: http://www.anddev.org/tinytut_-_get_resources_by_name__getidentifier_-t460.html; last accessed 14 Sept 2011
+//						        Resources myRes = getResources();
+						    myDrawableImage = myRes.getDrawable(myRes.getIdentifier("no_image", "drawable", udtea.myPackageName));
+						    myImageDisplayScreenImageView.setImageDrawable(myDrawableImage);		        		        	
+						}
+*/						    
+					animate_counter=(animate_counter+1)%endFrame;
+			    }
+			}).start();			
 		} else if (udtea.currScreen == UsbongConstants.IMAGE_DISPLAY_SCREEN) {
 			udtea.setContentView(R.layout.image_display_screen);
 			udtea.initBackNextButtons();
