@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 
 import usbong.android.R;
 import usbong.android.UsbongDecisionTreeEngineActivity;
+import usbong.android.multimedia.graphics.MyCanvas;
 import usbong.android.utils.FedorMyLocation.LocationResult;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -33,6 +34,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Message;
 import android.provider.Settings;
 import android.text.InputType;
 import android.util.Log;
@@ -52,9 +54,6 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
-
-import com.google.android.youtube.player.YouTubePlayerSupportFragment;
-import com.google.android.youtube.player.YouTubePlayerView;
 
 /*
  * This class was created to reduce the length (i.e. number of lines of code) 
@@ -743,7 +742,7 @@ public class UsbongScreenProcessor
 			}).show();
 						
 		} else if (udtea.currScreen == UsbongConstants.ANIMATE_SCREEN) {
-			udtea.setContentView(R.layout.image_display_screen);
+			udtea.setContentView(R.layout.animate_screen);
 			udtea.initBackNextButtons();
 			myAnimateImageView = (ImageView)udtea.findViewById(R.id.special_imageview);
 
@@ -753,24 +752,37 @@ public class UsbongScreenProcessor
 			
 			StringTokenizer animate_st = new StringTokenizer(myResName, "-");
 			final String frameName = animate_st.nextToken();
-			final int startFrame = Integer.parseInt(st.nextToken()); 
-			final int endFrame = Integer.parseInt(st.nextToken()); 
+			final int startFrame = Integer.parseInt(animate_st.nextToken()); 
+			final int endFrame = Integer.parseInt(animate_st.nextToken())+1; 
 
-//			animate_counter=0;
-	    	new Thread(new Runnable() {
-			    public void run() {
-					UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+animate_counter);
-/*
-					if (!UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+animate_counter)) {
-						//Reference: http://www.anddev.org/tinytut_-_get_resources_by_name__getidentifier_-t460.html; last accessed 14 Sept 2011
-//						        Resources myRes = getResources();
-						    myDrawableImage = myRes.getDrawable(myRes.getIdentifier("no_image", "drawable", udtea.myPackageName));
-						    myImageDisplayScreenImageView.setImageDrawable(myDrawableImage);		        		        	
-						}
-*/						    
+			UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+startFrame);
+
+			/**
+		     * Create a simple handler that we can use to cause animation to happen.  We
+		     * set ourselves as a target and we can use the sleep()
+		     * function to cause an update/invalidate to occur at a later date.
+		     */
+			class RefreshHandler extends Handler {
+		        @Override
+		        public void handleMessage(Message msg) {
+		        	//do updates
 					animate_counter=(animate_counter+1)%endFrame;
-			    }
-			}).start();			
+					UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+animate_counter);
+					this.sleep(1000); //1000 is mMoveDelay
+					
+					//do invalidate
+					//MyCanvas.this.invalidate();
+		        }
+
+		        public void sleep(long delayMillis) {
+		                this.removeMessages(0);
+		            sendMessageDelayed(obtainMessage(0), delayMillis);
+		        }
+		    };
+		    RefreshHandler mRedrawHandler = new RefreshHandler();
+		    mRedrawHandler.sleep(0);
+			
+//			animate_counter=0;
 		} else if (udtea.currScreen == UsbongConstants.IMAGE_DISPLAY_SCREEN) {
 			udtea.setContentView(R.layout.image_display_screen);
 			udtea.initBackNextButtons();

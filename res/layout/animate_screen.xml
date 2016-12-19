@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	style="@style/UsbongSpecialParentLayout"
+	android:id="@+id/parent_layout_id"       
+	>
+	<LinearLayout style="@style/UsbongSpecialImageMainLayout">
+		<ImageView android:id="@+id/special_imageview"
+		    style="@style/UsbongDefaultImageView"	    	
+		/>
+	</LinearLayout>
+	<LinearLayout
+		style="@style/UsbongDefaultBackNextButtonLayout">	
+	    <Button android:id="@+id/back_button"
+		    style="@style/UsbongDefaultBackNextButton"
+		    android:text="Back"/>
+		    
+	   	<Button android:id="@+id/next_button"
+		    style="@style/UsbongDefaultBackNextButton"
+		    android:text="Next"/>	    
+	</LinearLayout>
+</LinearLayout>
