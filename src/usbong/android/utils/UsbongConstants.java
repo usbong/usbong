@@ -43,8 +43,10 @@ public class UsbongConstants {
 	public static final int YOUTUBE_VIDEO_SCREEN=32;	
 	public static final int YOUTUBE_VIDEO_WITH_TEXT_SCREEN=33;	
 	public static final int ANIMATE_SCREEN=34;	
+	public static final int ANIMATE_AND_TEXT_SCREEN=35;	
+	public static final int TEXT_AND_ANIMATE_SCREEN=36;	
 	
-	public static final int END_STATE_SCREEN=35;		
+	public static final int END_STATE_SCREEN=37;		
 
     //JSON constants
 	public static String MY_TREE = "MY_TREE";

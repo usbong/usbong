@@ -1988,6 +1988,18 @@ public class UsbongDecisionTreeEngineActivity extends /*YouTubeBaseActivity*/App
 
 									parseYesNoAnswers(parser);
 								}
+								else if (myStringToken.equals("animate_and_text")) { 
+									parser.nextTag(); //go to transition tag
+									currScreen=UsbongConstants.ANIMATE_AND_TEXT_SCREEN;
+
+									parseYesNoAnswers(parser);
+								}
+								else if (myStringToken.equals("text_and_animate")) { 
+									parser.nextTag(); //go to transition tag
+									currScreen=UsbongConstants.TEXT_AND_ANIMATE_SCREEN;
+
+									parseYesNoAnswers(parser);
+								}
 								else if ((myStringToken.equals("specialImage")) || (myStringToken.equals("imageDisplay"))) { //special?
 									parser.nextTag(); //go to transition tag
 									currScreen=UsbongConstants.IMAGE_DISPLAY_SCREEN;

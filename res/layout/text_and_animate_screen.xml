@@ -3,11 +3,18 @@
 	style="@style/UsbongSpecialParentLayout"
 	android:id="@+id/parent_layout_id"       
 	>
-	<LinearLayout style="@style/UsbongSpecialImageMainLayout">
+	<ScrollView style="@style/UsbongDefaultScrollView"
+	>		 	
+	<LinearLayout style="@style/UsbongTextImageMainLayout">	    
+	    <TextView android:id="@+id/image_text_display_textview"
+		    style="@style/UsbongDefaultTextView"	    	
+		    android:text="@string/default_textview" 
+		/>	    
 	    <ImageView android:id="@+id/image_display_imageview"
 		    style="@style/UsbongTextImageDisplayImageView"	    	
 		/>
-	</LinearLayout>
+	</LinearLayout>	
+	</ScrollView>	    	            
 	<LinearLayout
 		style="@style/UsbongDefaultBackNextButtonLayout">	
 	    <Button android:id="@+id/back_button"

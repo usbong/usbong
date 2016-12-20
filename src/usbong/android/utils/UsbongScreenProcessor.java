@@ -744,7 +744,7 @@ public class UsbongScreenProcessor
 		} else if (udtea.currScreen == UsbongConstants.ANIMATE_SCREEN) {
 			udtea.setContentView(R.layout.animate_screen);
 			udtea.initBackNextButtons();
-			myAnimateImageView = (ImageView)udtea.findViewById(R.id.special_imageview);
+			myAnimateImageView = (ImageView)udtea.findViewById(R.id.image_display_imageview);
 
 		    //example: <task-node name="animate~frame-0-4~Happy Mike">
 		    //becomes "frame-0-4"
@@ -768,7 +768,95 @@ public class UsbongScreenProcessor
 		        	//do updates
 					animate_counter=(animate_counter+1)%endFrame;
 					UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+animate_counter);
-					this.sleep(1000); //1000 is mMoveDelay
+					this.sleep(500); //1000 is mMoveDelay
+					
+					//do invalidate
+					//MyCanvas.this.invalidate();
+		        }
+
+		        public void sleep(long delayMillis) {
+		                this.removeMessages(0);
+		            sendMessageDelayed(obtainMessage(0), delayMillis);
+		        }
+		    };
+		    RefreshHandler mRedrawHandler = new RefreshHandler();
+		    mRedrawHandler.sleep(0);
+			
+//			animate_counter=0;
+		} else if (udtea.currScreen == UsbongConstants.ANIMATE_AND_TEXT_SCREEN) {
+			udtea.setContentView(R.layout.animate_and_text_screen);
+			udtea.initBackNextButtons();
+			TextView myImageTextDisplayTextView = (TextView)udtea.findViewById(R.id.image_text_display_textview);
+			myImageTextDisplayTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myImageTextDisplayTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			myAnimateImageView = (ImageView)udtea.findViewById(R.id.image_display_imageview);
+
+		    //example: <task-node name="animate~frame-0-4~Happy Mike">
+		    //becomes "frame-0-4"
+			String myResName = UsbongUtils.getResName(udtea.currUsbongNode);
+			
+			StringTokenizer animate_st = new StringTokenizer(myResName, "-");
+			final String frameName = animate_st.nextToken();
+			final int startFrame = Integer.parseInt(animate_st.nextToken()); 
+			final int endFrame = Integer.parseInt(animate_st.nextToken())+1; 
+
+			UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+startFrame);
+
+			/**
+		     * Create a simple handler that we can use to cause animation to happen.  We
+		     * set ourselves as a target and we can use the sleep()
+		     * function to cause an update/invalidate to occur at a later date.
+		     */
+			class RefreshHandler extends Handler {
+		        @Override
+		        public void handleMessage(Message msg) {
+		        	//do updates
+					animate_counter=(animate_counter+1)%endFrame;
+					UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+animate_counter);
+					this.sleep(500); //1000 is mMoveDelay
+					
+					//do invalidate
+					//MyCanvas.this.invalidate();
+		        }
+
+		        public void sleep(long delayMillis) {
+		                this.removeMessages(0);
+		            sendMessageDelayed(obtainMessage(0), delayMillis);
+		        }
+		    };
+		    RefreshHandler mRedrawHandler = new RefreshHandler();
+		    mRedrawHandler.sleep(0);
+			
+//			animate_counter=0;
+		} else if (udtea.currScreen == UsbongConstants.TEXT_AND_ANIMATE_SCREEN) {
+			udtea.setContentView(R.layout.text_and_animate_screen);
+			udtea.initBackNextButtons();
+			TextView myImageTextDisplayTextView = (TextView)udtea.findViewById(R.id.image_text_display_textview);
+			myImageTextDisplayTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myImageTextDisplayTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
+			myAnimateImageView = (ImageView)udtea.findViewById(R.id.image_display_imageview);
+
+		    //example: <task-node name="animate~frame-0-4~Happy Mike">
+		    //becomes "frame-0-4"
+			String myResName = UsbongUtils.getResName(udtea.currUsbongNode);
+			
+			StringTokenizer animate_st = new StringTokenizer(myResName, "-");
+			final String frameName = animate_st.nextToken();
+			final int startFrame = Integer.parseInt(animate_st.nextToken()); 
+			final int endFrame = Integer.parseInt(animate_st.nextToken())+1; 
+
+			UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+startFrame);
+
+			/**
+		     * Create a simple handler that we can use to cause animation to happen.  We
+		     * set ourselves as a target and we can use the sleep()
+		     * function to cause an update/invalidate to occur at a later date.
+		     */
+			class RefreshHandler extends Handler {
+		        @Override
+		        public void handleMessage(Message msg) {
+		        	//do updates
+					animate_counter=(animate_counter+1)%endFrame;
+					UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+animate_counter);
+					this.sleep(500); //1000 is mMoveDelay
 					
 					//do invalidate
 					//MyCanvas.this.invalidate();
