@@ -14,7 +14,9 @@
  */
 package usbong.android.utils;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -22,13 +24,13 @@ import org.apache.commons.lang3.StringEscapeUtils;
 
 import usbong.android.R;
 import usbong.android.UsbongDecisionTreeEngineActivity;
-import usbong.android.multimedia.graphics.MyCanvas;
 import usbong.android.utils.FedorMyLocation.LocationResult;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -77,6 +79,7 @@ public class UsbongScreenProcessor
 	
 	public static int animate_counter=0;
 	public static ImageView myAnimateImageView;
+	public static List<Bitmap> frames;
 	
 	public UsbongScreenProcessor(){		
 	}
@@ -768,7 +771,7 @@ public class UsbongScreenProcessor
 		        	//do updates
 					animate_counter=(animate_counter+1)%endFrame;
 					UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+animate_counter);
-					this.sleep(500); //1000 is mMoveDelay
+					this.sleep(1); //1000 is mMoveDelay
 					
 					//do invalidate
 					//MyCanvas.this.invalidate();
@@ -800,7 +803,19 @@ public class UsbongScreenProcessor
 			final int endFrame = Integer.parseInt(animate_st.nextToken())+1; 
 
 			UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+startFrame);
-
+/*
+			//load all frames
+			// Loading the frames before starting the animation
+			frames = new ArrayList<Bitmap>();
+			for (int i = 0; i < 13; i++) {
+			    // Load next frame (e. g. from drawable or assets folder)
+			    frames.add(UsbongUtils.getBitmap(udtea.myTree, frameName+animate_counter));
+			    // Do garbage collection every 3rd frame; really helps loading all frames into memory
+			    if (i % 3 == 0) {
+			        System.gc();
+			    }
+			}
+*/			
 			/**
 		     * Create a simple handler that we can use to cause animation to happen.  We
 		     * set ourselves as a target and we can use the sleep()
@@ -811,8 +826,10 @@ public class UsbongScreenProcessor
 		        public void handleMessage(Message msg) {
 		        	//do updates
 					animate_counter=(animate_counter+1)%endFrame;
+//					myAnimateImageView.setImageBitmap(frames.get(animate_counter));
 					UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+animate_counter);
-					this.sleep(500); //1000 is mMoveDelay
+
+					this.sleep(1); //1000 is mMoveDelay
 					
 					//do invalidate
 					//MyCanvas.this.invalidate();
@@ -856,7 +873,7 @@ public class UsbongScreenProcessor
 		        	//do updates
 					animate_counter=(animate_counter+1)%endFrame;
 					UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+animate_counter);
-					this.sleep(500); //1000 is mMoveDelay
+					this.sleep(1); //1000 is mMoveDelay
 					
 					//do invalidate
 					//MyCanvas.this.invalidate();

@@ -1717,6 +1717,25 @@ public class UsbongUtils {
 //		return imageFile;
     }
     
+    //added by Mike, 20161221
+    //supports .png, .jpg and .jpeg
+    public static Bitmap getBitmap(String myTree, String resFileName) {
+    	String path = getPathOfImageFile(myTree, resFileName);
+        if(!path.equals("null"))
+        {
+        	System.out.println(">>>>>>>>>>>>>>>>>> INSIDE!!!");                	
+        	Bitmap myBitmap = BitmapFactory.decodeFile(path);
+        	if(myBitmap != null)
+        	{
+        		return myBitmap;
+        	}
+        	else {
+        		return null;
+        	}
+        }
+        return null; //not successful!
+    }
+    
     //supports .png, .jpg and .jpeg
     public static boolean setImageDisplay(ImageView myImageView, String myTree, String resFileName) {
     	/*
