@@ -772,7 +772,7 @@ public class UsbongScreenProcessor
 			// Loading the frames before starting the animation
 			if (frames==null) {
 				frames = new ArrayList<Bitmap>();
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < endFrame; i++) {
 				    frames.add(UsbongUtils.getBitmap(udtea.myTree, frameName+i));
 				    // Do garbage collection every 3rd frame; really helps loading all frames into memory
 				    if (i % 3 == 0) {
@@ -819,7 +819,7 @@ public class UsbongScreenProcessor
 			// Loading the frames before starting the animation
 			if (frames==null) {
 				frames = new ArrayList<Bitmap>();
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < endFrame; i++) {
 				    frames.add(UsbongUtils.getBitmap(udtea.myTree, frameName+i));
 				    // Do garbage collection every 3rd frame; really helps loading all frames into memory
 				    if (i % 3 == 0) {
@@ -898,7 +898,7 @@ public class UsbongScreenProcessor
 			// Loading the frames before starting the animation
 			if (frames==null) {
 				frames = new ArrayList<Bitmap>();
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < endFrame; i++) {
 				    frames.add(UsbongUtils.getBitmap(udtea.myTree, frameName+i));
 				    // Do garbage collection every 3rd frame; really helps loading all frames into memory
 				    if (i % 3 == 0) {
