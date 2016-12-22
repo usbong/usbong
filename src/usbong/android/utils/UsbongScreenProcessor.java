@@ -763,7 +763,7 @@ public class UsbongScreenProcessor
 			endFrame = Integer.parseInt(animate_st.nextToken())+1; 
 			
 //			animate_counter = startFrame;			
-//			UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+startFrame);
+			UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+animate_counter );
 
 			//Reference: http://stackoverflow.com/questions/4724355/draw-high-res-animations-with-high-frame-rate-on-android;
 			//last accessed: 20161222
@@ -810,7 +810,7 @@ public class UsbongScreenProcessor
 			endFrame = Integer.parseInt(animate_st.nextToken())+1; 
 			
 //			animate_counter = startFrame;			
-//			UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+startFrame);
+			UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+animate_counter);
 
 			//Reference: http://stackoverflow.com/questions/4724355/draw-high-res-animations-with-high-frame-rate-on-android;
 			//last accessed: 20161222
@@ -889,7 +889,7 @@ public class UsbongScreenProcessor
 			endFrame = Integer.parseInt(animate_st.nextToken())+1; 
 			
 //			animate_counter = startFrame;			
-//			UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+startFrame);
+			UsbongUtils.setImageDisplay(myAnimateImageView, udtea.myTree, frameName+animate_counter);
 
 			//Reference: http://stackoverflow.com/questions/4724355/draw-high-res-animations-with-high-frame-rate-on-android;
 			//last accessed: 20161222

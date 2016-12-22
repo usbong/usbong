@@ -252,7 +252,8 @@ public class UsbongUtils {
 		//		public static final int TEXT_IMAGE_DISPLAY_SCREEN=11;
 		//		public static final int IMAGE_TEXT_DISPLAY_SCREEN=12;
 		//		public static final int CLASSIFICATION_SCREEN=13;		
-		if ((a.currScreen>=UsbongConstants.TEXT_DISPLAY_SCREEN) && (a.currScreen<=UsbongConstants.CLASSIFICATION_SCREEN)) {
+		if ((a.currScreen>=UsbongConstants.TEXT_DISPLAY_SCREEN) && (a.currScreen<=UsbongConstants.CLASSIFICATION_SCREEN)
+				|| 	(a.currScreen>=UsbongConstants.ANIMATE_SCREEN) && (a.currScreen<=UsbongConstants.TEXT_AND_ANIMATE_SCREEN)) {	
 			return true;
 		}
 		return false;
