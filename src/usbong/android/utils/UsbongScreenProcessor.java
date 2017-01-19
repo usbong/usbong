@@ -746,8 +746,7 @@ public class UsbongScreenProcessor
 				@Override
 				public void onClick(DialogInterface dialog, int which) {	            				
 				}
-			}).show();
-						
+			}).show();					
 		} else if (udtea.currScreen == UsbongConstants.ANIMATE_SCREEN) {
 			udtea.setContentView(R.layout.animate_screen);
 			udtea.initBackNextButtons();
