@@ -34,6 +34,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
@@ -347,8 +348,17 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	  	  
 				BufferedOutputStream bos = new BufferedOutputStream(
 						fileOutputStream);
+				
+				//added by Mike, 20160120
+	        	Matrix matrix = new Matrix();
+	            matrix.postRotate(90);
+	            Bitmap myBitmapRotated = Bitmap.createBitmap(myImage, 0, 0, myImage.getWidth(), myImage.getHeight(), matrix, true);
 
+	            myBitmapRotated.compress(CompressFormat.JPEG, quality, bos);
+
+/*	            //commented out by Mike, 20160120
 				myImage.compress(CompressFormat.JPEG, quality, bos);
+*/				
 
 				bos.flush();
 				bos.close();
