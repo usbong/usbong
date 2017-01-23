@@ -2129,10 +2129,10 @@ public class UsbongUtils {
 */
 	    	StringBuffer temp = new StringBuffer();
 	    	while (sc.hasNext()) {
-	    		temp.append(sc.next()+" ");
-
-	    		Log.d(">>>temp: ",temp.toString());
+    			temp.append(sc.next()+" ");
 	    		
+	    		Log.d(">>>temp: ",temp.toString());
+	    			    		
 	    		if (temp.toString().startsWith("<a")) {
 	    			while (sc.hasNext()&&!temp.toString().trim().endsWith("</a>")) {
 	    				temp.append(sc.next()+" ");
@@ -2170,18 +2170,47 @@ public class UsbongUtils {
 	    			while (sc.hasNext()&&!temp.toString().trim().endsWith("</u>")) {
 	    				temp.append(sc.next()+" ");
 	    			}
-	    		}	    		
+	    		}	   
 	    		
 //	    		tokenizedStringList.add(temp.toString()+" "); //commented out by Mike, 19 Sept. 2015
-	    		tokenizedStringList.add(temp.toString());
+	    		tokenizedStringList.add(temp.toString());	    			
 	    		temp.delete(0, temp.length());//reset
 	    	}		    	    	
 	    }
     	
     	for(int i=0; i<tokenizedStringList.size(); i++) {				  
-    		Log.d(">>",""+tokenizedStringList.get(i));    	
-    	}
-
+    		Log.d(">>",""+tokenizedStringList.get(i));   
+    		
+    		//added by Mike, 20160123
+    		if (tokenizedStringList.get(i).contains("<br>")) {
+        		Pattern pattern = Pattern.compile(Pattern.quote("<br>"));            
+        		String[] myTokenList = pattern.split(tokenizedStringList.get(i));
+    	  		String myStringToken = "";
+    	  		tokenizedStringList.remove(i);
+    	  		
+    	  		int counter = i;
+    	  		for (int k=0; k<myTokenList.length; k++) {
+    	  			 myStringToken = myTokenList[k]; 	
+    	  			 
+    	  			 if (myStringToken.trim().equals("")) {	  				 
+	    	  			 tokenizedStringList.add(counter,"<br>");
+		  				 counter++;
+    	  			 }
+    	  			 else if (!myStringToken.trim().equals("")) {	  				 
+    	  				 tokenizedStringList.add(counter,myStringToken);
+    	  				 counter++;
+    	  				 
+    	  				 if (k!=myTokenList.length-1) { //no need to add <br> if this is already the last token
+	    	  				 tokenizedStringList.add(counter,"<br>");
+	    	  				 counter++;
+    	  				 }
+    	  			 }    	  			 
+    	  		}
+    	  		i = counter;	  		
+    			
+    		}    		
+    	}	    
+	    
 		try {
 		  boolean foundMatch=false;
 		  
@@ -2191,7 +2220,7 @@ public class UsbongUtils {
 			  Log.d(">>>>", "tokenizedString: "+tokenizedStringList.get(i).trim().toLowerCase().replaceAll("[^\\w\\s]", ""));
 			  
 			  String tokenizedString = tokenizedStringList.get(i).trim().toLowerCase().replaceAll("[^\\w\\s]", "");
-			  
+
 			  if (myHashtableForCurrLang.containsKey(tokenizedString)) {					  								  
 				  final String hintText = myHashtableForCurrLang.get(tokenizedString);
 				  final UsbongDecisionTreeEngineActivity finalUdtea = (UsbongDecisionTreeEngineActivity)a;
@@ -2226,10 +2255,11 @@ public class UsbongUtils {
 						continue;
 			      }							      							      
 			  }
+    			  
 			  if (!foundMatch) {					  
-			        Log.d(">>>","i: "+i+" "+tokenizedStringList.get(i));
+//    			        Log.d(">>>","i: "+i+" "+tokenizedStringList.get(i));
 			        output.append(tokenizedStringList.get(i));
-			        Log.d(">>> type",""+type);
+//    			        Log.d(">>> type",""+type);
 			        
 		        	switch(type) {
 						case IS_RADIOBUTTON:
@@ -2238,20 +2268,20 @@ public class UsbongUtils {
 							continue;
 						case IS_CHECKBOX:
 							((CheckBox)myView).append(Html.fromHtml(tokenizedStringList.get(i)));
-//							    makeLinksFocusable(((CheckBox)myView), IS_CHECKBOX); 
+//    							    makeLinksFocusable(((CheckBox)myView), IS_CHECKBOX); 
 							continue;				
 						default://case IS_TEXTVIEW:
-//								Log.d(">>>>>myView before Html.fromHtml...",((TextView)myView).getText().toString());
+//    								Log.d(">>>>>myView before Html.fromHtml...",((TextView)myView).getText().toString());
 							((TextView)myView).append(Html.fromHtml(tokenizedStringList.get(i)));
 
-//								((TextView)myView).setText(Html.fromHtml(((TextView)myView).getText().toString()+tokenizedStringList.get(i)));
+//    								((TextView)myView).setText(Html.fromHtml(((TextView)myView).getText().toString()+tokenizedStringList.get(i)));
 							
 							Log.d(">>>>>myView",((TextView)myView).getText().toString());
-//								((CheckBox)myView).setText(mySpanned, TextView.BufferType.SPANNABLE);
-//								((TextView)myView).setMovementMethod(LinkMovementMethod.getInstance());
-//							    makeLinksFocusable(((TextView)myView), IS_TEXTVIEW); 
+//    								((CheckBox)myView).setText(mySpanned, TextView.BufferType.SPANNABLE);
+//    								((TextView)myView).setMovementMethod(LinkMovementMethod.getInstance());
+//    							    makeLinksFocusable(((TextView)myView), IS_TEXTVIEW); 
 							continue;
-				   }							      						      
+				   }							      						          			     
 			  }
 		  }	
 		}
