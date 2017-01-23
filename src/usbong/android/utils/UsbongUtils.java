@@ -2130,51 +2130,48 @@ public class UsbongUtils {
 	    	StringBuffer temp = new StringBuffer();
 	    	while (sc.hasNext()) {
     			temp.append(sc.next()+" ");
+
+    			//added by Mike, 20160123
+	    		String startsWith = "";
+	    		String endsWith = "";
 	    		
-	    		Log.d(">>>temp: ",temp.toString());
-	    			    		
-	    		if (temp.toString().startsWith("<a")) {
+	    		if (temp.toString().startsWith("<a")) { //doesn't use the startsWith String
 	    			while (sc.hasNext()&&!temp.toString().trim().endsWith("</a>")) {
 	    				temp.append(sc.next()+" ");
 	    			}
 	    		}	    		
 	    		else if (temp.toString().startsWith("<small>")) {
-	    			while (sc.hasNext()&&!temp.toString().trim().endsWith("</small>")) {
-	    				temp.append(sc.next()+" ");
-	    			}
+	    			startsWith="<small>"; //added by Mike, 20160123
 	    		}	    		
 	    		else if (temp.toString().startsWith("<big>")) {
-	    			while (sc.hasNext()&&!temp.toString().trim().endsWith("</big>")) {
-	    				temp.append(sc.next()+" ");
-	    			}
+	    			startsWith="<big>"; //added by Mike, 20160123
 	    		}	    		
 	    		else if (temp.toString().startsWith("<font>")) {
-	    			while (sc.hasNext()&&!temp.toString().trim().endsWith("</font>")) {
-	    				temp.append(sc.next()+" ");
-	    			}
+	    			startsWith="<font>"; //added by Mike, 20160123
 	    		}	    		
 	    		else if (temp.toString().startsWith("<b>")) {
-//	    			Log.d(">>nasa loob","<b>");
-	    			while (sc.hasNext()&&!temp.toString().trim().endsWith("</b>")) {
-//	    			while (sc.hasNext()&&!temp.toString().trim().contains("</b>")) {
-	    				temp.append(sc.next()+" ");
-	    			}
+	    			startsWith="<b>"; //added by Mike, 20160123
 	    		}	    		
 	    		else if (temp.toString().startsWith("<i>")) {
-	    			while (sc.hasNext()&&!temp.toString().trim().endsWith("</i>")) {
-//	    			while (sc.hasNext()&&!temp.toString().trim().contains("</i>")) {
-	    				temp.append(sc.next()+" ");
-	    			}
+	    			startsWith="<i>"; //added by Mike, 20160123
 	    		}	    		
 	    		else if (temp.toString().startsWith("<u>")) {
-	    			while (sc.hasNext()&&!temp.toString().trim().endsWith("</u>")) {
-	    				temp.append(sc.next()+" ");
-	    			}
+	    			startsWith="<u>"; //added by Mike, 20160123
 	    		}	   
 	    		
+	    		endsWith = startsWith.replace("<", "</");
+	    		
 //	    		tokenizedStringList.add(temp.toString()+" "); //commented out by Mike, 19 Sept. 2015
-	    		tokenizedStringList.add(temp.toString());	    			
+	    		if (!startsWith.equals("")) {
+		    		tokenizedStringList.add(startsWith);	    				    			
+	    		}
+	    		
+	    		tokenizedStringList.add(temp.toString().replace(startsWith,"").replace(endsWith, ""));
 	    		temp.delete(0, temp.length());//reset
+
+	    		if (!startsWith.equals("")) {
+		    		tokenizedStringList.add(endsWith);	    				    			
+	    		}
 	    	}		    	    	
 	    }
     	
