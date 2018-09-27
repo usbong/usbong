@@ -5,6 +5,12 @@ Automatically exported from code.google.com/p/usbong
 
 As long as you have a flowchart, even if you don't have a background in Computer Science or Engineering, you can build your own apps, or what we call "Trees".
 
+# Usbong App
+http://life.usbong.ph
+
+# Usbong Builder
+http://build.usbong.ph
+
 # Official Company Website
 http://www.usbong.ph
 
